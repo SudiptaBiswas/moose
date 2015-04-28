@@ -35,4 +35,3 @@ SelfAux::computeValue()
 {
   return _u[_qp];
 }
-

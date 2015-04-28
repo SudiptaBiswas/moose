@@ -32,7 +32,6 @@ InputParameters validParams<FunctionPenaltyDirichletBC>();
 class FunctionPenaltyDirichletBC : public IntegratedBC
 {
 public:
-
   /**
    * Factory constructor, takes parameters so that all derived classes can be built using the same constructor.
    */
@@ -43,6 +42,14 @@ public:
 protected:
   virtual Real computeQpResidual();
   virtual Real computeQpJacobian();
+
+public:
+  virtual void calc_physical_volfrac();
+  virtual void calc_mf_weights();
+  virtual Point get_origin(unsigned int plane_id, MeshBase* displaced_mesh=NULL) const;
+  virtual Point get_normal(unsigned int plane_id, MeshBase* displaced_mesh=NULL) const;
+  virtual const EFAelement * get_efa_elem() const;
+  virtual unsigned int num_cut_planes() const;
 
 private:
   Function & _func;
