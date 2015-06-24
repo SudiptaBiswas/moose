@@ -320,19 +320,13 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerUserObject(EBSDReader);
   registerUserObject(SolutionRasterizer);
 
+  registerFunction(ImageFunction);
+
   registerVectorPostprocessor(GrainCentersPostprocessor);
   registerVectorPostprocessor(GrainForcesPostprocessor);
 
-  registerFunction(ImageFunction);
-
   registerMesh(EBSDMesh);
   registerMesh(ImageMesh);
-
-#undef registerDeprecatedObjectName
-#define registerDeprecatedObjectName(obj, name, time) factory.regLegacyReplaced<obj>(stringifyName(obj), name, time)
-#undef registerObject
-#define registerObject(name) factory.regLegacy<name>(stringifyName(name))
-
 }
 
 // External entry point for dynamic syntax association
