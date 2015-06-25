@@ -93,8 +93,9 @@
  */
 #include "BndsCalcAux.h"
 #include "CrossTermGradientFreeEnergy.h"
-#include "KKSGlobalFreeEnergy.h"
 #include "FeatureFloodCountAux.h"
+#include "KKSGlobalFreeEnergy.h"
+#include "MaterialStdVectorRealGradientAux.h"
 #include "TotalFreeEnergy.h"
 
 /*
@@ -240,8 +241,9 @@ PhaseFieldApp::registerObjects(Factory & factory)
 
   registerAux(BndsCalcAux);
   registerAux(CrossTermGradientFreeEnergy);
-  registerAux(KKSGlobalFreeEnergy);
   registerAux(FeatureFloodCountAux);
+  registerAux(KKSGlobalFreeEnergy);
+  registerAux(MaterialStdVectorRealGradientAux);
   registerAux(TotalFreeEnergy);
 
   registerUserObject(ConservedMaskedNormalNoise);
