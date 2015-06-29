@@ -12,46 +12,25 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#ifndef MATERIALSTDVECTORAUX_H
-#define MATERIALSTDVECTORAUX_H
-
 // MOOSE includes
-#include "MaterialAuxBase.h"
+#include "MaterialScaleAuxBase.h"
 
-// Forward declarations
-class MaterialStdVectorAux;
-
-template<>
-InputParameters validParams<MaterialStdVectorAux>();
-
-/**
- * AuxKernel for outputting a std::vector material-property component to an AuxVariable
+/* Each AuxKernel that inherits from MaterialScaleAuxBase must define a specialization
+ * of the input parameters that includes the template parameter passed to MaterialScaleAuxBase.
  */
-class MaterialStdVectorAux : public MaterialAuxBase<std::vector<Real> >
+template<>
+InputParameters validParams<MaterialScaleAuxBase>()
 {
-public:
+  InputParameters params = validParams<AuxKernel>();
+  params.addParam<Real>("factor", 1, "The factor by which to multiply your material property for visualization");
+  params.addParam<Real>("offset", 0, "The offset to add to your material property for visualization");
+  return params;
+}
 
-  /**
-   * Class constructor
-   * @param name AuxKernel name
-   * @param parameters The input parameters for this object
-   */
-  MaterialStdVectorAux(const std::string & name, InputParameters parameters);
-
-  /**
-   * Class destructor
-   */
-  virtual ~MaterialStdVectorAux();
-
-protected:
-
-  /**
-   * Compute the value of the material property for the given index
-   */
-  virtual Real computeValue();
-
-  /// The vector index to output
-  unsigned int _index;
-};
-
-#endif //MATERIALSTDVECTORAUX_H
+MaterialScaleAuxBase::MaterialScaleAuxBase(const std::string & name,
+                                               InputParameters parameters) :
+    AuxKernel(name,parameters),
+    _factor(getParam<Real>("factor")),
+    _offset(getParam<Real>("offset"))
+{
+}

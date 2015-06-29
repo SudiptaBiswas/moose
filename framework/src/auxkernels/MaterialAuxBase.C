@@ -21,10 +21,8 @@
 template<>
 InputParameters validParams<MaterialAuxBase<Real> >()
 {
-  InputParameters params = validParams<AuxKernel>();
+  InputParameters params = validParams<MaterialScaleAuxBase>();
   params.addRequiredParam<MaterialPropertyName>("property", "The scalar material property name");
-  params.addParam<Real>("factor", 1, "The factor by which to multiply your material property for visualization");
-  params.addParam<Real>("offset", 0, "The offset to add to your material property for visualization");
   return params;
 }
 
@@ -36,12 +34,6 @@ InputParameters validParams<MaterialAuxBase<RealVectorValue> >()
 
 template<>
 InputParameters validParams<MaterialAuxBase<RealTensorValue> >()
-{
-  return validParams<MaterialAuxBase<Real> >();
-}
-
-template<>
-InputParameters validParams<MaterialAuxBase<std::vector<Real> > >()
 {
   return validParams<MaterialAuxBase<Real> >();
 }

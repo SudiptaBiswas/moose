@@ -12,27 +12,19 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#ifndef MATERIALSTDVECTORAUXBASE_H
-#define MATERIALSTDVECTORAUXBASE_H
+#ifndef MATERIALSCALEAUXBASE_H
+#define MATERIALSCALEAUXBASE_H
 
 // MOOSE includes
 #include "AuxKernel.h"
 
-// Forward declarations
-template<typename T>
-class MaterialStdVectorAuxBase;
+//forward declaration
+class MaterialScaleAuxBase;
 
 template<>
-InputParameters validParams<MaterialStdVectorAuxBase<Real> >();
+InputParameters validParams<MaterialScaleAuxBase>();
 
-template<>
-InputParameters validParams<MaterialStdVectorAuxBase<RealGradient> >();
-
-/**
- * A base class for the various Material related AuxKernal objects
- */
-template<typename T>
-class MaterialStdVectorAuxBase : public AuxKernel
+class MaterialScaleAuxBase : public AuxKernel
 {
 public:
 
@@ -41,33 +33,13 @@ public:
    * @param name Name of the AuxKernel
    * @param parameters The input parameters for this object
    */
-  MaterialStdVectorAuxBase(const std::string & name, InputParameters parameters);
-
-  /**
-   * Class destructor
-   */
-  virtual ~MaterialStdVectorAuxBase(){}
+  MaterialScaleAuxBase(const std::string & name, InputParameters parameters);
 
 protected:
-
-  /// Reference to the material property for this AuxKernel
-  const MaterialProperty<T> & _prop;
-
-  // Value to be added to the material property
+  /// Multiplier for the material property
   const Real _factor;
-
-  // Multiplier for the material property
+  /// Value to be added to the material property
   const Real _offset;
 
 };
-
-template<typename T>
-MaterialStdVectorAuxBase<T>::MaterialStdVectorAuxBase(const std::string & name, InputParameters parameters) :
-    AuxKernel(name, parameters),
-    _prop(getMaterialProperty<T>("property")),
-    _factor(getParam<Real>("factor")),
-    _offset(getParam<Real>("offset"))
-{
-}
-
-#endif //MATERIALSTDVECTORAUXBASE_H
+#endif //MATERIALSCALEAUXBASE_H

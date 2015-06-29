@@ -16,7 +16,7 @@
 #define MATERIALAUXBASE_H
 
 // MOOSE includes
-#include "AuxKernel.h"
+#include "MaterialScaleAuxBase.h"
 
 // Forward declarations
 template<typename T>
@@ -38,7 +38,8 @@ InputParameters validParams<MaterialAuxBase<DenseMatrix<Real> > >();
  * A base class for the various Material related AuxKernal objects
  */
 template<typename T>
-class MaterialAuxBase : public AuxKernel
+class MaterialAuxBase : public MaterialScaleAuxBase
+
 {
 public:
 
@@ -55,24 +56,15 @@ public:
   virtual ~MaterialAuxBase(){}
 
 protected:
-
   /// Reference to the material property for this AuxKernel
   const MaterialProperty<T> & _prop;
-
-  // Value to be added to the material property
-  const Real _factor;
-
-  // Multiplier for the material property
-  const Real _offset;
 
 };
 
 template<typename T>
 MaterialAuxBase<T>::MaterialAuxBase(const std::string & name, InputParameters parameters) :
-    AuxKernel(name, parameters),
-    _prop(getMaterialProperty<T>("property")),
-    _factor(getParam<Real>("factor")),
-    _offset(getParam<Real>("offset"))
+    MaterialScaleAuxBase(name, parameters),
+    _prop(getMaterialProperty<T>("property"))
 {
 }
 
