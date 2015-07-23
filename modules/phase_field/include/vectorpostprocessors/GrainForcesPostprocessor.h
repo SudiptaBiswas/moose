@@ -16,7 +16,9 @@
 #define GRAINFORCESPOSTPROCESSOR_H
 
 #include "GeneralVectorPostprocessor.h"
-#include "ComputeGrainForceAndTorque.h"
+// #include "ComputeGrainForceAndTorque.h"
+#include "ConstantGrainForceAndTorque.h"
+
 
 //Forward Declarations
 class GrainForcesPostprocessor;
@@ -68,7 +70,8 @@ protected:
   VectorPostprocessorValue & _grain_force_torque_vector;
 
   /// The vector of PostprocessorValue objects that are used to get the values of the postprocessors
-  const ComputeGrainForceAndTorque & _grain_force_torque;
+  // const ComputeGrainForceAndTorque & _grain_force_torque;
+  const ConstantGrainForceAndTorque & _grain_force_torque;
   const std::vector<RealGradient> & _grain_forces;
   const std::vector<RealGradient> & _grain_torques;
   const std::vector<RealGradient> & _grain_force_derivatives;
