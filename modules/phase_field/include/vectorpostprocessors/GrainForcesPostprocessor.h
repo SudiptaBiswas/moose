@@ -40,7 +40,7 @@ public:
     * @param name The name of the object
     * @param parameters The input parameters
     */
-  GrainForcesPostprocessor(const std::string & name, InputParameters parameters);
+  GrainForcesPostprocessor(const InputParameters & parameters);
 
   /**
    * Destructor

@@ -24,8 +24,8 @@ InputParameters validParams<ComputeGrainForceAndTorque>()
   return params;
 }
 
-ComputeGrainForceAndTorque::ComputeGrainForceAndTorque(const std::string & name, InputParameters parameters) :
-    ElementUserObject(name, parameters),
+ComputeGrainForceAndTorque::ComputeGrainForceAndTorque(const InputParameters & parameters) :
+    ElementUserObject(parameters),
     _dF(getMaterialProperty<std::vector<RealGradient> >("force_density")),
     _dFdc(getMaterialProperty<std::vector<RealGradient> >("dFdc")),
     _grain_data(getUserObject<ComputeGrainCenterUserObject>("grain_data")),

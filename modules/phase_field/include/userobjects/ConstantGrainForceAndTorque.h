@@ -30,7 +30,7 @@ InputParameters validParams<ConstantGrainForceAndTorque>();
 class ConstantGrainForceAndTorque :  public ElementUserObject
 {
 public:
-  ConstantGrainForceAndTorque(const std::string & name, InputParameters parameters);
+  ConstantGrainForceAndTorque(const InputParameters & parameters);
 
   virtual void initialize();
   virtual void execute();

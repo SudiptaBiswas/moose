@@ -27,8 +27,8 @@ InputParameters validParams<ConstantGrainForceAndTorque>()
   return params;
 }
 
-ConstantGrainForceAndTorque::ConstantGrainForceAndTorque(const std::string & name, InputParameters parameters) :
-    ElementUserObject(name, parameters),
+ConstantGrainForceAndTorque::ConstantGrainForceAndTorque(const InputParameters & parameters) :
+    ElementUserObject(parameters),
     _dF(getParam<RealGradient>("force")),
     // _dFdc(getMaterialProperty<std::vector<RealGradient> >("dFdc")),
     // _grain_data(getUserObject<ComputeGrainCenterUserObject>("grain_data")),
