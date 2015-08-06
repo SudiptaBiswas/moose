@@ -14,6 +14,7 @@ InputParameters validParams<GrainAdvectionVelocity>()
   params.addCoupledVar("etas", "Array of other coupled order parameters");
   params.addParam<Real>("translation_constant", 500, "constant value characterizing grain translation");
   params.addParam<Real>("rotation_constant", 1.0, "constant value characterizing grain rotation");
+  params.addParam<std::string>("force_type", "Optional parameter that allows the user to define type of force density under consideration");
   params.addParam<UserObjectName>("grain_data", "userobject for getting volume and center of mass of grains");
   params.addParam<UserObjectName>("grain_force", "userobject for getting force and torque acting on grains");
   return params;
@@ -34,11 +35,12 @@ GrainAdvectionVelocity::GrainAdvectionVelocity(const InputParameters & parameter
    _ncrys(_grain_forces.size()),
    _vals(_ncrys),
    _grad_vals(_ncrys),
-   _velocity_advection(declareProperty<std::vector<RealGradient> >("advection_velocity")),
-   _div_velocity_advection(declareProperty<std::vector<Real> >("advection_velocity_divergence")),
-   _velocity_advection_derivative_c(declareProperty<std::vector<RealGradient> >("advection_velocity_derivative_c")),
-   _div_velocity_advection_derivative_c(declareProperty<std::vector<Real> >("advection_velocity_divergence_derivative_c")),
-   _velocity_advection_derivative_eta(declareProperty<std::vector<RealGradient> >("advection_velocity_derivative_eta"))
+   _force_type(isParamValid("force_type") ? getParam<std::string>("force_type") + "_" : "" ),
+   _velocity_advection(declareProperty<std::vector<RealGradient> >(_force_type + "advection_velocity")),
+   _div_velocity_advection(declareProperty<std::vector<Real> >(_force_type + "advection_velocity_divergence")),
+   _velocity_advection_derivative_c(declareProperty<std::vector<RealGradient> >(_force_type + "advection_velocity_derivative_c")),
+   _div_velocity_advection_derivative_c(declareProperty<std::vector<Real> >(_force_type + "advection_velocity_divergence_derivative_c")),
+   _velocity_advection_derivative_eta(declareProperty<std::vector<RealGradient> >(_force_type + "advection_velocity_derivative_eta"))
 {
   //Loop through grains and load coupled variables into the arrays
   for (unsigned int i = 0; i < _ncrys; ++i)

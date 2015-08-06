@@ -39,6 +39,9 @@ protected:
   std::vector<VariableValue *> _vals;
   std::vector<unsigned int> _vals_var;
 
+  /// type of force density material
+  std::string _force_type;
+
   /// Material property for advection velocities
   const MaterialProperty<std::vector<RealGradient> > & _velocity_advection;
   /// Material property for divergence of advection velocities

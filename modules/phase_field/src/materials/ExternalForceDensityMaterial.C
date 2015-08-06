@@ -46,8 +46,8 @@ ExternalForceDensityMaterial::computeQpProperties()
 
   for (unsigned int i = 0; i < _ncrys; ++i)
   {
-    _dF[_qp][i](0) = _k * _c[_qp] * _force_x.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];;
-    _dF[_qp][i](1) = _k * _c[_qp] * _force_y.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];;
+    _dF[_qp][i](0) = _k * _c[_qp] * _force_x.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];
+    _dF[_qp][i](1) = _k * _c[_qp] * _force_y.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];
     _dF[_qp][i](2) = _k * _c[_qp] * _force_z.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];
 
     _dFdc[_qp][i](0) = _k * _force_x.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];

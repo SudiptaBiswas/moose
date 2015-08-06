@@ -52,6 +52,9 @@ private:
   std::vector<VariableValue *> _vals;
   std::vector<VariableGradient *> _grad_vals;
 
+  /// type of force density material
+  std::string _force_type;
+
   /// Material storing advection velocities of grains
   MaterialProperty<std::vector<RealGradient> > & _velocity_advection;
 

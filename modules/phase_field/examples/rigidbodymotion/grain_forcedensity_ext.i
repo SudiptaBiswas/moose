@@ -19,7 +19,7 @@
     [./InitialCondition]
       type = SpecifiedSmoothCircleIC
       invalue = 1.0
-      outvalue = 0.1
+      outvalue = 0.0
       int_width = 6.0
       x_positions = '20.0 30.0 '
       z_positions = '0.0 0.0 '
@@ -39,7 +39,7 @@
 [Functions]
   [./load]
     type = ConstantFunction
-    value = 0.01
+    value = -0.01
   [../]
 []
 
@@ -104,6 +104,7 @@
 []
 
 [AuxVariables]
+  active = 'bnds eta0 eta1 df11 df10 df00 df01'
   [./eta0]
   [../]
   [./eta1]
@@ -153,6 +154,7 @@
 []
 
 [AuxKernels]
+  active = 'bnds df11 df10 df01 df00'
   [./bnds]
     type = BndsCalcAux
     variable = bnds
@@ -289,7 +291,7 @@
   l_tol = 1.0e-4
   nl_rel_tol = 1.0e-10
   start_time = 0.0
-  num_steps = 10
+  num_steps = 5
   dt = 0.1
 []
 
