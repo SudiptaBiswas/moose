@@ -3,8 +3,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 50
-  ny = 25
+  nx = 25
+  ny = 10
   nz = 0
   xmax = 50
   ymax = 25
@@ -74,7 +74,7 @@
     type = GenericConstantMaterial
     block = 0
     prop_names = 'M    kappa_c  kappa_eta'
-    prop_values = '1.0  2.0      0.1'
+    prop_values = '5.0  2.0      0.1'
   [../]
   [./free_energy]
     type = DerivativeParsedMaterial
@@ -260,11 +260,11 @@
   [./grain_center]
     type = ComputeGrainCenterUserObject
     etas = 'eta0 eta1'
-    execute_on = 'initial linear'
+    execute_on = 'initial timestep_end'
   [../]
   [./grain_force]
     type = ComputeGrainForceAndTorque
-    execute_on = 'initial linear'
+    execute_on = 'initial timestep_end'
     grain_data = grain_center
     force_density = force_density_ext
     force_density_derivative = dFdc_ext
@@ -289,7 +289,7 @@
   l_tol = 1.0e-4
   nl_rel_tol = 1.0e-10
   start_time = 0.0
-  num_steps = 2
+  num_steps = 1
   dt = 0.1
 []
 

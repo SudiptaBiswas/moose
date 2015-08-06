@@ -1,4 +1,4 @@
-# test file for showing reaction forces between particles
+# example showing grain motion due to applied force density on grains
 
 [Mesh]
   type = GeneratedMesh
