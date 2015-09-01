@@ -34,6 +34,7 @@
 #include "CoupledAllenCahn.h"
 #include "CoupledReaction.h"
 #include "GradientComponent.h"
+#include "GBVacancyAnnihilation.h"
 #include "HHPFCRFF.h"
 #include "KKSACBulkC.h"
 #include "KKSACBulkF.h"
@@ -258,6 +259,7 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerKernel(CoupledReaction);
   registerKernel(GradientComponent);
   registerKernel(HHPFCRFF);
+  registerKernel(GBVacancyAnnihilation);
   registerKernel(KKSACBulkC);
   registerKernel(KKSACBulkF);
   registerKernel(KKSCHBulk);
