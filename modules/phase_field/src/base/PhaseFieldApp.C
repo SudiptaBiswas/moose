@@ -58,6 +58,7 @@
 #include "SwitchingFunctionConstraintEta.h"
 #include "SwitchingFunctionConstraintLagrange.h"
 #include "SwitchingFunctionPenalty.h"
+#include "VacancyRecombination.h"
 
 /*
  * Initial Conditions
@@ -280,6 +281,8 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerKernel(SwitchingFunctionConstraintEta);
   registerKernel(SwitchingFunctionConstraintLagrange);
   registerKernel(SwitchingFunctionPenalty);
+  registerKernel(VacancyRecombination);
+
   registerDeprecatedObjectName(AllenCahn, "ACParsed", "15/04/2016 00:00");
   registerDeprecatedObjectName(CahnHilliard, "CHParsed", "11/01/2015 00:00");
 
