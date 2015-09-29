@@ -1,0 +1,7 @@
+[Tests]
+  [./Recombination]
+    type = 'Exodiff'
+    input = 'recombination.i'
+    exodiff = 'recombination_out.e'
+  [../]
+[]
