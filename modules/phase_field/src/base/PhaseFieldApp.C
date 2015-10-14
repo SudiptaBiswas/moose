@@ -43,6 +43,7 @@
 #include "MaskedBodyForce.h"
 #include "MatDiffusion.h"
 #include "MultiGrainRigidBodyMotion.h"
+#include "OstRipACKernel.h"
 #include "PFFracBulkRate.h"
 #include "PFFracCoupledInterface.h"
 #include "PFFracIntVar.h"
@@ -97,6 +98,7 @@
 #include "MathEBFreeEnergy.h"
 #include "MathFreeEnergy.h"
 #include "MultiBarrierFunctionMaterial.h"
+#include "OstRipFreeEnergy.h"
 #include "ParsedMaterial.h"
 #include "PFCRFFMaterial.h"
 #include "PFCTradMaterial.h"
@@ -169,6 +171,7 @@
 #include "CHPFCRFFSplitVariablesAction.h"
 #include "HHPFCRFFSplitKernelAction.h"
 #include "HHPFCRFFSplitVariablesAction.h"
+#include "OstRipACKernelAction.h"
 #include "PFCRFFKernelAction.h"
 #include "PFCRFFVariablesAction.h"
 #include "PolycrystalElasticDrivingForceAction.h"
@@ -254,6 +257,7 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerKernel(MaskedBodyForce);
   registerKernel(MatDiffusion);
   registerKernel(MultiGrainRigidBodyMotion);
+  registerKernel(OstRipACKernel);
   registerKernel(PFFracBulkRate);
   registerKernel(PFFracCoupledInterface);
   registerKernel(PFFracIntVar);
@@ -304,6 +308,7 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerMaterial(MathEBFreeEnergy);
   registerMaterial(MathFreeEnergy);
   registerMaterial(MultiBarrierFunctionMaterial);
+  registerMaterial(OstRipFreeEnergy);
   registerMaterial(ParsedMaterial);
   registerMaterial(PFCRFFMaterial);
   registerMaterial(PFCTradMaterial);
@@ -368,6 +373,7 @@ PhaseFieldApp::associateSyntax(Syntax & syntax, ActionFactory & action_factory)
   syntax.registerActionSyntax("EmptyAction", "ICs/PolycrystalICs");  // placeholder
   syntax.registerActionSyntax("HHPFCRFFSplitKernelAction", "Kernels/HHPFCRFFSplitKernel");
   syntax.registerActionSyntax("HHPFCRFFSplitVariablesAction", "Variables/HHPFCRFFSplitVariables");
+  syntax.registerActionSyntax("OstRipACKernelAction", "Kernels/OstRipACKernel");
   syntax.registerActionSyntax("PFCRFFKernelAction", "Kernels/PFCRFFKernel");
   syntax.registerActionSyntax("PFCRFFVariablesAction", "Variables/PFCRFFVariables");
   syntax.registerActionSyntax("PolycrystalElasticDrivingForceAction", "Kernels/PolycrystalElasticDrivingForce");
@@ -388,6 +394,7 @@ PhaseFieldApp::associateSyntax(Syntax & syntax, ActionFactory & action_factory)
   registerAction(DisplacementGradientsAction, "add_kernel");
   registerAction(HHPFCRFFSplitKernelAction, "add_kernel");
   registerAction(HHPFCRFFSplitVariablesAction, "add_variable");
+  registerAction(OstRipACKernelAction, "add_kernel");
   registerAction(PFCRFFKernelAction, "add_kernel");
   registerAction(PFCRFFVariablesAction, "add_variable");
   registerAction(PolycrystalElasticDrivingForceAction, "add_kernel");
