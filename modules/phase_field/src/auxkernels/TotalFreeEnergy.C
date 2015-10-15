@@ -41,9 +41,8 @@ TotalFreeEnergy::computeValue()
   for (unsigned int i = 0; i < _nvars; ++i)
   {
     Real abs_grad_var = (*_grad_vars[i])[_qp].size();
-    total_energy += (*_kappas[i])[_qp]/2.0*abs_grad_var*abs_grad_var;
+    total_energy += (*_kappas[i])[_qp]/2.0 * abs_grad_var*abs_grad_var;
   }
 
   return total_energy;
 }
-

@@ -38,39 +38,44 @@ OstRipFreeEnergy::OstRipFreeEnergy(const InputParameters & parameters) :
   for (unsigned int i = 0; i < _ncrys; ++i)
   {
     _vals[i] = &coupledValue("v", i);
-    _vals_var[i] = coupled("v",i);
+    _vals_var[i] = coupled("v", i);
   }
 }
 
 Real
 OstRipFreeEnergy::computeF()
 {
-  Real SumEtai = 0.0;
+  Real SumEtai2 = 0.0;
   Real SumEtai4 = 0.0;
-  Real SumEtaj = 0.0;
+  Real SumEtai2j2 = 0.0;
+
   for (unsigned int i = 0; i < _ncrys; ++i)
   {
-    SumEtai += (*_vals[i])[_qp] * (*_vals[i])[_qp]; //Sum all order parameters
+    SumEtai2 += (*_vals[i])[_qp] * (*_vals[i])[_qp]; //Sum all order parameters
     SumEtai4 += (*_vals[i])[_qp] * (*_vals[i])[_qp] * (*_vals[i])[_qp] * (*_vals[i])[_qp];;
     for (unsigned int j = 0; j < _ncrys; ++j)
     {
       if (j != i)
-        SumEtaj += (*_vals[j])[_qp] * (*_vals[j])[_qp]; //Sum all other order parameters
+        SumEtai2j2 += (*_vals[i])[_qp] * (*_vals[i])[_qp]
+                    * (*_vals[j])[_qp] * (*_vals[j])[_qp]; //Sum all other order parameters
     }
   }
-  return - _gamma[_qp] / 2.0 * (_c[_qp] - _conc_alpha) * (_c[_qp] - _conc_alpha) * SumEtai + _beta / 4.0 * SumEtai + _epsilon / 2.0 * SumEtai * SumEtaj;
+  return - _gamma[_qp] / 2.0 * (_c[_qp] - _conc_alpha) * (_c[_qp] - _conc_alpha) * SumEtai2
+         + _beta / 4.0 * SumEtai4
+         + _epsilon / 2.0 * SumEtai2j2;
 }
 
 Real
 OstRipFreeEnergy::computeDF(unsigned int j_var)
 {
-  Real SumEtai = 0.0;
-  if (j_var == _c_var)//Note that these checks are only really necessary when the material has more than one coupled variable
+  if (j_var == _c_var)
   {
+    // Sum all order parameters
+    Real SumEtai2 = 0.0;
     for (unsigned int i = 0; i < _ncrys; ++i)
-      SumEtai += (*_vals[i])[_qp] * (*_vals[i])[_qp]; //Sum all order parameters
+      SumEtai2 += (*_vals[i])[_qp] * (*_vals[i])[_qp];
 
-    return - _gamma[_qp] * (_c[_qp] - _conc_alpha) * SumEtai;
+    return -_gamma[_qp] * (_c[_qp] - _conc_alpha) * SumEtai2;
   }
 
   for (unsigned int i = 0; i < _ncrys; ++i)
@@ -83,18 +88,21 @@ OstRipFreeEnergy::computeDF(unsigned int j_var)
         if (j != i)
           SumEtaj += (*_vals[j])[_qp] * (*_vals[j])[_qp]; //Sum all other order parameters
       }
-      return - _gamma[_qp] * (_c[_qp] - _conc_alpha) * (_c[_qp] - _conc_alpha) * (*_vals[i])[_qp] + _beta * (*_vals[i])[_qp] * (*_vals[i])[_qp] * (*_vals[i])[_qp] + _epsilon * (*_vals[i])[_qp] * SumEtaj ;
+      return   -_gamma[_qp] * (_c[_qp] - _conc_alpha) * (_c[_qp] - _conc_alpha) * (*_vals[i])[_qp]
+             + _beta * (*_vals[i])[_qp] * (*_vals[i])[_qp] * (*_vals[i])[_qp]
+             + _epsilon * (*_vals[i])[_qp] * SumEtaj ;
     }
   }
+
   return 0.0;
 }
 
 Real
 OstRipFreeEnergy::computeD2F(unsigned int j_var, unsigned int k_var)
 {
-  Real SumEtai = 0.0;
   if ( (j_var == _c_var) && (k_var == _c_var) )
   {
+    Real SumEtai = 0.0;
     for (unsigned int i = 0; i < _ncrys; ++i)
       SumEtai += (*_vals[i])[_qp] * (*_vals[i])[_qp]; //Sum all other order parameters
 
@@ -110,13 +118,15 @@ OstRipFreeEnergy::computeD2F(unsigned int j_var, unsigned int k_var)
     {
       Real SumEtaj = 0.0;
       for (unsigned int j = 0; j < _ncrys; ++j)
-      {
         if (j != i)
           SumEtaj += (*_vals[j])[_qp] * (*_vals[j])[_qp]; //Sum all other order parameters
-      }
-      return - _gamma[_qp] * (_c[_qp] - _conc_alpha) * (_c[_qp] - _conc_alpha) + 3.0 * _beta * (*_vals[i])[_qp] * (*_vals[i])[_qp] * (*_vals[i])[_qp] + _epsilon * SumEtaj;
+
+      return -_gamma[_qp] * (_c[_qp] - _conc_alpha) * (_c[_qp] - _conc_alpha)
+             + 3.0 * _beta * (*_vals[i])[_qp] * (*_vals[i])[_qp] * (*_vals[i])[_qp]
+             + _epsilon * SumEtaj;
     }
   }
+
   return 0.0;
 }
 

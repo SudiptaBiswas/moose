@@ -9,9 +9,10 @@ InputParameters validParams<OstRipACKernelAction>()
   InputParameters params = validParams<Action>();
   params.addRequiredParam<unsigned int>("op_num", "specifies the number of grains to create");
   params.addRequiredParam<std::string>("var_name_base", "specifies the base name of the variables");
-  // params.addParam<VariableName>("c", "NONE", "Name of coupled concentration variable");
+  params.addParam<VariableName>("c", "NONE", "Name of coupled concentration variable");
   // params.addParam<MaterialPropertyName>("gamma", 1.0, "Material Proprty/co-effieient for free energy term");
-  params.addRequiredParam<MaterialPropertyName>("f_name", "Base name of the free energy function F defined in a DerivativeParsedMaterial");
+  params.addParam<MaterialPropertyName>("f_name", "F", "Base name of the free energy function F defined in a DerivativeParsedMaterial");
+  params.addParam<std::vector<VariableName> >("args", "Vector of nonlinear variable arguments this object depends ons");
   params.addParam<bool>("use_displaced_mesh", false, "Whether to use displaced mesh in the kernels");
   return params;
 }
@@ -20,9 +21,8 @@ OstRipACKernelAction::OstRipACKernelAction(const InputParameters & params) :
     Action(params),
     _op_num(getParam<unsigned int>("op_num")),
     _var_name_base(getParam<std::string>("var_name_base")),
-    _f_name(MaterialPropertyName("f_name"))
-    // _c(getParam<VariableName>("c")),
-    // _gamma(MaterialPropertyName("gamma"))
+    _f_name(getParam<MaterialPropertyName>("f_name")),
+    _c(getParam<VariableName>("c"))
 {
 }
 
@@ -43,36 +43,30 @@ OstRipACKernelAction::act()
     var_name.append(out.str());
 
     std::vector<VariableName> v;
-    v.resize(_op_num - 1);
-
-    unsigned int ind = 0;
+    v.resize(_op_num);
 
     for (unsigned int j = 0; j < _op_num; ++j)
     {
       if (j != op)
       {
-        std::string coupled_var_name = _var_name_base;
         std::stringstream out2;
-        out2 << j;
-        coupled_var_name.append(out2.str());
-        v[ind] = coupled_var_name;
-        ind++;
+        out2 << _var_name_base << j;
+        v[j] = out2.str();
       }
+      else
+        v[j] = _c;
     }
 
     // InputParameters poly_params = _factory.getValidParams("OstRipACKernel");
     InputParameters poly_params = _factory.getValidParams("ACParsed");
     poly_params.set<NonlinearVariableName>("variable") = var_name;
     poly_params.set<MaterialPropertyName>("f_name") = _f_name;
-    // poly_params.set<std::vector<VariableName> >("c").push_back(_c);
-    // poly_params.set<std::vector<VariableName> >("v") = v;
-    // poly_params.set<MaterialPropertyName>("gamma") = _gamma;
+    poly_params.set<std::vector<VariableName> >("args") = v;
     poly_params.set<bool>("use_displaced_mesh") = getParam<bool>("use_displaced_mesh");
 
-    std::string kernel_name = "ACBulk_";
-    kernel_name.append(var_name);
+    std::string kernel_name = "ACBulk_" + var_name;
 
-    _problem->addKernel("OstRipACKernel", kernel_name, poly_params);
+    _problem->addKernel("ACParsed", kernel_name, poly_params);
 
     //********************************************
 
@@ -80,8 +74,7 @@ OstRipACKernelAction::act()
     poly_params.set<NonlinearVariableName>("variable") = var_name;
     poly_params.set<bool>("use_displaced_mesh") = getParam<bool>("use_displaced_mesh");
 
-    kernel_name = "ACInt_";
-    kernel_name.append(var_name);
+    kernel_name = "ACInt_" + var_name;
 
     _problem->addKernel("ACInterface", kernel_name, poly_params);
 

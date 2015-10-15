@@ -15,7 +15,7 @@ private:
   std::string _var_name_base;
   MaterialPropertyName _f_name;
 
-  // VariableName _c;
+  VariableName _c;
   //
   // MaterialPropertyName _gamma;
 
