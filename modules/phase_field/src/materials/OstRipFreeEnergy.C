@@ -46,17 +46,19 @@ Real
 OstRipFreeEnergy::computeF()
 {
   Real SumEtai = 0.0;
+  Real SumEtai4 = 0.0;
   Real SumEtaj = 0.0;
   for (unsigned int i = 0; i < _ncrys; ++i)
   {
     SumEtai += (*_vals[i])[_qp] * (*_vals[i])[_qp]; //Sum all order parameters
+    SumEtai4 += (*_vals[i])[_qp] * (*_vals[i])[_qp] * (*_vals[i])[_qp] * (*_vals[i])[_qp];;
     for (unsigned int j = 0; j < _ncrys; ++j)
     {
       if (j != i)
         SumEtaj += (*_vals[j])[_qp] * (*_vals[j])[_qp]; //Sum all other order parameters
     }
   }
-  return - _gamma[_qp] / 2.0 * (_c[_qp] - _conc_alpha) * (_c[_qp] - _conc_alpha) * SumEtai + _beta / 4.0 * SumEtai * SumEtai + _epsilon / 2.0 * SumEtai * SumEtaj;
+  return - _gamma[_qp] / 2.0 * (_c[_qp] - _conc_alpha) * (_c[_qp] - _conc_alpha) * SumEtai + _beta / 4.0 * SumEtai + _epsilon / 2.0 * SumEtai * SumEtaj;
 }
 
 Real

@@ -121,8 +121,8 @@
 [Materials]
   [./constants]
     type = GenericConstantMaterial
-    prop_names = 'kappa_c M L kappa_op'
-    prop_values = '2.0 1.0 1.0 2.0'
+    prop_names  = 'kappa_c M   L   kappa_op'
+    prop_values = '2.0     1.0 1.0 2.0'
   [../]
   [./gamma]
     type = ParsedMaterial
@@ -135,11 +135,12 @@
     type = DerivativeParsedMaterial
     f_name = f1
     args = c
-    constant_names = 'A C_alpha C_beta C_m B'
-    constant_expressions = '2.0 0.05 0.95 0.5*(C_alpha+C_beta)  A/((C_alpha-C_m)*(C_alpha-C_m))'
-    function = '-0.5*A*(c-C_m)*(c-C_m)+0.25*B*(c-C_m)*(c-C_m)*(c-C_m)*(c-C_m)+
-                0.25*C_alpha*(c-C_alpha)*(c-C_alpha)*(c-C_alpha)*(c-C_alpha)+
-                0.25*C_beta*(c-C_beta)*(c-C_beta)*(c-C_beta)*(c-C_beta)'
+    constant_names       = 'A   C_alpha C_beta                     C_m B'
+    constant_expressions = '2.0 0.05    0.95 0.5*(C_alpha+C_beta)  A/(C_alpha-C_m)^2'
+    function = '-0.5*A*(c-C_m)^2+0.25*B*(c-C_m)^4+
+                0.25*gamma*(c-C_alpha)^4+
+                0.25*gamma*(c-C_beta)^4'
+    material_property_names = gamma
   [../]
   [./fen2]
     type = OstRipFreeEnergy
@@ -192,10 +193,10 @@
   l_max_its = 20
   nl_max_its = 20
   l_tol = 1.0e-3
-  nl_rel_tol = 1.0e-8
+  nl_rel_tol = 1.0e-6
   start_time = 0.0
   num_steps = 1500
-  nl_abs_tol = 1e-9
+  nl_abs_tol = 1e-8
   [./TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.5
