@@ -13,9 +13,9 @@ public:
 private:
   unsigned int _op_num;
   std::string _var_name_base;
-  VariableName _c;
-
-  MaterialPropertyName _gamma;
+  // VariableName _c;
+  //
+  // MaterialPropertyName _gamma;
 
 };
 
