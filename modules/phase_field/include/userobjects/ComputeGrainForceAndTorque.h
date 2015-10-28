@@ -25,9 +25,12 @@ class ComputeGrainForceAndTorque :
     public ElementUserObject,
     public DerivativeMaterialPropertyNameInterface,
     public GrainForceAndTorqueInterface
+
 {
 public:
   ComputeGrainForceAndTorque(const InputParameters & parameters);
+
+  virtual void initialSetup();
 
   virtual void initialize();
   virtual void execute();
@@ -38,10 +41,14 @@ public:
   virtual const std::vector<RealGradient> & getTorqueValues() const;
   virtual const std::vector<RealGradient> & getForceDerivatives() const;
   virtual const std::vector<RealGradient> & getTorqueDerivatives() const;
+  virtual const std::vector<std::vector<RealGradient> > & getForceDerivativesJacobian() const;
+  virtual const std::vector<std::vector<RealGradient> > & getTorqueDerivativesJacobian() const;
 
 protected:
   unsigned int _qp;
+  unsigned int _j;
 
+  MooseVariable * _c;
   VariableName _c_name;
   /// material property that provides force density
   const MaterialProperty<std::vector<RealGradient> > & _dF;
@@ -59,11 +66,23 @@ protected:
   std::vector<RealGradient> _torque_values;
   std::vector<RealGradient> _force_derivatives;
   std::vector<RealGradient> _torque_derivatives;
+  std::vector<std::vector<RealGradient> > _force_derivatives_jac;
+  std::vector<std::vector<RealGradient> > _torque_derivatives_jac;
   ///@}
   /// vector storing grain force and torque values
   std::vector<Real> _force_torque_store;
-  /// vector storing derivative of grain force and torque values
   std::vector<Real> _force_torque_derivative_store;
+
+  // std::vector<std::vector<Real> > _force_torque_jacobian;
+
+  /// shape function values (in QPs)
+  const VariablePhiValue & _phi;
+  /// The global DOF indices of the element
+  std::vector<dof_id_type> & _dof_indices;
+  /// Total DOF in the system
+  dof_id_type _total_num_dofs;
+  /// vector storing derivative of grain force and torque values
+  std::vector<Real> _force_torque_jacobian_store;
 };
 
 #endif //COMPUTEGRAINFORCEANDTORQUE_H

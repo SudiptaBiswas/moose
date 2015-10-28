@@ -95,6 +95,7 @@
   [./centers]
     type = GrainCentersPostprocessor
     grain_data = grain_center
+    outputs = exodus
   [../]
 []
 
