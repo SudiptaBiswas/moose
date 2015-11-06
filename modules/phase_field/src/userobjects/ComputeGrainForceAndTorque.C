@@ -14,7 +14,7 @@
 template<>
 InputParameters validParams<ComputeGrainForceAndTorque>()
 {
-  InputParameters params = validParams<ElementUserObject>();
+  InputParameters params = validParams<ShapeElementUserObject>();
   params.addClassDescription("Userobject for calculating force and torque acting on a grain");
   params.addParam<MaterialPropertyName>("force_density", "force_density", "Force density material");
   params.addParam<UserObjectName>("grain_data", "grain_data", "center of mass of grains");
@@ -23,10 +23,11 @@ InputParameters validParams<ComputeGrainForceAndTorque>()
 }
 
 ComputeGrainForceAndTorque::ComputeGrainForceAndTorque(const InputParameters & parameters) :
-    ElementUserObject(parameters),
+    ShapeElementUserObject(parameters),
     GrainForceAndTorqueInterface(),
     _c(getVar("c", 0)),
     _c_name(getVar("c", 0)->name()),
+    _c_var(getVar("c", 0)->number()),
     _dF(getMaterialProperty<std::vector<RealGradient> >("force_density")),
     _dF_name(getParam<MaterialPropertyName>("force_density")),
     _dFdc(getMaterialPropertyByName<std::vector<RealGradient> >(propertyNameFirst(_dF_name, _c_name))),
@@ -85,26 +86,31 @@ ComputeGrainForceAndTorque::execute()
       _force_torque_store[6*i+5] += compute_torque(2);
     }
 
-    if (_fe_problem.currentlyComputingJacobian())
-    {
-      // Temporary printing option for checking the jacobian flag
-      // mooseWarning("Jacobian_flag is'" << _fe_problem.currentlyComputingJacobian() << "'." );
+      // executeJacobian(_c_var);
+}
 
-      for (unsigned int i = 0; i < _ncrys; ++i)
-        for (_j=0; _j < _phi.size(); ++_j)
-          for (_qp=0; _qp < _qrule->n_points(); ++_qp)
-          {
-            unsigned int k = _dof_indices[_j];
-            const RealGradient compute_torque_derivative_c = _JxW[_qp] * _coord[_qp]
-                                                             * (_q_point[_qp] - _grain_centers[i]).cross(_dFdc[_qp][i]);
-            _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](0) * _phi[_j][_qp];
-            _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](1) * _phi[_j][_qp];
-            _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](2) * _phi[_j][_qp];
-            _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += compute_torque_derivative_c(0) * _phi[_j][_qp];
-            _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += compute_torque_derivative_c(1) * _phi[_j][_qp];
-            _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += compute_torque_derivative_c(2) * _phi[_j][_qp];
-          }
-      }
+void
+ComputeGrainForceAndTorque::executeJacobian( unsigned int jvar)
+{
+  if (jvar == _c_var)
+  {
+    // ShapeElementUserObject::requestJacobian(_c_name);
+
+    for (unsigned int i = 0; i < _ncrys; ++i)
+      for (_j=0; _j < _phi.size(); ++_j)
+        for (_qp=0; _qp < _qrule->n_points(); ++_qp)
+        {
+          unsigned int k = _dof_indices[_j];
+          const RealGradient compute_torque_derivative_c = _JxW[_qp] * _coord[_qp]
+                                                           * (_q_point[_qp] - _grain_centers[i]).cross(_dFdc[_qp][i]);
+          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](0) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](1) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](2) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += compute_torque_derivative_c(0) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += compute_torque_derivative_c(1) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += compute_torque_derivative_c(2) * _phi[_j][_qp];
+        }
+  }
 }
 
 void

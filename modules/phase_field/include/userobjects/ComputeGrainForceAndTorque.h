@@ -7,7 +7,7 @@
 #ifndef COMPUTEGRAINFORCEANDTORQUE_H
 #define COMPUTEGRAINFORCEANDTORQUE_H
 
-#include "ElementUserObject.h"
+#include "ShapeElementUserObject.h"
 #include "GrainForceAndTorqueInterface.h"
 #include "DerivativeMaterialInterface.h"
 
@@ -22,7 +22,7 @@ InputParameters validParams<ComputeGrainForceAndTorque>();
  * This class is here to get the force and torque acting on a grain
  */
 class ComputeGrainForceAndTorque :
-    public ElementUserObject,
+    public ShapeElementUserObject,
     public DerivativeMaterialPropertyNameInterface,
     public GrainForceAndTorqueInterface
 
@@ -34,6 +34,7 @@ public:
 
   virtual void initialize();
   virtual void execute();
+  virtual void executeJacobian(unsigned int jvar);
   virtual void finalize();
   virtual void threadJoin(const UserObject & y);
 
@@ -50,6 +51,7 @@ protected:
 
   MooseVariable * _c;
   VariableName _c_name;
+  unsigned int _c_var;
   /// material property that provides force density
   const MaterialProperty<std::vector<RealGradient> > & _dF;
   MaterialPropertyName _dF_name;
