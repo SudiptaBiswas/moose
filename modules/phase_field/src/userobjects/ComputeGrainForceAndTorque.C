@@ -25,9 +25,9 @@ InputParameters validParams<ComputeGrainForceAndTorque>()
 ComputeGrainForceAndTorque::ComputeGrainForceAndTorque(const InputParameters & parameters) :
     ShapeElementUserObject(parameters),
     GrainForceAndTorqueInterface(),
-    _c(getVar("c", 0)),
+    //_c(getVar("c",0)),
     _c_name(getVar("c", 0)->name()),
-    _c_var(getVar("c", 0)->number()),
+    _c_var(coupled("c")),
     _dF(getMaterialProperty<std::vector<RealGradient> >("force_density")),
     _dF_name(getParam<MaterialPropertyName>("force_density")),
     _dFdc(getMaterialPropertyByName<std::vector<RealGradient> >(propertyNameFirst(_dF_name, _c_name))),
@@ -43,9 +43,8 @@ ComputeGrainForceAndTorque::ComputeGrainForceAndTorque(const InputParameters & p
     _force_derivatives_jac(_ncrys),
     _torque_derivatives_jac(_ncrys),
     _force_torque_store(_ncomp),
-    _force_torque_derivative_store(_ncomp),
-    _phi(_assembly.phi()),
-    _dof_indices(_c->dofIndices())
+    _force_torque_derivative_store(_ncomp)
+    //_dof_indices(_c->dofIndices())
   {
   }
 
@@ -68,6 +67,7 @@ ComputeGrainForceAndTorque::initialize()
   std::fill(_force_torque_store.begin(), _force_torque_store.end(), 0);
   std::fill(_force_torque_derivative_store.begin(), _force_torque_derivative_store.end(), 0);
   std::fill(_force_torque_jacobian_store.begin(), _force_torque_jacobian_store.end(), 0);
+  _execute_mask = 0;
 }
 
 void
@@ -85,8 +85,6 @@ ComputeGrainForceAndTorque::execute()
       _force_torque_store[6*i+4] += compute_torque(1);
       _force_torque_store[6*i+5] += compute_torque(2);
     }
-
-      // executeJacobian(_c_var);
 }
 
 void
@@ -94,21 +92,19 @@ ComputeGrainForceAndTorque::executeJacobian( unsigned int jvar)
 {
   if (jvar == _c_var)
   {
-    // ShapeElementUserObject::requestJacobian(_c_name);
+    _execute_mask |= 1;
 
     for (unsigned int i = 0; i < _ncrys; ++i)
-      for (_j=0; _j < _phi.size(); ++_j)
         for (_qp=0; _qp < _qrule->n_points(); ++_qp)
         {
-          unsigned int k = _dof_indices[_j];
           const RealGradient compute_torque_derivative_c = _JxW[_qp] * _coord[_qp]
                                                            * (_q_point[_qp] - _grain_centers[i]).cross(_dFdc[_qp][i]);
-          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](0) * _phi[_j][_qp];
-          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](1) * _phi[_j][_qp];
-          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](2) * _phi[_j][_qp];
-          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += compute_torque_derivative_c(0) * _phi[_j][_qp];
-          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += compute_torque_derivative_c(1) * _phi[_j][_qp];
-          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+k] += compute_torque_derivative_c(2) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+_j_global] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](0) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+1)*_total_num_dofs+_j_global] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](1) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+2)*_total_num_dofs+_j_global] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](2) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+3)*_total_num_dofs+_j_global] += compute_torque_derivative_c(0) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+4)*_total_num_dofs+_j_global] += compute_torque_derivative_c(1) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+5)*_total_num_dofs+_j_global] += compute_torque_derivative_c(2) * _phi[_j][_qp];
         }
   }
 }
@@ -119,6 +115,12 @@ ComputeGrainForceAndTorque::finalize()
   gatherSum(_force_torque_store);
   gatherSum(_force_torque_derivative_store);
   gatherSum(_force_torque_jacobian_store);
+
+  if (_fe_problem.currentlyComputingJacobian())
+  {
+    if ((_execute_mask & 1) == 0)
+      mooseError("Never called executeJacobian for variable c.");
+  }
 
   for (unsigned int i = 0; i < _ncrys; ++i)
   {
@@ -151,7 +153,7 @@ ComputeGrainForceAndTorque::finalize()
 void
 ComputeGrainForceAndTorque::threadJoin(const UserObject & y)
 {
-  const ComputeGrainForceAndTorque & pps = static_cast<const ComputeGrainForceAndTorque &>(y);
+  const ComputeGrainForceAndTorque & pps = dynamic_cast<const ComputeGrainForceAndTorque &>(y);
   for (unsigned int i = 0; i < _ncomp; ++i)
   {
     _force_torque_store[i] += pps._force_torque_store[i];
@@ -159,6 +161,8 @@ ComputeGrainForceAndTorque::threadJoin(const UserObject & y)
   }
   for (unsigned int i=0; i < (_total_num_dofs*_ncomp); ++i)
     _force_torque_jacobian_store[i] += pps._force_torque_jacobian_store[i];
+
+    _execute_mask &= pps._execute_mask;
 }
 
 const std::vector<RealGradient> &

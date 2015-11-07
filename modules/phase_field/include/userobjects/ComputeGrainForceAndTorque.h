@@ -48,8 +48,8 @@ public:
 protected:
   unsigned int _qp;
   unsigned int _j;
+  unsigned int _execute_mask;
 
-  MooseVariable * _c;
   VariableName _c_name;
   unsigned int _c_var;
   /// material property that provides force density
@@ -75,12 +75,6 @@ protected:
   std::vector<Real> _force_torque_store;
   std::vector<Real> _force_torque_derivative_store;
 
-  // std::vector<std::vector<Real> > _force_torque_jacobian;
-
-  /// shape function values (in QPs)
-  const VariablePhiValue & _phi;
-  /// The global DOF indices of the element
-  std::vector<dof_id_type> & _dof_indices;
   /// Total DOF in the system
   dof_id_type _total_num_dofs;
   /// vector storing derivative of grain force and torque values

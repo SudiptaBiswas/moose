@@ -259,10 +259,22 @@
   [../]
   [./grain_force]
     type = ComputeGrainForceAndTorque
-    execute_on = 'initial linear nonlinear'
+    execute_on = 'linear nonlinear'
     grain_data = grain_center
     force_density = force_density
     c = c
+  [../]
+  [./test]
+    type = ShapeTestUserObject
+    u = c
+    # first order lagrange variables have 4 DOFs per element
+    u_dofs = 4
+    v = w
+    # third order hermite variables have 16 DOFs per element
+    v_dofs = 4
+    # as this userobject computes quantities for both the residual AND the jacobian
+    # it needs to have these execute_on flags set.
+    execute_on = 'linear nonlinear'
   [../]
 []
 
