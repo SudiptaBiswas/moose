@@ -26,8 +26,9 @@ GrainForceAndTorqueSum::GrainForceAndTorqueSum(const InputParameters & parameter
     _force_values(_ncrys),
     _torque_values(_ncrys),
     _force_derivatives(_ncrys),
-    _torque_derivatives(_ncrys)
-
+    _torque_derivatives(_ncrys),
+    _force_derivatives_jac(_ncrys),
+    _torque_derivatives_jac(_ncrys)
 {
   for (unsigned int i = 0; i < _num_forces; ++i)
     _sum_forces[i] = & getUserObjectByName<GrainForceAndTorqueInterface>(_sum_objects[i]);
@@ -43,6 +44,8 @@ GrainForceAndTorqueSum::initialize()
     _torque_values[i] = 0.0;
     _force_derivatives[i] = 0.0;
     _torque_derivatives[i] = 0.0;
+    _force_derivatives_jac[i].assign(_subproblem.es().n_dofs(), 0.0);
+    _torque_derivatives_jac[i].assign(_subproblem.es().n_dofs(), 0.0);
 
     for (unsigned int j = 0; j < _num_forces; ++j)
     {
@@ -50,6 +53,11 @@ GrainForceAndTorqueSum::initialize()
       _torque_values[i] += (_sum_forces[j]->getTorqueValues())[i];
       _force_derivatives[i] += (_sum_forces[j]->getForceDerivatives())[i];
       _torque_derivatives[i] += (_sum_forces[j]->getTorqueDerivatives())[i];
+      for (unsigned int k = 0; k < _subproblem.es().n_dofs(); ++k)
+      {
+        _force_derivatives_jac[i][k] += (_sum_forces[j]->getForceDerivativesJacobian())[i][k];
+        _torque_derivatives_jac[i][k] += (_sum_forces[j]->getTorqueDerivativesJacobian())[i][k];
+      }
     }
   }
 }
@@ -76,4 +84,16 @@ const std::vector<RealGradient> &
 GrainForceAndTorqueSum::getTorqueDerivatives() const
 {
   return _torque_derivatives;
+}
+
+const std::vector<std::vector<RealGradient> > &
+GrainForceAndTorqueSum::getForceDerivativesJacobian() const
+{
+  return _force_derivatives_jac;
+}
+
+const std::vector<std::vector<RealGradient> > &
+GrainForceAndTorqueSum::getTorqueDerivativesJacobian() const
+{
+  return _torque_derivatives_jac;
 }

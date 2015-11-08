@@ -26,7 +26,9 @@ ConstantGrainForceAndTorque::ConstantGrainForceAndTorque(const InputParameters &
     _force_values(_ncrys),
     _torque_values(_ncrys),
     _force_derivatives(_ncrys),
-    _torque_derivatives(_ncrys)
+    _torque_derivatives(_ncrys),
+    _force_derivatives_jac(_ncrys),
+    _torque_derivatives_jac(_ncrys)
 {
 }
 
@@ -44,6 +46,9 @@ ConstantGrainForceAndTorque::initialize()
 
     _force_derivatives[i] = 0.0;
     _torque_derivatives[i] = 0.0;
+
+    _force_derivatives_jac[i].assign(_subproblem.es().n_dofs(), 0.0);
+    _torque_derivatives_jac[i].assign(_subproblem.es().n_dofs(), 0.0);
   }
 }
 
@@ -69,4 +74,16 @@ const std::vector<RealGradient> &
 ConstantGrainForceAndTorque::getTorqueDerivatives() const
 {
   return _torque_derivatives;
+}
+
+const std::vector<std::vector<RealGradient> > &
+ConstantGrainForceAndTorque::getForceDerivativesJacobian() const
+{
+  return _force_derivatives_jac;
+}
+
+const std::vector<std::vector<RealGradient> > &
+ConstantGrainForceAndTorque::getTorqueDerivativesJacobian() const
+{
+  return _torque_derivatives_jac;
 }

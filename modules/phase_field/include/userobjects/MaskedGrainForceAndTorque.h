@@ -35,6 +35,8 @@ public:
   virtual const std::vector<RealGradient> & getTorqueValues() const;
   virtual const std::vector<RealGradient> & getForceDerivatives() const;
   virtual const std::vector<RealGradient> & getTorqueDerivatives() const;
+  virtual const std::vector<std::vector<RealGradient> > & getForceDerivativesJacobian() const;
+  virtual const std::vector<std::vector<RealGradient> > & getTorqueDerivativesJacobian() const;
 
 protected:
 
@@ -43,6 +45,8 @@ protected:
   const std::vector<RealGradient> & _grain_torques_input;
   const std::vector<RealGradient> & _grain_force_derivatives_input;
   const std::vector<RealGradient> & _grain_torque_derivatives_input;
+  std::vector<std::vector<RealGradient> > _grain_force_jacobian_input;
+  std::vector<std::vector<RealGradient> > _grain_torque_jacobian_input;
 
   std::vector<unsigned int> _pinned_grains;
   unsigned int _num_pinned_grains;
@@ -53,6 +57,8 @@ protected:
   std::vector<RealGradient> _torque_values;
   std::vector<RealGradient> _force_derivatives;
   std::vector<RealGradient> _torque_derivatives;
+  std::vector<std::vector<RealGradient> > _force_derivatives_jac;
+  std::vector<std::vector<RealGradient> > _torque_derivatives_jac;
   ///@}
 };
 

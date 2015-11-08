@@ -24,13 +24,17 @@ MaskedGrainForceAndTorque::MaskedGrainForceAndTorque(const InputParameters & par
     _grain_torques_input(_grain_force_torque_input.getTorqueValues()),
     _grain_force_derivatives_input(_grain_force_torque_input.getForceDerivatives()),
     _grain_torque_derivatives_input(_grain_force_torque_input.getTorqueDerivatives()),
+    _grain_force_jacobian_input(_grain_force_torque_input.getForceDerivativesJacobian()),
+    _grain_torque_jacobian_input(_grain_force_torque_input.getTorqueDerivativesJacobian()),
     _pinned_grains(getParam<std::vector<unsigned int> >("pinned_grains")),
     _num_pinned_grains(_pinned_grains.size()),
     _ncrys(_grain_forces_input.size()),
     _force_values(_ncrys),
     _torque_values(_ncrys),
     _force_derivatives(_ncrys),
-    _torque_derivatives(_ncrys)
+    _torque_derivatives(_ncrys),
+    _force_derivatives_jac(_ncrys),
+    _torque_derivatives_jac(_ncrys)
 {
 }
 
@@ -44,6 +48,15 @@ MaskedGrainForceAndTorque::initialize()
     _force_derivatives[i] = _grain_force_derivatives_input[i];
     _torque_derivatives[i] = _grain_torque_derivatives_input[i];
 
+    _force_derivatives_jac[i].resize(_subproblem.es().n_dofs());
+    _torque_derivatives_jac[i].resize(_subproblem.es().n_dofs());
+
+    for (unsigned int k = 0; k < _subproblem.es().n_dofs(); ++k)
+    {
+      _force_derivatives_jac[i][k] = _grain_force_jacobian_input[i][k];
+      _torque_derivatives_jac[i][k] = _grain_torque_jacobian_input[i][k];
+    }
+
     if (_num_pinned_grains != 0)
     {
       for (unsigned int j = 0; j < _num_pinned_grains; ++j)
@@ -54,6 +67,12 @@ MaskedGrainForceAndTorque::initialize()
           _torque_values[i] = 0.0;
           _force_derivatives[i] = 0.0;
           _torque_derivatives[i] = 0.0;
+
+          for (unsigned int k = 0; k < _subproblem.es().n_dofs(); ++k)
+          {
+            _force_derivatives_jac[i][k] = 0.0;
+            _torque_derivatives_jac[i][k] = 0.0;
+          }
         }
       }
     }
@@ -82,4 +101,16 @@ const std::vector<RealGradient> &
 MaskedGrainForceAndTorque::getTorqueDerivatives() const
 {
   return _torque_derivatives;
+}
+
+const std::vector<std::vector<RealGradient> > &
+MaskedGrainForceAndTorque::getForceDerivativesJacobian() const
+{
+  return _force_derivatives_jac;
+}
+
+const std::vector<std::vector<RealGradient> > &
+MaskedGrainForceAndTorque::getTorqueDerivativesJacobian() const
+{
+  return _torque_derivatives_jac;
 }

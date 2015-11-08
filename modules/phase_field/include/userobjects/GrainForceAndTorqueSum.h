@@ -35,6 +35,8 @@ public:
   virtual const std::vector<RealGradient> & getTorqueValues() const;
   virtual const std::vector<RealGradient> & getForceDerivatives() const;
   virtual const std::vector<RealGradient> & getTorqueDerivatives() const;
+  virtual const std::vector<std::vector<RealGradient> > & getForceDerivativesJacobian() const;
+  virtual const std::vector<std::vector<RealGradient> > & getTorqueDerivativesJacobian() const;
 
 protected:
   /// Vector of userobjects providing forces and torques acting on grains
@@ -50,6 +52,8 @@ protected:
   std::vector<RealGradient> _torque_values;
   std::vector<RealGradient> _force_derivatives;
   std::vector<RealGradient> _torque_derivatives;
+  std::vector<std::vector<RealGradient> > _force_derivatives_jac;
+  std::vector<std::vector<RealGradient> > _torque_derivatives_jac;
   ///@}
 };
 
