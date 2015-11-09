@@ -41,6 +41,8 @@ protected:
   const std::vector<RealGradient> & _grain_torques;
   const std::vector<RealGradient> & _grain_force_derivatives;
   const std::vector<RealGradient> & _grain_torque_derivatives;
+  const std::vector<std::vector<RealGradient> > & _grain_force_derivatives_jac;
+  const std::vector<std::vector<RealGradient> > & _grain_torque_derivatives_jac;
 
 private:
   /// constant value corresponding to grain translation
@@ -63,11 +65,17 @@ private:
   MaterialProperty<std::vector<Real> > & _div_velocity_advection;
 
   /// Material storing derivative of advection velocities of grains w r. t. c
-  MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_c;
+  MaterialProperty<std::vector<std::vector<RealGradient> > > & _velocity_advection_derivative_c;
   /// Material storing derivative of divergence of advection velocities of grains w r. t. c
-  MaterialProperty<std::vector<Real> > & _div_velocity_advection_derivative_c;
+  MaterialProperty<std::vector<std::vector<Real> > > & _div_velocity_advection_derivative_c;
   /// Material storing derivative of advection velocities of grains w r. t. eta
   MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_eta;
+
+// protected:
+//   const std::vector<RealGradient> & _velocity_translation_jacobian_c;
+//   const std::vector<Real> & _div_velocity_translation_jacobian_c;
+//   const std::vector<RealGradient> & _velocity_rotation_jacobian_c;
+//   const std::vector<Real> &_div_velocity_rotation_jacobian_c;
 };
 
 #endif //GRAINADVECTIONVELOCITY_H

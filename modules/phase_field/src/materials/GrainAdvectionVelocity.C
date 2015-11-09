@@ -31,6 +31,8 @@ GrainAdvectionVelocity::GrainAdvectionVelocity(const InputParameters & parameter
    _grain_torques(_grain_force_torque.getTorqueValues()),
    _grain_force_derivatives(_grain_force_torque.getForceDerivatives()),
    _grain_torque_derivatives(_grain_force_torque.getTorqueDerivatives()),
+   _grain_force_derivatives_jac(_grain_force_torque.getForceDerivativesJacobian()),
+   _grain_torque_derivatives_jac(_grain_force_torque.getTorqueDerivativesJacobian()),
    _mt(getParam<Real>("translation_constant")),
    _mr(getParam<Real>("rotation_constant")),
    _ncrys(_grain_forces.size()),
@@ -40,8 +42,8 @@ GrainAdvectionVelocity::GrainAdvectionVelocity(const InputParameters & parameter
    _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : "" ),
    _velocity_advection(declareProperty<std::vector<RealGradient> >(_base_name + "advection_velocity")),
    _div_velocity_advection(declareProperty<std::vector<Real> >(_base_name + "advection_velocity_divergence")),
-   _velocity_advection_derivative_c(declarePropertyDerivative<std::vector<RealGradient> >(_base_name + "advection_velocity", _c_name )),
-   _div_velocity_advection_derivative_c(declarePropertyDerivative<std::vector<Real> >(_base_name + "advection_velocity_divergence", _c_name)),
+   _velocity_advection_derivative_c(declarePropertyDerivative<std::vector<std::vector<RealGradient> > >(_base_name + "advection_velocity", _c_name )),
+   _div_velocity_advection_derivative_c(declarePropertyDerivative<std::vector<std::vector<Real> > >(_base_name + "advection_velocity_divergence", _c_name)),
    _velocity_advection_derivative_eta(declarePropertyDerivative<std::vector<RealGradient> >(_base_name + "advection_velocity", "eta"))
 {
   //Loop through grains and load coupled variables into the arrays
@@ -57,9 +59,9 @@ GrainAdvectionVelocity::computeQpProperties()
 {
   _velocity_advection[_qp].resize(_ncrys);
   _div_velocity_advection[_qp].resize(_ncrys);
+  _velocity_advection_derivative_eta[_qp].resize(_ncrys);
   _velocity_advection_derivative_c[_qp].resize(_ncrys);
   _div_velocity_advection_derivative_c[_qp].resize(_ncrys);
-  _velocity_advection_derivative_eta[_qp].resize(_ncrys);
 
   for (unsigned int i = 0; i < _ncrys; ++i)
   {
@@ -78,8 +80,25 @@ GrainAdvectionVelocity::computeQpProperties()
 
     _velocity_advection[_qp][i] = velocity_translation + velocity_rotation;
     _div_velocity_advection[_qp][i] = div_velocity_translation + div_velocity_rotation;
-    _velocity_advection_derivative_c[_qp][i] = velocity_translation_derivative_c + velocity_rotation_derivative_c;
-    _div_velocity_advection_derivative_c[_qp][i] = div_velocity_translation_derivative_c + div_velocity_rotation_derivative_c;
     _velocity_advection_derivative_eta[_qp][i] = velocity_translation_derivative_eta + velocity_rotation_derivative_eta;
+
+    _velocity_advection_derivative_c[_qp][i].resize(_subproblem.es().n_dofs());
+    _div_velocity_advection_derivative_c[_qp][i].resize(_subproblem.es().n_dofs());
+
+    std::vector<RealGradient> velocity_translation_jacobian_c;
+    std::vector<Real> div_velocity_translation_jacobian_c;
+    std::vector<RealGradient> velocity_rotation_jacobian_c;
+    std::vector<Real> div_velocity_rotation_jacobian_c;
+
+    for (unsigned int k = 0; k < _subproblem.es().n_dofs(); ++k)
+    {
+      velocity_translation_jacobian_c[k] = _mt / _grain_volumes[i] * ((*_vals[i])[_qp] * _grain_force_derivatives_jac[i][k]);
+      div_velocity_translation_jacobian_c[k] = _mt / _grain_volumes[i] * ((*_grad_vals[i])[_qp] * _grain_force_derivatives_jac[i][k]);
+      velocity_rotation_jacobian_c[k] = _mr / _grain_volumes[i] * (_grain_torque_derivatives_jac[i][k].cross(_q_point[_qp] - _grain_centers[i])) * (*_vals[i])[_qp];
+      div_velocity_rotation_jacobian_c[k] = _mr / _grain_volumes[i] * (_grain_torque_derivatives_jac[i][k].cross(_q_point[_qp] - _grain_centers[i])) * (*_grad_vals[i])[_qp] ;
+
+      _velocity_advection_derivative_c[_qp][i][k] = velocity_translation_jacobian_c[k] + velocity_rotation_jacobian_c[k];
+      _div_velocity_advection_derivative_c[_qp][i][k] = div_velocity_translation_jacobian_c[k] + div_velocity_rotation_jacobian_c[k];
+    }
   }
 }
