@@ -97,14 +97,14 @@ ComputeGrainForceAndTorque::executeJacobian( unsigned int jvar)
     for (unsigned int i = 0; i < _ncrys; ++i)
         for (_qp=0; _qp < _qrule->n_points(); ++_qp)
         {
-          const RealGradient compute_torque_derivative_c = _JxW[_qp] * _coord[_qp]
+          const RealGradient compute_torque_derivative_c = _JxW[_qp] * _coord[_qp] * _phi[_j][_qp]
                                                            * (_q_point[_qp] - _grain_centers[i]).cross(_dFdc[_qp][i]);
           _force_torque_jacobian_store[(6*i+0)*_total_num_dofs+_j_global] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](0) * _phi[_j][_qp];
           _force_torque_jacobian_store[(6*i+1)*_total_num_dofs+_j_global] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](1) * _phi[_j][_qp];
           _force_torque_jacobian_store[(6*i+2)*_total_num_dofs+_j_global] += _JxW[_qp] * _coord[_qp] * _dFdc[_qp][i](2) * _phi[_j][_qp];
-          _force_torque_jacobian_store[(6*i+3)*_total_num_dofs+_j_global] += compute_torque_derivative_c(0) * _phi[_j][_qp];
-          _force_torque_jacobian_store[(6*i+4)*_total_num_dofs+_j_global] += compute_torque_derivative_c(1) * _phi[_j][_qp];
-          _force_torque_jacobian_store[(6*i+5)*_total_num_dofs+_j_global] += compute_torque_derivative_c(2) * _phi[_j][_qp];
+          _force_torque_jacobian_store[(6*i+3)*_total_num_dofs+_j_global] += compute_torque_derivative_c(0);
+          _force_torque_jacobian_store[(6*i+4)*_total_num_dofs+_j_global] += compute_torque_derivative_c(1);
+          _force_torque_jacobian_store[(6*i+5)*_total_num_dofs+_j_global] += compute_torque_derivative_c(2);
         }
   }
 }

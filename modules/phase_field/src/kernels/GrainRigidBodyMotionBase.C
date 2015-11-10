@@ -20,17 +20,18 @@ InputParameters validParams<GrainRigidBodyMotionBase>()
 GrainRigidBodyMotionBase::GrainRigidBodyMotionBase(const InputParameters & parameters) :
     Kernel(parameters),
     _c_var(coupled("c")),
-    _c(coupledValue("c")),
+    _c_value(coupledValue("c")),
     _grad_c(coupledGradient("c")),
     _c_name(getVar("c", 0)->name()),
+    _c_dof(getVar("c", 0)->dofIndices()),
     _ncrys(coupledComponents("v")),
     _vals(_ncrys),
     _vals_var(_ncrys),
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : "" ),
     _velocity_advection(getMaterialProperty<std::vector<RealGradient> >(_base_name + "advection_velocity")),
     _div_velocity_advection(getMaterialProperty<std::vector<Real> >(_base_name + "advection_velocity_divergence")),
-    _velocity_advection_derivative_c(getMaterialPropertyByName<std::vector<RealGradient> >(propertyNameFirst(_base_name + "advection_velocity", _c_name))),
-    _div_velocity_advection_derivative_c(getMaterialPropertyByName<std::vector<Real> >(propertyNameFirst(_base_name + "advection_velocity_divergence", _c_name))),
+    _velocity_advection_derivative_c(getMaterialPropertyByName<std::vector<std::vector<RealGradient> > >(propertyNameFirst(_base_name + "advection_velocity", _c_name))),
+    _div_velocity_advection_derivative_c(getMaterialPropertyByName<std::vector<std::vector<Real> > >(propertyNameFirst(_base_name + "advection_velocity_divergence", _c_name))),
     _velocity_advection_derivative_eta(getMaterialPropertyByName<std::vector<RealGradient> >(propertyNameFirst(_base_name + "advection_velocity", "eta")))
 {
   //Loop through grains and load coupled variables into the arrays

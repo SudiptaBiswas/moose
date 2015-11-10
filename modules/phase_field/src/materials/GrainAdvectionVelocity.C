@@ -85,10 +85,10 @@ GrainAdvectionVelocity::computeQpProperties()
     _velocity_advection_derivative_c[_qp][i].resize(_subproblem.es().n_dofs());
     _div_velocity_advection_derivative_c[_qp][i].resize(_subproblem.es().n_dofs());
 
-    std::vector<RealGradient> velocity_translation_jacobian_c;
-    std::vector<Real> div_velocity_translation_jacobian_c;
-    std::vector<RealGradient> velocity_rotation_jacobian_c;
-    std::vector<Real> div_velocity_rotation_jacobian_c;
+    std::vector<RealGradient> velocity_translation_jacobian_c(_subproblem.es().n_dofs());
+    std::vector<Real> div_velocity_translation_jacobian_c(_subproblem.es().n_dofs());
+    std::vector<RealGradient> velocity_rotation_jacobian_c(_subproblem.es().n_dofs());
+    std::vector<Real> div_velocity_rotation_jacobian_c(_subproblem.es().n_dofs());
 
     for (unsigned int k = 0; k < _subproblem.es().n_dofs(); ++k)
     {

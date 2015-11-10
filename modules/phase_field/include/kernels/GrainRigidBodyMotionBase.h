@@ -32,12 +32,13 @@ protected:
   unsigned int _c_var;
 
   /// Variable value for the concentration
-  VariableValue & _c;
+  VariableValue & _c_value;
 
   /// Variable gradient for the concentration
   VariableGradient & _grad_c;
 
   VariableName _c_name;
+  const std::vector<dof_id_type> & _c_dof;
   unsigned int _ncrys;
   /// Variable value for the order parameters
   std::vector<VariableValue *> _vals;
@@ -52,9 +53,9 @@ protected:
   const MaterialProperty<std::vector<Real> > & _div_velocity_advection;
 
   /// Material property for  dervative of advection velocities
-  const MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_c;
+  const MaterialProperty<std::vector<std::vector<RealGradient> > > & _velocity_advection_derivative_c;
   /// Material property for dirivative of divergence of advection velocities
-  const MaterialProperty<std::vector<Real> > & _div_velocity_advection_derivative_c;
+  const MaterialProperty<std::vector<std::vector<Real> > > & _div_velocity_advection_derivative_c;
   /// Material property for  dervative of advection velocities
   const MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_eta;
 };
