@@ -54,7 +54,11 @@ private:
   unsigned int _ncrys;
   std::vector<VariableValue *> _vals;
   std::vector<VariableGradient *> _grad_vals;
+  std::vector<std::vector<dof_id_type> > _vals_dof;
+  std::vector<VariableName> _vals_name;
+
   VariableName _c_name;
+  const std::vector<dof_id_type> & _c_dof;
   /// type of force density material
   std::string _base_name;
 
@@ -70,6 +74,9 @@ private:
   MaterialProperty<std::vector<std::vector<Real> > > & _div_velocity_advection_derivative_c;
   /// Material storing derivative of advection velocities of grains w r. t. eta
   MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_eta;
+  /// Material storing derivative of advection velocities of grains w r. t. gradeta
+  std::vector<MaterialProperty<std::vector<std::vector<RealGradient> > > *> _velocity_advection_derivative_gradeta;
+  std::vector<MaterialProperty<std::vector<std::vector<Real> > > *> _div_velocity_advection_derivative_gradeta;
 
 // protected:
 //   const std::vector<RealGradient> & _velocity_translation_jacobian_c;

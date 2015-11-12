@@ -20,6 +20,7 @@
 #include "SideUserObject.h"
 #include "InternalSideUserObject.h"
 #include "NodalUserObject.h"
+#include "Assembly.h"
 
 #include "libmesh/numeric_vector.h"
 

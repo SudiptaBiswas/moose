@@ -43,9 +43,13 @@ protected:
   /// Variable value for the order parameters
   std::vector<VariableValue *> _vals;
   std::vector<unsigned int> _vals_var;
+  std::vector<VariableName> _vals_name;
+  std::vector<MooseVariable> _e;
+  std::vector<std::vector<dof_id_type> *> _vals_dof;
 
   /// type of force density material
   std::string _base_name;
+  MaterialPropertyName _vadv_name;
 
   /// Material property for advection velocities
   const MaterialProperty<std::vector<RealGradient> > & _velocity_advection;
@@ -58,6 +62,10 @@ protected:
   const MaterialProperty<std::vector<std::vector<Real> > > & _div_velocity_advection_derivative_c;
   /// Material property for  dervative of advection velocities
   const MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_eta;
+  /// Material property for  dervative of advection velocities
+  std::vector<const MaterialProperty<std::vector<std::vector<RealGradient> > > *> _velocity_advection_derivative_gradeta;
+  /// Material property for dirivative of divergence of advection velocities
+  std::vector<const MaterialProperty<std::vector<std::vector<Real> > > *> _div_velocity_advection_derivative_gradeta;
 };
 
 #endif //GRAINRIGIDBODYMOTIONBASE_H

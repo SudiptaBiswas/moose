@@ -31,9 +31,16 @@ SingleGrainRigidBodyMotion::computeQpResidual()
 Real
 SingleGrainRigidBodyMotion::computeQpJacobian()
 {
+  std::vector<dof_id_type> vals_dof = getVar("v", _op_index)->dofIndices();
+
   return _velocity_advection[_qp][_op_index] * _grad_phi[_j][_qp] * _test[_i][_qp]
          + _velocity_advection_derivative_eta[_qp][_op_index] * _grad_u[_qp] * _phi[_j][_qp] *  _test[_i][_qp]
-         + _div_velocity_advection[_qp][_op_index] * _phi[_j][_qp] * _test[_i][_qp];
+         + _div_velocity_advection[_qp][_op_index] * _phi[_j][_qp] * _test[_i][_qp]
+         + _velocity_advection_derivative_eta[_qp][_op_index] * _u[_qp] * _grad_phi[_j][_qp] *  _test[_i][_qp]
+        // + _velocity_advection[_qp][_op_index] / _u[_qp] * _grad_phi[_j][_qp] * _test[_i][_qp]
+         + (*_velocity_advection_derivative_gradeta[_op_index])[_qp][_op_index][vals_dof[_j]] * _grad_u[_qp] * _test[_i][_qp]
+         + (*_div_velocity_advection_derivative_gradeta[_op_index])[_qp][_op_index][vals_dof[_j]] * _u[_qp] * _test[_i][_qp];
+
 }
 
 Real
@@ -47,8 +54,12 @@ SingleGrainRigidBodyMotion::computeQpOffDiagJacobian(unsigned int jvar)
   {
     if (i != _op_index)
     {
+      std::vector<dof_id_type> vals_dof = getVar("v", i)->dofIndices();
+
       if (jvar == _vals_var[i])
-        return _velocity_advection_derivative_eta[_qp][_op_index] * _grad_u[_qp] * _phi[_j][_qp] * _test[_i][_qp];
+        return //_velocity_advection_derivative_eta[_qp][i] * _grad_u[_qp] * _phi[_j][_qp] * _test[_i][_qp]
+               (*_velocity_advection_derivative_gradeta[i])[_qp][_op_index][vals_dof[_j]] * _grad_u[_qp] * _test[_i][_qp]
+               + (*_div_velocity_advection_derivative_gradeta[i])[_qp][_op_index][vals_dof[_j]] * _u[_qp] * _test[_i][_qp];
     }
   }
 

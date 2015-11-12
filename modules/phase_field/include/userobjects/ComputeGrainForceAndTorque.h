@@ -62,6 +62,12 @@ protected:
   const std::vector<Real> & _grain_volumes;
   const std::vector<Point> & _grain_centers;
   unsigned int _ncrys;
+  /// Variable value for the order parameters
+  std::vector<VariableValue *> _vals;
+  std::vector<VariableGradient *> _grad_vals;
+  std::vector<VariableName> _vals_name;
+  std::vector<unsigned int> _vals_var;
+
   unsigned int _ncomp;
   ///@{ providing grain forces, torques and their derivatives w. r. t c
   std::vector<RealGradient> _force_values;
@@ -79,6 +85,9 @@ protected:
   dof_id_type _total_num_dofs;
   /// vector storing derivative of grain force and torque values
   std::vector<Real> _force_torque_jacobian_store;
+
+  std::vector<const MaterialProperty<std::vector<Real> > *> _dFdvgrad;
+
 };
 
 #endif //COMPUTEGRAINFORCEANDTORQUE_H

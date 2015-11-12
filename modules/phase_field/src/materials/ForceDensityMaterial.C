@@ -29,16 +29,22 @@ ForceDensityMaterial::ForceDensityMaterial(const InputParameters & parameters) :
    _ncrys(coupledComponents("etas")), //determine number of grains from the number of names passed in.
    _vals(_ncrys), //Size variable arrays
    _grad_vals(_ncrys),
+   _vals_name(_ncrys),
    _product_etas(_ncrys),
    _sum_grad_etas(_ncrys),
    _dF(declareProperty<std::vector<RealGradient> >("force_density")),
    _dFdc(declarePropertyDerivative<std::vector<RealGradient> >("force_density", _c_name))
 {
+  _dFdvgrad.resize(_ncrys);
   //Loop through grains and load coupled variables into the arrays
   for (unsigned int i = 0; i < _ncrys; ++i)
   {
     _vals[i] = &coupledValue("etas", i);
     _grad_vals[i] = &coupledGradient("etas", i);
+    _vals_name[i] = getVar("etas",i)->name();
+
+    _dFdvgrad[i] = &declarePropertyDerivative<std::vector<Real> >("force_density", _vals_name[i]);
+
   }
 }
 
@@ -50,18 +56,28 @@ ForceDensityMaterial::computeQpProperties()
 
   for (unsigned int i = 0; i < _ncrys; ++i)
   {
-    _product_etas[i] = 0.0;
-    _sum_grad_etas[i] = 0.0;
+    (*_dFdvgrad[i])[_qp].resize(_ncrys);
 
     for (unsigned int j = 0; j < _ncrys; ++j)
     {
-      if (j != i)
+      _product_etas[j] = 0.0;
+      _sum_grad_etas[j] = 0.0;
+      for (unsigned int k = 0; k < _ncrys; ++k)
       {
-        _product_etas[i] = (*_vals[i])[_qp] * (*_vals[j])[_qp] >= _cgb? 1 : 0; //Sum all other order parameters
-        _sum_grad_etas[i] += _product_etas[i] * ((*_grad_vals[i])[_qp] - (*_grad_vals[j])[_qp]);
+        if (k != j)
+        {
+          _product_etas[j] = (*_vals[j])[_qp] * (*_vals[k])[_qp] >= _cgb? 1 : 0; //Sum all other order parameters
+          _sum_grad_etas[j] += _product_etas[j] * ((*_grad_vals[j])[_qp] - (*_grad_vals[k])[_qp]);
+        }
       }
-    }
-  _dF[_qp][i] = _k * (_c[_qp] - _ceq) * _sum_grad_etas[i];
-  _dFdc[_qp][i] = _k * _sum_grad_etas[i];
+
+      if (j == i)
+        (*_dFdvgrad[i])[_qp][j] = _k * (_c[_qp] - _ceq)* _product_etas[j];
+      else
+        (*_dFdvgrad[i])[_qp][j] = -_k * (_c[_qp] - _ceq)* _product_etas[j];
+
+      _dF[_qp][j] = _k * (_c[_qp] - _ceq) * _sum_grad_etas[j];
+      _dFdc[_qp][j] = _k * _sum_grad_etas[j];
+   }
  }
 }

@@ -42,6 +42,7 @@ private:
   unsigned int _ncrys;
   std::vector<VariableValue *> _vals;
   std::vector<VariableGradient *> _grad_vals;
+  std::vector<VariableName> _vals_name;
 
   std::vector<Real> _product_etas;
   std::vector<RealGradient> _sum_grad_etas;
@@ -53,6 +54,10 @@ private:
   MaterialProperty<std::vector<RealGradient> > & _dF;
   /// first order derivative of force density material w.r.t c
   MaterialProperty<std::vector<RealGradient> > & _dFdc;
+
+  // MaterialProperty<std::vector<Real> *> _dFdvgradi;
+  /// first order derivative of force density material w.r.t c
+  std::vector<MaterialProperty<std::vector<Real> > *> _dFdvgrad;
 };
 
 #endif //FORCEDENSITYMATERIAL_H

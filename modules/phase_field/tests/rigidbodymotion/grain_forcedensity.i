@@ -77,6 +77,7 @@
     block = 0
     c = c
     etas ='eta0 eta1'
+    outputs = exodus
   [../]
   [./advection_vel]
     type = GrainAdvectionVelocity
@@ -85,6 +86,7 @@
     etas = 'eta0 eta1'
     c = c
     grain_data = grain_center
+    outputs = exodus
   [../]
 []
 
@@ -259,10 +261,11 @@
   [../]
   [./grain_force]
     type = ComputeGrainForceAndTorque
-    execute_on = 'linear nonlinear'
+    execute_on = 'initial linear nonlinear'
     grain_data = grain_center
     force_density = force_density
     c = c
+    etas = 'eta0 eta1'
   [../]
   #[./test]
   #  type = ShapeTestUserObject
