@@ -27,10 +27,14 @@ public:
 protected:
   virtual Real computeQpResidual();
   virtual Real computeQpJacobian();
+  virtual Real computeQpOffDiagJacobian(unsigned int jvar);
 
 private:
   /// Material Property providing efficiency of vacancy annihilation/nucleation
   const MaterialProperty<Real> & _Svgb;
+  /// vacancy concentration field
+  VariableValue & _c;
+  unsigned int _c_var;
   /// Equilibrium concentartion
   Real _ceq;
   /// No. of grains

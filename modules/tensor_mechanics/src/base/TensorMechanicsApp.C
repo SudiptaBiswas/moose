@@ -54,6 +54,7 @@
 #include "ComputeConcentrationDependentElasticityTensor.h"
 #include "FiniteStrainHyperElasticViscoPlastic.h"
 #include "LinearIsoElasticPFDamage.h"
+#include "PolyElasticityTensor.h"
 
 #include "TensorMechanicsPlasticSimpleTester.h"
 #include "TensorMechanicsPlasticTensile.h"
@@ -166,6 +167,7 @@ TensorMechanicsApp::registerObjects(Factory & factory)
   registerMaterial(ComputeConcentrationDependentElasticityTensor);
   registerMaterial(FiniteStrainHyperElasticViscoPlastic);
   registerMaterial(LinearIsoElasticPFDamage);
+  registerMaterial(PolyElasticityTensor);
 
   registerUserObject(TensorMechanicsPlasticSimpleTester);
   registerUserObject(TensorMechanicsPlasticTensile);

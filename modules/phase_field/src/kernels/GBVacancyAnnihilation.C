@@ -11,6 +11,7 @@ InputParameters validParams<GBVacancyAnnihilation>()
 {
   InputParameters params = validParams<Kernel>();
   params.addClassDescription("Kernel for vacancy annihilation at GBs");
+  params.addRequiredCoupledVar("c", "vacancy concentration field");
   params.addRequiredCoupledVar("v", "Array of order parameters representing grain orientations");
   params.addParam<MaterialPropertyName>("Svgb", "S", "Efficiency of void nucleation/annihilation");
   params.addParam<Real>("ceq", 0.0, "Equilibrium concentration");
@@ -20,6 +21,8 @@ InputParameters validParams<GBVacancyAnnihilation>()
 GBVacancyAnnihilation::GBVacancyAnnihilation(const InputParameters & parameters) :
     Kernel(parameters),
     _Svgb(getMaterialProperty<Real>("Svgb")),
+    _c(coupledValue("c")),
+    _c_var(coupled("c")),
     _ceq(getParam<Real>("ceq")),
     _ncrys(coupledComponents("v")),
     _vals(_ncrys)
@@ -36,15 +39,26 @@ GBVacancyAnnihilation::computeQpResidual()
   for (unsigned int i = 0; i < _ncrys; ++i)
     SumEta += (*_vals[i])[_qp]*(*_vals[i])[_qp]; //Sum order parameters
 
-  return _Svgb[_qp] * (1.0 - SumEta) * (_u[_qp] - _ceq) * _test[_i][_qp];
+  return _Svgb[_qp] * (1.0 - SumEta) * (_c[_qp] - _ceq) * _test[_i][_qp];
 }
 
 Real
 GBVacancyAnnihilation::computeQpJacobian()
 {
-  Real SumEta = 0.0;
-  for (unsigned int i = 0; i < _ncrys; ++i)
-    SumEta += (*_vals[i])[_qp]*(*_vals[i])[_qp]; //Sum all order parameters
+  return 0.0;
+}
 
-  return _Svgb[_qp] * (1.0 - SumEta) * _phi[_j][_qp] * _test[_i][_qp];
+Real
+GBVacancyAnnihilation::computeQpOffDiagJacobian(unsigned int jvar)
+{
+  if (jvar == _c_var)
+  {
+    Real SumEta = 0.0;
+    for (unsigned int i = 0; i < _ncrys; ++i)
+      SumEta += (*_vals[i])[_qp]*(*_vals[i])[_qp]; //Sum all order parameters
+
+    return _Svgb[_qp] * (1.0 - SumEta) * _phi[_j][_qp] * _test[_i][_qp];
+  }
+
+  return 0.0;
 }
