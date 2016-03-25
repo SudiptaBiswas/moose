@@ -19,9 +19,12 @@ InputParameters validParams<VPKinematicHardeningRate>()
 VPKinematicHardeningRate::VPKinematicHardeningRate(const InputParameters & parameters) :
     VPHardeningRateBase(parameters),
     _intvar(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_names")),
+    _dintvar_dstress(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_names" + "stress")),
     _intvar_rate(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_rate_names")),
+    _dintvarrate_dstress(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_rate_names" + "stress")),
     _flow_rate_prop_name(getParam<std::string>(_base_name + "flow_rate_prop_name")),
     _flow_rate(getMaterialPropertyByName<RankTwoTensor>(_base_name + "flow_rate_prop_name")),
+    _dflowrate_dstress(getMaterialPropertyByName<RankTwoTensor>(_base_name + "flow_rate_prop_name" + "stress")),
     _D(getParam<Real>("hardening_multiplier"))
 {
 }
@@ -50,5 +53,14 @@ VPKinematicHardeningRate::computeDerivativeT(unsigned int qp, const std::vector<
     if (_flow_rate_prop_name == coupled_var_names[i])
       val.addIa(1);
   }
+  return true;
+}
+
+bool
+VPKinematicHardeningRate::computeStressDerivativeT(unsigned int qp, RankTwoTensor & val) const
+{
+  val = _dflowrate_dstress[qp] - _D * _intvar[0][qp] * _dintvarrate_dstress[1][qp]
+        - _D * _dintvar_dstress[0][qp] * _intvar_rate[1][qp];
+
   return true;
 }

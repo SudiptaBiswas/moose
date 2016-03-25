@@ -23,6 +23,7 @@ public:
 
   virtual bool computeValue(unsigned int, Real &) const;
   virtual bool computeDerivativeT(unsigned int, const std::vector<std::string> &, RankTwoTensor &) const;
+  virtual bool computeStressDerivativeT(unsigned int, RankTwoTensor &) const;
 
 protected:
   const MaterialProperty<std::vector<RankTwoTensor> > & _intvar;

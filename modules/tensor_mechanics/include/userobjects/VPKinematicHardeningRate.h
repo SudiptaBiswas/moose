@@ -23,12 +23,17 @@ public:
 
   virtual bool computeValueT(unsigned int, RankTwoTensor &) const;
   virtual bool computeDerivativeT(unsigned int, const std::vector<std::string> &, RankTwoTensor &) const;
+  virtual bool computeStressDerivativeT(unsigned int, RankTwoTensor &) const;
 
 protected:
   const MaterialProperty<std::vector<RankTwoTensor> > & _intvar;
+  const MaterialProperty<std::vector<RankTwoTensor> > & _dintvar_dstress;
   const MaterialProperty<std::vector<RankTwoTensor> > & _intvar_rate;
+  const MaterialProperty<std::vector<RankTwoTensor> > & _dintvarrate_dstress;
+
   std::string _flow_rate_prop_name;
   const MaterialProperty<RankTwoTensor> & _flow_rate;
+  const MaterialProperty<RankTwoTensor> & _dflowrate_dstress;
   Real _D;
 
 };

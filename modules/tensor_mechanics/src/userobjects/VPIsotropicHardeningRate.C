@@ -51,7 +51,7 @@ VPIsotropicHardeningRate::computeDerivativeT(unsigned int qp, const std::vector<
       RankTwoTensor diff_stress = _stress[qp].deviatoric() - back_stress.deviatoric();
       Real J2_back_stress = std::sqrt(3/2 * diff_stress.doubleContraction(diff_stress));
 
-      Real dflowrate_dj2backstress = _exponent * std::pow(macaulayBracket(J2_back_stress / _yield_stress - 1.0), _exponent - 1.0) / _yield_stress;
+      Real dhardrate_dj2backstress = _exponent * std::pow(macaulayBracket(J2_back_stress / _yield_stress - 1.0), _exponent - 1.0) / _yield_stress;
 
       RankTwoTensor dj2backstress_ddiffstess = 1.5 / J2_back_stress * diff_stress;
 
@@ -60,9 +60,29 @@ VPIsotropicHardeningRate::computeDerivativeT(unsigned int qp, const std::vector<
 
       Real dbackstress_dint = 2/3 * _C;
 
-      val = -dflowrate_dj2backstress * dbackstressdev_dbackstress.transposeMajor() * dj2backstress_ddiffstess * dbackstress_dint;
+      val = -dhardrate_dj2backstress * dbackstressdev_dbackstress.transposeMajor() * dj2backstress_ddiffstess * dbackstress_dint;
     }
   }
+  return true;
+}
+
+bool
+VPIsotropicHardeningRate::computeStressDerivativeT(unsigned int qp, RankTwoTensor & val) const
+{
+  // val.zero();
+  RankTwoTensor back_stress = 2/3 * _C * _intvar[0][qp];
+  RankTwoTensor diff_stress = _stress[qp].deviatoric() - back_stress.deviatoric();
+  Real J2_back_stress = std::sqrt(3/2 * diff_stress.doubleContraction(diff_stress));
+
+  Real dhardrate_dj2backstress = _exponent * std::pow(macaulayBracket(J2_back_stress / _yield_stress - 1.0), _exponent - 1.0) / _yield_stress;
+
+  RankTwoTensor dj2backstress_ddiffstess = 1.5 / J2_back_stress * diff_stress;
+
+  RankFourTensor dstressdev_dstress;
+  dstressdev_dstress = dDevStress_dStress(dstressdev_dstress);
+
+  val = dhardrate_dj2backstress * dstressdev_dstress.transposeMajor() * dj2backstress_ddiffstess;
+
   return true;
 }
 
