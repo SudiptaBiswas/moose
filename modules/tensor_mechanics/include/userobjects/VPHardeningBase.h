@@ -30,6 +30,7 @@ public:
   // Use this if the hardening rate or flow rate is a tensor
   virtual bool computeValueT(unsigned int, Real, RankTwoTensor &) const = 0;
   virtual bool computeDerivativeT(unsigned int, Real, const std::vector<std::string> &, RankTwoTensor &) const = 0;
+  virtual bool computeStressDerivativeT(unsigned int, RankTwoTensor &) const = 0;
 
 protected:
   std::string _base_name;

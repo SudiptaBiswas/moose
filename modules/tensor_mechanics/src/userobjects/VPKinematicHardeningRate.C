@@ -19,12 +19,13 @@ InputParameters validParams<VPKinematicHardeningRate>()
 VPKinematicHardeningRate::VPKinematicHardeningRate(const InputParameters & parameters) :
     VPHardeningRateBase(parameters),
     _intvar(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_names")),
-    _dintvar_dstress(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_names" + "stress")),
+    _intvar_uo_name(isParamValid("intvar_uo") ? getParam<UserObjectName>("intvar_uo") : UserObjectName(0)),
+    // _dintvar_dstress(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_names" + "stress")),
     _intvar_rate(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_rate_names")),
-    _dintvarrate_dstress(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_rate_names" + "stress")),
+    _vp_strain_rate_uo_name(isParamValid("visco-platic_strain_rate_uo") ? getParam<UserObjectName>("visco-platic_strain_rate_uo") : UserObjectName(0)),
     _flow_rate_prop_name(getParam<std::string>(_base_name + "flow_rate_prop_name")),
     _flow_rate(getMaterialPropertyByName<RankTwoTensor>(_base_name + "flow_rate_prop_name")),
-    _dflowrate_dstress(getMaterialPropertyByName<RankTwoTensor>(_base_name + "flow_rate_prop_name" + "stress")),
+    _flow_rate_uo_name(isParamValid("flow_rate_uo") ? getParam<UserObjectName>("flow_rate_uo") : UserObjectName(0)),
     _D(getParam<Real>("hardening_multiplier"))
 {
 }
@@ -59,8 +60,17 @@ VPKinematicHardeningRate::computeDerivativeT(unsigned int qp, const std::vector<
 bool
 VPKinematicHardeningRate::computeStressDerivativeT(unsigned int qp, RankTwoTensor & val) const
 {
-  val = _dflowrate_dstress[qp] - _D * _intvar[0][qp] * _dintvarrate_dstress[1][qp]
-        - _D * _dintvar_dstress[0][qp] * _intvar_rate[1][qp];
+  RankTwoTensor dintvarrate_dstress, dflowrate_dstress, dintvar_dstress;
+  // deriv.zero();
+  dintvarrate_dstress.zero();
+  dflowrate_dstress.zero();
+  dintvar_dstress.zero();
+  _intvar_uo->computeStressDerivativeT(qp, dintvar_dstress);
+  _vp_strain_rate_uo->computeStressDerivativeT(qp, dintvarrate_dstress);
+  _flow_rate_uo->computeStressDerivativeT(qp, dflowrate_dstress);
+
+  val = dflowrate_dstress - _D * _intvar[0][qp] * dintvarrate_dstress
+        - _D * dintvar_dstress * _intvar_rate[1][qp];
 
   return true;
 }

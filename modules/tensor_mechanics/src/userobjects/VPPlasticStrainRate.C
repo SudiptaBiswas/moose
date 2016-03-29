@@ -11,6 +11,7 @@ InputParameters validParams<VPPlasticStrainRate>()
 {
   InputParameters params = validParams<VPHardeningRateBase>();
   params.addParam<Real>("hardening_multiplier", 1.0, "Names of internal variable property to calculate material resistance: Same as internal variable user object");
+  params.addParam<UserObjectName>("visco-platic_strain_rate_uo", "User object name that computes intvar rate and derivatives for intvar being the viscoplastic strain");
   params.addClassDescription("User Object to compute material resistance");
   return params;
 }
@@ -19,7 +20,7 @@ VPPlasticStrainRate::VPPlasticStrainRate(const InputParameters & parameters) :
     VPHardeningRateBase(parameters),
     _intvar(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_names")),
     _intvar_rate(getMaterialPropertyByName<std::vector<Real> >(_base_name + "intvar_rate_prop_names")),
-    _dintvarrate_dstress(getMaterialPropertyByName<std::vector<RankTwoTensor> >(_base_name + "intvar_prop_rate_names" + "stress")),
+    _vp_strain_rate_uo_name(isParamValid("visco-platic_strain_rate_uo") ? getParam<UserObjectName>("visco-platic_strain_rate_uo") : UserObjectName(0)),
     _stress(getMaterialProperty<RankTwoTensor>(_base_name + "stress")),
     _C(getParam<Real>("hardening_multiplier"))
 {
@@ -83,13 +84,18 @@ VPPlasticStrainRate::computeStressDerivativeT(unsigned int qp, RankFourTensor & 
   RankFourTensor dstressdev_dstress;
   dstressdev_dstress = dDevStress_dStress(dstressdev_dstress);
 
+  RankTwoTensor dintvarrate_dstress;
+  // deriv.zero();
+  dintvarrate_dstress.zero();
+  _vp_strain_rate_uo->computeStressDerivativeT(qp, dintvarrate_dstress);
   val.zero();
   for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
     for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
       for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
         for (unsigned int l = 0; l < LIBMESH_DIM; ++l)
         {
-          val(i, j, k, l) = 1.5 * (_dintvarrate_dstress[1][qp](k, l) * diff_stress(k, l) / J2_back_stress
+          // dintvarrate_dstress(k, l) = deriv(k,l);
+          val(i, j, k, l) = 1.5 * (dintvarrate_dstress(k, l) * diff_stress(k, l) / J2_back_stress
                                    + _intvar_rate[1][qp] * dstressdev_dstress(i, j, k, l) / J2_back_stress
                                    - _intvar_rate[1][qp] * diff_stress(k, l) * dstressdev_dstress(i, j, k, l) * dj2backstress_ddiffstress(k, l) / (J2_back_stress * J2_back_stress));
         }

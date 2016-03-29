@@ -32,7 +32,10 @@ public:
 protected:
   const MaterialProperty<std::vector<RankTwoTensor> > & _intvar;
   const MaterialProperty<std::vector<Real> > & _intvar_rate;
-  const MaterialProperty<std::vector<RankTwoTensor> > & _dintvarrate_dstress;
+  UserObjectName _vp_strain_rate_uo_name;
+  const VPHardeningRateBase * _vp_strain_rate_uo;
+
+  // const MaterialProperty<std::vector<RankTwoTensor> > & _dintvarrate_dstress;
   const MaterialProperty<RankTwoTensor> & _stress;
   Real _C;
 
