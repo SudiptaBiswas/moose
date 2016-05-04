@@ -43,6 +43,7 @@
 #include "MultiPhaseStressMaterial.h"
 #include "SimpleEigenStrainMaterial.h"
 #include "CompositeEigenstrain.h"
+#include "ComputeEigenstrainFromStress.h"
 #include "CompositeElasticityTensor.h"
 #include "ComputeElasticityTensor.h"
 #include "ComputeElasticityTensorCP.h"
@@ -201,6 +202,7 @@ TensorMechanicsApp::registerObjects(Factory & factory)
   registerMaterial(ComputeLinearElasticStress);
   registerMaterial(ComputeFiniteStrainElasticStress);
   registerMaterial(ComputeEigenstrain);
+  registerMaterial(ComputeEigenstrainFromStress);
   registerMaterial(ComputeVariableBaseEigenStrain);
   registerMaterial(ComputeVariableEigenstrain);
   registerMaterial(ComputeConcentrationDependentElasticityTensor);
