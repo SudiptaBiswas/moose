@@ -137,4 +137,3 @@ void
 Kernel::precalculateResidual()
 {
 }
-

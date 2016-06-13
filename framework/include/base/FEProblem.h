@@ -66,6 +66,7 @@ class ElementUserObject;
 class InternalSideUserObject;
 class GeneralUserObject;
 class Function;
+class KernelBase;
 
 // libMesh forward declarations
 namespace libMesh
@@ -253,6 +254,11 @@ public:
    * @return The maximum order for all scalar variables in this problem's systems.
    */
   Order getMaxScalarOrder() const;
+
+  /**
+   * @return Flag indicating nonlocal coupling exists or not.
+   */
+  void checkNonlocalCoupling();
 
   virtual Assembly & assembly(THREAD_ID tid) { return *_assembly[tid]; }
 
@@ -1062,6 +1068,9 @@ protected:
   /// functions
   MooseObjectWarehouse<Function> _functions;
 
+  /// nonlocal kernels
+  MooseObjectWarehouse<KernelBase> _nonlocal_kernels;
+
   ///@{
   /// Initial condition storage
   InitialConditionWarehouse _ics;
@@ -1190,6 +1199,10 @@ protected:
 
   /// Indicates if the Jacobian was computed
   bool _has_jacobian;
+
+  /// Indicates if nonlocal coupling is required/exists
+  bool _requires_nonlocal_coupling;
+  bool _has_nonlocal_coupling;
 
   SolverParams _solver_params;
 

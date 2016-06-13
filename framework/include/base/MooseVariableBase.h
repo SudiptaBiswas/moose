@@ -45,7 +45,7 @@ typedef MooseArray<std::vector<RealTensor> >   VariablePhiSecond;
 class Assembly;
 class SubProblem;
 class SystemBase;
-
+class MooseMesh;
 
 class MooseVariableBase
 {
@@ -70,9 +70,14 @@ public:
   SystemBase & sys() { return _sys; }
 
   /**
-   * Get the variable number
+   * Get the variable name
    */
   const std::string & name() const;
+
+  /**
+   * Get all global dofindices for the variable
+   */
+  std::vector<dof_id_type> allDofIndices() const;
 
   /**
    * Kind of the variable (Nonlinear, Auxiliary, ...)
@@ -132,7 +137,8 @@ protected:
   const DofMap & _dof_map;
   /// DOF indices
   std::vector<dof_id_type> _dof_indices;
-
+  /// mesh the variable is active in
+  MooseMesh & _mesh;
   /// scaling factor for this variable
   Real _scaling_factor;
 };

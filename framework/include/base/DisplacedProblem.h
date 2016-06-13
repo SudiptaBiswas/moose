@@ -123,8 +123,10 @@ public:
   // reinit /////
 
   virtual void prepare(const Elem * elem, THREAD_ID tid);
+  virtual void prepareNonlocal(THREAD_ID tid);
   virtual void prepareFace(const Elem * elem, THREAD_ID tid);
   virtual void prepare(const Elem * elem, unsigned int ivar, unsigned int jvar, const std::vector<dof_id_type> & dof_indices, THREAD_ID tid);
+  virtual void prepareBlockNonlocal(unsigned int ivar, unsigned int jvar, const std::vector<dof_id_type> & dof_indices, THREAD_ID tid);
   virtual void prepareAssembly(THREAD_ID tid);
   virtual void prepareAssemblyNeighbor(THREAD_ID tid);
 
@@ -159,11 +161,14 @@ public:
   virtual void setResidualNeighbor(NumericVector<Number> & residual, THREAD_ID tid);
 
   virtual void addJacobian(SparseMatrix<Number> & jacobian, THREAD_ID tid);
+  virtual void addJacobianNonlocal(SparseMatrix<Number> & jacobian, THREAD_ID tid);
   virtual void addJacobianNeighbor(SparseMatrix<Number> & jacobian, THREAD_ID tid);
   virtual void addJacobianBlock(SparseMatrix<Number> & jacobian, unsigned int ivar, unsigned int jvar, const DofMap & dof_map, std::vector<dof_id_type> & dof_indices, THREAD_ID tid);
+  virtual void addJacobianBlockNonlocal(SparseMatrix<Number> & jacobian, unsigned int ivar, unsigned int jvar, const DofMap & dof_map, std::vector<dof_id_type> & dof_indices, THREAD_ID tid);
   virtual void addJacobianNeighbor(SparseMatrix<Number> & jacobian, unsigned int ivar, unsigned int jvar, const DofMap & dof_map, std::vector<dof_id_type> & dof_indices, std::vector<dof_id_type> & neighbor_dof_indices, THREAD_ID tid);
 
   virtual void cacheJacobian(THREAD_ID tid);
+  virtual void cacheJacobianNonlocal(THREAD_ID tid);
   virtual void cacheJacobianNeighbor(THREAD_ID tid);
   virtual void addCachedJacobian(SparseMatrix<Number> & jacobian, THREAD_ID tid);
 

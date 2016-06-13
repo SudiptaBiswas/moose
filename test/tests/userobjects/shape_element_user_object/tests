@@ -5,6 +5,12 @@
     recover = false
   [../]
 
+  [./simple_shape_element_uo]
+    type = RunApp
+    input = 'simple_shape_element_uo_test.i'
+    recover = false
+  [../]
+
   [./jacobian]
     type = PetscJacobianTester
     input = 'jacobian.i'
