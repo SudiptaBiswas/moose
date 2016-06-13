@@ -94,6 +94,7 @@
 #include "DotCouplingAux.h"
 #include "VectorPostprocessorAux.h"
 #include "ExampleShapeElementKernel.h"
+#include "SimpleTestShapeElementKernel.h"
 
 #include "RobinBC.h"
 #include "InflowBC.h"
@@ -182,6 +183,7 @@
 #include "ReadDoubleIndex.h"
 #include "TestShapeElementUserObject.h"
 #include "ExampleShapeElementUserObject.h"
+#include "SimpleTestShapeElementUserObject.h"
 
 // Postprocessors
 #include "TestCopyInitialSolution.h"
@@ -341,6 +343,7 @@ MooseTestApp::registerObjects(Factory & factory)
   registerKernel(DefaultMatPropConsumerKernel);
   registerKernel(DoNotCopyParametersKernel);
   registerKernel(ExampleShapeElementKernel);
+  registerKernel(SimpleTestShapeElementKernel);
 
   // Aux kernels
   registerAux(CoupledAux);
@@ -480,6 +483,7 @@ MooseTestApp::registerObjects(Factory & factory)
   registerUserObject(ReadDoubleIndex);
   registerUserObject(TestShapeElementUserObject);
   registerUserObject(ExampleShapeElementUserObject);
+  registerUserObject(SimpleTestShapeElementUserObject);
 
   registerPostprocessor(InsideValuePPS);
   registerPostprocessor(TestCopyInitialSolution);
