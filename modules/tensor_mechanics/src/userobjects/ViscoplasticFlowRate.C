@@ -45,7 +45,8 @@ ViscoplasticFlowRate::computeDirection(unsigned int qp, RankTwoTensor & val) con
 {
   RankTwoTensor pk2_dev = computePK2Deviatoric(_pk2[qp], _ce[qp]);
   RankTwoTensor back_stress = 2/3 * _C * _intvar_tensor[qp];
-  RankTwoTensor sdev = pk2_dev * _ce[qp] - back_stress.deviatoric();
+  RankTwoTensor sdiff = _pk2[qp] - back_stress;
+  RankTwoTensor sdev = computeDeviatoricStress(sdiff, _ce[qp]);
   Real eqv_stress = computeEqvStress(pk2_dev, _ce[qp], _intvar_tensor[qp]);
 
   val.zero();
@@ -79,7 +80,7 @@ ViscoplasticFlowRate::computeTensorDerivative(unsigned int qp, const std::string
 }
 
 RankTwoTensor
-ViscoplasticFlowRate::computePK2Deviatoric(const RankTwoTensor & pk2, const RankTwoTensor & ce) const
+ViscoplasticFlowRate::computeDeviatoricStress(const RankTwoTensor & pk2, const RankTwoTensor & ce) const
 {
   return pk2 - (pk2.doubleContraction(ce) * ce.inverse())/3.0;
 }
@@ -88,7 +89,8 @@ Real
 ViscoplasticFlowRate::computeEqvStress(const RankTwoTensor & pk2_dev, const RankTwoTensor & ce, const RankTwoTensor & intvar) const
 {
   RankTwoTensor back_stress = 2/3 * _C * intvar;
-  RankTwoTensor sdev = pk2_dev * ce - back_stress.deviatoric();
+  RankTwoTensor sdiff = pk2 - back_stress;
+  RankTwoTensor sdev = computeDeviatoricStress(sdiff, ce);
   Real val = sdev.doubleContraction(sdev.transpose());
   return std::pow(1.5 * val, 0.5);
 }

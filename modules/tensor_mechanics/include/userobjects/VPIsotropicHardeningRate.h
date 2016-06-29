@@ -31,8 +31,8 @@ protected:
   /// The multiplier used in back stress calculation
   Real _C;
 
-  RankTwoTensor computePK2Deviatoric(const RankTwoTensor &, const RankTwoTensor &) const;
   Real computeEqvStress(const RankTwoTensor &, const RankTwoTensor &, const RankTwoTensor &) const;
+  RankTwoTensor computeDeviatoricStress(const RankTwoTensor &, const RankTwoTensor &) const;
   Real macaulayBracket(Real) const;
 };
 
