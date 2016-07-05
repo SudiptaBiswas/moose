@@ -22,15 +22,13 @@ MaskedGrainForceAndTorque::MaskedGrainForceAndTorque(const InputParameters & par
     _grain_force_torque_input(getUserObject<GrainForceAndTorqueInterface>("grain_force")),
     _grain_forces_input(_grain_force_torque_input.getForceValues()),
     _grain_torques_input(_grain_force_torque_input.getTorqueValues()),
-    _grain_force_derivatives_input(_grain_force_torque_input.getForceDerivatives()),
-    _grain_torque_derivatives_input(_grain_force_torque_input.getTorqueDerivatives()),
+    _grain_force_jacobians_input(_grain_force_torque_input.getForceJacobianValues()),
+    _grain_torque_jacobians_input(_grain_force_torque_input.getTorqueJacobianValues()),
     _pinned_grains(getParam<std::vector<unsigned int> >("pinned_grains")),
     _num_pinned_grains(_pinned_grains.size()),
     _ncrys(_grain_forces_input.size()),
     _force_values(_ncrys),
-    _torque_values(_ncrys),
-    _force_derivatives(_ncrys),
-    _torque_derivatives(_ncrys)
+    _torque_values(_ncrys)
 {
 }
 
@@ -41,8 +39,6 @@ MaskedGrainForceAndTorque::initialize()
   {
     _force_values[i] = _grain_forces_input [i];
     _torque_values[i] = _grain_torques_input[i];
-    _force_derivatives[i] = _grain_force_derivatives_input[i];
-    _torque_derivatives[i] = _grain_torque_derivatives_input[i];
 
     if (_num_pinned_grains != 0)
     {
@@ -52,34 +48,30 @@ MaskedGrainForceAndTorque::initialize()
         {
           _force_values[i] = 0.0;
           _torque_values[i] = 0.0;
-          _force_derivatives[i] = 0.0;
-          _torque_derivatives[i] = 0.0;
         }
       }
     }
   }
-}
 
-const std::vector<RealGradient> &
-MaskedGrainForceAndTorque::getForceValues() const
-{
-  return _force_values;
-}
+  unsigned int total_dofs = _subproblem.es().n_dofs();
+  _force_jacobians.resize(_ncrys*total_dofs);
+  _torque_jacobians.resize(_ncrys*total_dofs);
+  for (unsigned int i = 0; i < _ncrys; ++i)
+    for (unsigned int j = 0; j < total_dofs; ++j)
+    {
+      _force_jacobians[i*total_dofs+j] = _grain_force_jacobians_input[i*total_dofs+j];
+      _torque_jacobians[i*total_dofs+j] = _grain_torque_jacobians_input[i*total_dofs+j];
 
-const std::vector<RealGradient> &
-MaskedGrainForceAndTorque::getTorqueValues() const
-{
-  return _torque_values;
-}
-
-const std::vector<RealGradient> &
-MaskedGrainForceAndTorque::getForceDerivatives() const
-{
-  return _force_derivatives;
-}
-
-const std::vector<RealGradient> &
-MaskedGrainForceAndTorque::getTorqueDerivatives() const
-{
-  return _torque_derivatives;
+      if (_num_pinned_grains != 0)
+      {
+        for (unsigned int k = 0; k < _num_pinned_grains; ++k)
+        {
+          if (i == _pinned_grains[k])
+          {
+            _force_jacobians[i*total_dofs+j] = 0.0;
+            _torque_jacobians[i*total_dofs+j] = 0.0;
+          }
+        }
+      }
+  }
 }

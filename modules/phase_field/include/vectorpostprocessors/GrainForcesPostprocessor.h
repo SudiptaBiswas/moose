@@ -41,9 +41,9 @@ protected:
   /// Extracting torques from Userobject
   const std::vector<RealGradient> & _grain_torques;
   /// Extracting derivative of forces from Userobject
-  const std::vector<RealGradient> & _grain_force_derivatives;
+  const std::vector<RealGradient> & _grain_force_jacobians;
   /// Extracting derivative of torques from Userobject
-  const std::vector<RealGradient> & _grain_torque_derivatives;
+  const std::vector<RealGradient> & _grain_torque_jacobians;
 
   unsigned int _total_grains;
 };

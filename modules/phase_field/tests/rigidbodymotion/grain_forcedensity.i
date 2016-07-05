@@ -2,11 +2,11 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 25
-  ny = 10
+  nx = 10
+  ny = 5
   nz = 0
-  xmax = 50
-  ymax = 25
+  xmax = 5
+  ymax = 2.5
   zmax = 0
   elem_type = QUAD4
 []
@@ -19,11 +19,11 @@
       type = SpecifiedSmoothCircleIC
       invalue = 1.0
       outvalue = 0.1
-      int_width = 6.0
-      x_positions = '20.0 30.0 '
+      int_width = 0.6
+      x_positions = '2.0 3.0 '
       z_positions = '0.0 0.0 '
-      y_positions = '0.0 25.0 '
-      radii = '14.0 14.0'
+      y_positions = '0.0 2.5 '
+      radii = '1.4 1.4'
       3D_spheres = false
       variable = c
       block = 0
@@ -52,6 +52,12 @@
     type = CoupledTimeDerivative
     variable = w
     v = c
+  [../]
+  [./motion]
+    type = MultiGrainRigidBodyMotion
+    variable = w
+    c = c
+    v = 'eta0 eta1'
   [../]
 []
 
@@ -213,20 +219,20 @@
 
 [ICs]
   [./ic_eta0]
-    int_width = 6.0
-    x1 = 20.0
+    int_width = 0.6
+    x1 = 2.0
     y1 = 0.0
-    radius = 14.0
+    radius = 1.4
     outvalue = 0.0
     variable = eta0
     invalue = 1.0
     type = SmoothCircleIC
   [../]
   [./IC_eta1]
-    int_width = 6.0
-    x1 = 30.0
-    y1 = 25.0
-    radius = 14.0
+    int_width = 0.6
+    x1 = 3.0
+    y1 = 2.5
+    radius = 1.4
     outvalue = 0.0
     variable = eta1
     invalue = 1.0
@@ -271,7 +277,10 @@
 [Executioner]
   type = Transient
   scheme = bdf2
-  solve_type = PJFNK
+  solve_type = NEWTON
+  #petsc_options = '-snes_test_display'
+  #petsc_options_iname = '-snes_type'
+  #petsc_options_value = 'test'
   petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
   petsc_options_value = 'asm         31   preonly   lu      1'
   l_max_its = 30

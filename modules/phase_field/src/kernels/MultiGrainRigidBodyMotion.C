@@ -36,8 +36,8 @@ MultiGrainRigidBodyMotion::computeQpResidual()
 Real
 MultiGrainRigidBodyMotion::computeQpJacobian()
 {
-  if (_c_var == _var.number()) //Requires c jacobian
-    return computeCVarJacobianEntry();
+  if (_var.number() == _c_var) //Requires c jacobian
+    return computeCVarJacobianEntry(_var.dofIndices()[_j]);
 
   return 0.0;
 }
@@ -45,14 +45,33 @@ MultiGrainRigidBodyMotion::computeQpJacobian()
 Real
 MultiGrainRigidBodyMotion::computeQpOffDiagJacobian(unsigned int jvar)
 {
-  if (_c_var == jvar) //Requires c jacobian
-    return computeCVarJacobianEntry();
+  if (jvar == _c_var) //Requires c jacobian
+    return computeCVarJacobianEntry(_var.dofIndices()[_j]);
 
   return 0.0;
 }
 
 Real
-MultiGrainRigidBodyMotion::computeCVarJacobianEntry()
+MultiGrainRigidBodyMotion::computeQpNonlocalJacobian(dof_id_type dof_index)
+{
+  if (_var.number() == _c_var) //Requires c jacobian
+    return computeCVarNonlocalJacobianEntry(dof_index);
+
+  return 0.0;
+}
+
+Real
+MultiGrainRigidBodyMotion::computeQpNonlocalOffDiagJacobian(unsigned int jvar, dof_id_type dof_index)
+{
+  if (jvar == _c_var)
+    return computeCVarNonlocalJacobianEntry(dof_index);
+
+  return 0.0;
+}
+
+
+Real
+MultiGrainRigidBodyMotion::computeCVarJacobianEntry(dof_id_type jdof)
 {
   RealGradient vadv_total = 0.0;
   Real div_vadv_total = 0.0;
@@ -62,10 +81,24 @@ MultiGrainRigidBodyMotion::computeCVarJacobianEntry()
   {
     vadv_total += _velocity_advection[_qp][i];
     div_vadv_total += _div_velocity_advection[_qp][i];
-    dvadvdc_total += _velocity_advection_derivative_c[_qp][i];
-    ddivvadvdc_total += _div_velocity_advection_derivative_c[_qp][i];
+    dvadvdc_total += _velocity_advection_derivative_c[_qp][i][jdof];
+    ddivvadvdc_total += _div_velocity_advection_derivative_c[_qp][i][jdof];
   }
 
-  return  vadv_total * _grad_phi[_j][_qp] * _test[_i][_qp] + dvadvdc_total * _grad_c[_qp] * _phi[_j][_qp] * _test[_i][_qp]
-          + div_vadv_total * _phi[_j][_qp] * _test[_i][_qp] + ddivvadvdc_total * _c[_qp] * _phi[_j][_qp] * _test[_i][_qp];
+  return  vadv_total * _grad_phi[_j][_qp] * _test[_i][_qp] + dvadvdc_total * _grad_c[_qp] * _test[_i][_qp]
+          + div_vadv_total * _phi[_j][_qp] * _test[_i][_qp] + ddivvadvdc_total * _c[_qp] * _test[_i][_qp];
+}
+
+Real
+MultiGrainRigidBodyMotion::computeCVarNonlocalJacobianEntry(dof_id_type jdof)
+{
+  RealGradient dvadvdc_total = 0.0;
+  Real ddivvadvdc_total = 0.0;
+  for (unsigned int i = 0; i < _velocity_advection[_qp].size(); ++i)
+  {
+    dvadvdc_total += _velocity_advection_derivative_c[_qp][i][jdof];
+    ddivvadvdc_total += _div_velocity_advection_derivative_c[_qp][i][jdof];
+  }
+
+  return  dvadvdc_total * _grad_c[_qp] * _test[_i][_qp] + ddivvadvdc_total * _c[_qp] * _test[_i][_qp];
 }

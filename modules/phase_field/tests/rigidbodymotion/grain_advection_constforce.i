@@ -2,8 +2,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 30
-  ny = 30
+  nx = 10
+  ny = 10
   nz = 0
   xmin = 0
   xmax = 250
@@ -71,6 +71,12 @@
     function = 16*barr_height*(c-cv_eq)^2*(1-cv_eq-c)^2+(c-eta)^2
     derivative_order = 2
   [../]
+  [./force_density]
+    type = ForceDensityMaterial
+    block = 0
+    c = c
+    etas = eta
+  [../]
   [./advection_vel]
     type = GrainAdvectionVelocity
     block = 0
@@ -84,38 +90,38 @@
 [AuxVariables]
   [./eta]
   [../]
-  [./vadv00]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./vadv01]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./vadv0_div]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
+  #[./vadv00]
+  #  order = CONSTANT
+  #  family = MONOMIAL
+  #[../]
+  #[./vadv01]
+  #  order = CONSTANT
+  #  family = MONOMIAL
+  #[../]
+  #[./vadv0_div]
+  #  order = CONSTANT
+  #  family = MONOMIAL
+  #[../]
 []
 
-[AuxKernels]
-  [./vadv00]
-    type = MaterialStdVectorRealGradientAux
-    variable = vadv00
-    property = advection_velocity
-  [../]
-  [./vadv01]
-    type = MaterialStdVectorRealGradientAux
-    variable = vadv01
-    property = advection_velocity
-    component = 1
-  [../]
-  [./vadv0_div]
-    type = MaterialStdVectorAux
-    variable = vadv0_div
-    property = advection_velocity_divergence
-  [../]
-[]
+#[AuxKernels]
+#  [./vadv00]
+#    type = MaterialStdVectorRealGradientAux
+#    variable = vadv00
+#    property = advection_velocity
+#  [../]
+#  [./vadv01]
+#    type = MaterialStdVectorRealGradientAux
+#    variable = vadv01
+#    property = advection_velocity
+#    component = 1
+#  [../]
+#  [./vadv0_div]
+#    type = MaterialStdVectorAux
+#    variable = vadv0_div
+#    property = advection_velocity_divergence
+#  [../]
+#[]
 
 
 [ICs]
@@ -151,9 +157,16 @@
   [./grain_force]
     type = ConstantGrainForceAndTorque
     execute_on = 'initial linear'
-    force = '0.2 0.0 0.0 '
-    torque = '0.0 0.0 5.0 '
+    force = '0.2 0.0 0.0'
+    torque = '0.0 0.0 5.0'
   [../]
+  #[./grain_force]
+  #  type = ComputeGrainForceAndTorque
+  #  execute_on = 'initial linear'
+  #  grain_data = grain_center
+  #  force_density = force_density
+  #  c = c
+  #[../]
 []
 
 [Preconditioning]

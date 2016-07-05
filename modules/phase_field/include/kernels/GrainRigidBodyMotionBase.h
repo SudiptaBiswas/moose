@@ -7,7 +7,7 @@
 #ifndef GRAINRIGIDBODYMOTIONBASE_H
 #define GRAINRIGIDBODYMOTIONBASE_H
 
-#include "Kernel.h"
+#include "NonlocalKernel.h"
 #include "DerivativeMaterialPropertyNameInterface.h"
 
 //Forward Declarations
@@ -17,7 +17,7 @@ template<>
 InputParameters validParams<GrainRigidBodyMotionBase>();
 
 class GrainRigidBodyMotionBase :
-    public Kernel,
+    public NonlocalKernel,
     public DerivativeMaterialPropertyNameInterface
 {
 public:
@@ -27,6 +27,9 @@ protected:
   virtual Real computeQpResidual() { return 0.0; }
   virtual Real computeQpJacobian() { return 0.0; }
   virtual Real computeQpOffDiagJacobian(unsigned int /* jvar */ ) { return 0.0; }
+  /// jacobian calculation corresponding to non-local dofs
+  virtual Real computeQpNonlocalJacobian(dof_id_type /* dof_index */) { return 0.0; }
+  virtual Real computeQpNonlocalOffDiagJacobian(unsigned int /* jvar */, dof_id_type /* dof_index */) { return 0.0; }
 
   /// int label for the Concentration
   unsigned int _c_var;
@@ -52,9 +55,9 @@ protected:
   const MaterialProperty<std::vector<Real> > & _div_velocity_advection;
 
   /// Material property for  dervative of advection velocities
-  const MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_c;
+  const MaterialProperty<std::vector<std::vector<RealGradient> > > & _velocity_advection_derivative_c;
   /// Material property for dirivative of divergence of advection velocities
-  const MaterialProperty<std::vector<Real> > & _div_velocity_advection_derivative_c;
+  const MaterialProperty<std::vector<std::vector<Real> > > & _div_velocity_advection_derivative_c;
   /// Material property for  dervative of advection velocities
   const MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_eta;
 };
