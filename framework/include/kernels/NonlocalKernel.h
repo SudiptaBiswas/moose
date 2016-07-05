@@ -38,6 +38,7 @@ protected:
 
   DenseMatrix<Number> _nonlocal_ke;
   unsigned int _k;
+  dof_id_type _total_dofs;
 };
 
 #endif /* NONLOCALKERNEL_H */
