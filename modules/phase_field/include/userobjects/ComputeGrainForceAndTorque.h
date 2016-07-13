@@ -14,7 +14,7 @@
 
 //Forward Declarations
 class ComputeGrainForceAndTorque;
-class ComputeGrainCenterUserObject;
+class GrainTrackerInterface;
 
 template<>
 InputParameters validParams<ComputeGrainForceAndTorque>();
@@ -52,10 +52,9 @@ protected:
   /// material property that provides jacobian of force density with respect to c
   const MaterialProperty<std::vector<RealGradient> > & _dFdc;
   /// provide UserObject for calculating grain volumes and centers
-  const ComputeGrainCenterUserObject & _grain_data;
-  const std::vector<Real> & _grain_volumes;
-  const std::vector<Point> & _grain_centers;
   unsigned int _op_num;
+  const GrainTrackerInterface & _grain_tracker;
+  unsigned int _ncrys;
   unsigned int _ncomp;
   // unsigned int _num_etas;
 

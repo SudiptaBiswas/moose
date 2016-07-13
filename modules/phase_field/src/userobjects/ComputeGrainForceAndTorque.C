@@ -6,7 +6,7 @@
 /****************************************************************/
 
 #include "ComputeGrainForceAndTorque.h"
-#include "ComputeGrainCenterUserObject.h"
+#include "GrainTrackerInterface.h"
 
 // libmesh includes
 #include "libmesh/quadrature.h"
@@ -31,16 +31,12 @@ ComputeGrainForceAndTorque::ComputeGrainForceAndTorque(const InputParameters & p
     _dF_name(getParam<MaterialPropertyName>("force_density")),
     _dF(getMaterialPropertyByName<std::vector<RealGradient> >(_dF_name)),
     _dFdc(getMaterialPropertyByName<std::vector<RealGradient> >(propertyNameFirst(_dF_name, _c_name))),
-    _grain_data(getUserObject<ComputeGrainCenterUserObject>("grain_data")),
-    _grain_volumes(_grain_data.getGrainVolumes()),
-    _grain_centers(_grain_data.getGrainCenters()),
     _op_num(coupledComponents("etas")),
     _ncomp(6*_op_num),
     _vals_var(_op_num),
     _vals_name(_op_num),
     _dFdgradeta(_op_num),
-    _force_values(_op_num),
-    _torque_values(_op_num)
+    _grain_tracker(getUserObject<GrainTrackerInterface>("grain_data"))
 {
   for (unsigned int i = 0; i < _op_num; ++i)
   {
@@ -53,6 +49,12 @@ ComputeGrainForceAndTorque::ComputeGrainForceAndTorque(const InputParameters & p
 void
 ComputeGrainForceAndTorque::initialize()
 {
+  _ncrys = _grain_tracker.getNumberGrains();
+  _ncomp = 6 * _ncrys;
+
+  _force_values.resize(_ncrys);
+  _torque_values.resize(_ncrys);
+
   _force_torque_store.assign(_ncomp, 0.0);
 
   if (_fe_problem.currentlyComputingJacobian())

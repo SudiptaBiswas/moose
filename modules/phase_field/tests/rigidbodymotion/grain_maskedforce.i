@@ -143,9 +143,9 @@
 
 [UserObjects]
   [./grain_center]
-    type = ComputeGrainCenterUserObject
-    etas = 'eta0 eta1'
-    execute_on = 'initial timestep_end linear'
+    type = GrainTracker
+    variable = 'eta0 eta1'
+    outputs = none
   [../]
   [./grain_force_const]
     type = ConstantGrainForceAndTorque

@@ -102,6 +102,40 @@
   [../]
 []
 
+[AuxKernels]
+  [./bnds]
+    type = BndsCalcAux
+    variable = bnds
+    var_name_base = eta
+    op_num = 2.0
+    v = 'eta0 eta1'
+  [../]
+  [./df01]
+    type = MaterialStdVectorRealGradientAux
+    variable = df01
+    component = 1
+    property = force_density
+  [../]
+  [./df11]
+    type = MaterialStdVectorRealGradientAux
+    variable = df11
+    index = 1
+    component = 1
+    property = force_density
+  [../]
+  [./df00]
+    type = MaterialStdVectorRealGradientAux
+    variable = df00
+    property = force_density
+  [../]
+  [./df10]
+    type = MaterialStdVectorRealGradientAux
+    variable = df10
+    index = 1
+    property = force_density
+  [../]
+[]
+
 [ICs]
   [./ic_eta0]
     int_width = 6.0
@@ -146,9 +180,9 @@
 
 [UserObjects]
   [./grain_center]
-    type = ComputeGrainCenterUserObject
-    etas = 'eta0 eta1'
-    execute_on = 'initial timestep_begin'
+    type = GrainTracker
+    variable = 'eta0 eta1'
+    outputs = none
   [../]
   [./grain_force_dns]
     type = ComputeGrainForceAndTorque
