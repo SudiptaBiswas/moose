@@ -39,6 +39,10 @@ public:
   virtual const std::vector<std::pair<unsigned int, unsigned int> > & getElementalValues(dof_id_type elem_id) const override;
   virtual const std::vector<unsigned int> & getOpToGrainsVector(dof_id_type elem_id) const override;
 
+  virtual unsigned int getNumberGrains() const override;
+  virtual Real getGrainVolume(unsigned int grain_id) const override;
+  virtual Point getGrainCentroid(unsigned int grain_id) const override;
+
 private:
   /// The mapping of entities to grains, in this case always the order parameter
   std::map<dof_id_type, unsigned int> _entity_id_to_var_num;
