@@ -48,7 +48,7 @@ bool
 VPIsotropicHardeningRate::computeTensorDerivative(unsigned int qp, const std::string & coupled_var_name, RankTwoTensor & val) const
 {
   val.zero();
-  if (_intvar_prop_name == coupled_var_name)
+  if (_intvar_prop_tensor_name == coupled_var_name)
   {
     Real eqv_stress = computeEqvStress(_pk2[qp], _ce[qp], _intvar_tensor[qp]);
     Real dhardrate_deqvstress = _exponent * std::pow(macaulayBracket(eqv_stress / _strength[qp] - 1.0), _exponent - 1.0) / _strength[qp];
@@ -70,7 +70,7 @@ VPIsotropicHardeningRate::computeTensorDerivative(unsigned int qp, const std::st
             if (i==j && k==l)
               dbackstressdev_dbackstress(i, j, k, l) -= 1.0/3.0;
           }
-    val = dhardrate_deqvstress * dbackstress_dint * dbackstressdev_dbackstress.transposeMajor() * deqvstress_dbackstressdev ;
+    val = dhardrate_deqvstress * dbackstress_dint * dbackstressdev_dbackstress.transposeMajor() * deqvstress_dbackstressdev;
   }
 
   if (_pk2_prop_name == coupled_var_name)

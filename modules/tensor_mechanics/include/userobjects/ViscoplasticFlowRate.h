@@ -37,7 +37,7 @@ protected:
   Real _C;
   Real _flow_rate_tol;
 
-  RankTwoTensor computePK2Deviatoric(const RankTwoTensor &, const RankTwoTensor &) const;
+  RankTwoTensor computeDeviatoricStress(const RankTwoTensor &, const RankTwoTensor &) const;
   Real computeEqvStress(const RankTwoTensor &, const RankTwoTensor &, const RankTwoTensor &) const;
 
 };

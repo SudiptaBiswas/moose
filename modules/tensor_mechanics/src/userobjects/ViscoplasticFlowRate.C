@@ -43,11 +43,10 @@ ViscoplasticFlowRate::computeValue(unsigned int qp, Real & val) const
 bool
 ViscoplasticFlowRate::computeDirection(unsigned int qp, RankTwoTensor & val) const
 {
-  RankTwoTensor pk2_dev = computePK2Deviatoric(_pk2[qp], _ce[qp]);
   RankTwoTensor back_stress = 2/3 * _C * _intvar_tensor[qp];
   RankTwoTensor sdiff = _pk2[qp] - back_stress;
   RankTwoTensor sdev = computeDeviatoricStress(sdiff, _ce[qp]);
-  Real eqv_stress = computeEqvStress(pk2_dev, _ce[qp], _intvar_tensor[qp]);
+  Real eqv_stress = computeEqvStress(_pk2[qp], _ce[qp], _intvar_tensor[qp]);
 
   val.zero();
   if (eqv_stress > 0.0)
@@ -86,7 +85,7 @@ ViscoplasticFlowRate::computeDeviatoricStress(const RankTwoTensor & pk2, const R
 }
 
 Real
-ViscoplasticFlowRate::computeEqvStress(const RankTwoTensor & pk2_dev, const RankTwoTensor & ce, const RankTwoTensor & intvar) const
+ViscoplasticFlowRate::computeEqvStress(const RankTwoTensor & pk2, const RankTwoTensor & ce, const RankTwoTensor & intvar) const
 {
   RankTwoTensor back_stress = 2/3 * _C * intvar;
   RankTwoTensor sdiff = pk2 - back_stress;
