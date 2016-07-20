@@ -98,9 +98,9 @@
 
 [UserObjects]
   [./grain_center]
-    type = ComputeGrainCenterUserObject
+    type = GrainTracker
     etas = eta
-    execute_on = 'initial linear'
+    execute_on = 'initial timestep_begin'
   [../]
 []
 

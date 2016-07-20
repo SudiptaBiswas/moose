@@ -35,10 +35,6 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./vadv0_div]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
 []
 
 [Kernels]
@@ -63,9 +59,9 @@
   [./motion]
     type = MultiGrainRigidBodyMotion
     variable = w
+    grain_tracker_object = grain_center
     c = c
     v = eta
-    grain_data = grain_center
     grain_force = grain_force
   [../]
   [./eta_dot]
@@ -74,10 +70,10 @@
   [../]
   [./vadv_eta]
     type = SingleGrainRigidBodyMotion
+    grain_tracker_object = grain_center
     variable = eta
     c = c
     v = eta
-    grain_data = grain_center
     grain_force = grain_force
   [../]
   [./acint_eta]
@@ -108,11 +104,6 @@
     property = advection_velocity
     component = 1
   [../]
-  [./vadv0_div]
-    type = MaterialStdVectorAux
-    variable = vadv0_div
-    property = advection_velocity_divergence
-  [../]
 []
 
 [Materials]
@@ -139,10 +130,6 @@
 []
 
 [VectorPostprocessors]
-  [./centers]
-    type = GrainCentersPostprocessor
-    grain_data = grain_center
-  [../]
   [./forces]
     type = GrainForcesPostprocessor
     grain_force = grain_force
@@ -151,8 +138,10 @@
 
 [UserObjects]
   [./grain_center]
-    type = ComputeGrainCenterUserObject
-    etas = eta
+    type = GrainTracker
+    variable = eta
+    outputs = none
+    compute_op_maps = true
     execute_on = 'initial timestep_begin'
   [../]
   [./grain_force]
@@ -187,6 +176,7 @@
 
 [Outputs]
   exodus = true
+  file_base = out
 []
 
 [ICs]

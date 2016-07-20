@@ -59,7 +59,7 @@
     c = c
     variable = w
     v = 'eta0 eta1'
-    grain_data = grain_center
+    grain_tracker_object = grain_center
     grain_force = grain_force
   [../]
 []
