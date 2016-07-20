@@ -32,6 +32,10 @@
     order = FIRST
     family = LAGRANGE
   [../]
+  [./eta0]
+  [../]
+  [./eta1]
+  [../]
 []
 
 [Kernels]
@@ -51,6 +55,63 @@
     type = CoupledTimeDerivative
     variable = w
     v = c
+  [../]
+  [./motion]
+    type = MultiGrainRigidBodyMotion
+    variable = w
+    c = c
+    v = 'eta0 eta1'
+    grain_tracker_object = grain_center
+  [../]
+  [./eta0_dot]
+    type = TimeDerivative
+    variable = eta0
+  [../]
+  [./vadv_eta0]
+    type = SingleGrainRigidBodyMotion
+    grain_tracker_object = grain_center
+    variable = eta0
+    c = c
+    v = 'eta1'
+  [../]
+  [./acint_eta0]
+    type = ACInterface
+    variable = eta0
+    mob_name = M
+    args = 'c eta1'
+    kappa_name = kappa_eta
+  [../]
+  [./acbulk_eta0]
+    type = AllenCahn
+    variable = eta0
+    mob_name = M
+    f_name = F
+    args = 'c eta1'
+  [../]
+  [./eta1_dot]
+    type = TimeDerivative
+    variable = eta1
+  [../]
+  [./vadv_eta1]
+    type = SingleGrainRigidBodyMotion
+    grain_tracker_object = grain_center
+    variable = eta1
+    c = c
+    v = 'eta0'
+  [../]
+  [./acint_eta1]
+    type = ACInterface
+    variable = eta1
+    mob_name = M
+    args = 'c eta0'
+    kappa_name = kappa_eta
+  [../]
+  [./acbulk_eta1]
+    type = AllenCahn
+    variable = eta1
+    mob_name = M
+    f_name = F
+    args = 'c eta0'
   [../]
 []
 
@@ -84,10 +145,10 @@
 []
 
 [AuxVariables]
-  [./eta0]
-  [../]
-  [./eta1]
-  [../]
+  #[./eta0]
+  #[../]
+  #[./eta1]
+  #[../]
   [./bnds]
   [../]
   [./df00]
@@ -243,12 +304,15 @@
 [UserObjects]
   [./grain_center]
     type = GrainTracker
-    variable = 'eta0 eta1'
     outputs = none
+    compute_op_maps = true
+    calculate_feature_volumes = true
+    execute_on = 'INITIAL TIMESTEP_END'
+    #execute_on = 'INITIAL linear TIMESTEP_END'
   [../]
   [./grain_force]
     type = ComputeGrainForceAndTorque
-    execute_on = 'initial linear'
+    execute_on = 'initial linear nonlinear'
     grain_data = grain_center
     force_density = force_density
     c = c

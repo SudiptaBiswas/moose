@@ -5,6 +5,7 @@
 /*             See LICENSE for full restrictions                */
 /****************************************************************/
 #include "MultiGrainRigidBodyMotion.h"
+#include "GrainTrackerInterface.h"
 
 template<>
 InputParameters validParams<MultiGrainRigidBodyMotion>()
@@ -22,6 +23,7 @@ MultiGrainRigidBodyMotion::MultiGrainRigidBodyMotion(const InputParameters & par
 Real
 MultiGrainRigidBodyMotion::computeQpResidual()
 {
+
   RealGradient vadv_total = 0.0;
   Real div_vadv_total = 0.0;
   for (unsigned int i = 0; i < _velocity_advection[_qp].size(); ++i)

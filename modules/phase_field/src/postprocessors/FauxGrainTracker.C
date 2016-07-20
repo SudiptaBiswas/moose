@@ -82,6 +82,7 @@ const std::vector<unsigned int> &
 FauxGrainTracker::getOpToGrainsVector(dof_id_type /*elem_id*/) const
 {
   return _faux_data_2;
+}
 
 unsigned int
 FauxGrainTracker::getNumberGrains() const

@@ -31,6 +31,7 @@ protected:
    * can be used with both split/non-split version of CH kernels
    */
   virtual Real computeCVarJacobianEntry();
+
 };
 
 #endif //MULTIGRAINRIGIDBODYMOTION_H

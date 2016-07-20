@@ -12,6 +12,7 @@
 
 //Forward Declarations
 class GrainRigidBodyMotionBase;
+class GrainTrackerInterface;
 
 template<>
 InputParameters validParams<GrainRigidBodyMotionBase>();
@@ -45,6 +46,8 @@ protected:
 
   /// type of force density material
   std::string _base_name;
+
+  const GrainTrackerInterface & _grain_tracker;
 
   /// Material property for advection velocities
   const MaterialProperty<std::vector<RealGradient> > & _velocity_advection;

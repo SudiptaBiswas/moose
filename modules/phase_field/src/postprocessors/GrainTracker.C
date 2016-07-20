@@ -179,22 +179,6 @@ GrainTracker::finalize()
   Moose::perf_log.pop("finalize()", "GrainTracker");
 }
 
-const std::vector<std::pair<unsigned int, unsigned int> > &
-GrainTracker::getElementalValues(dof_id_type elem_id) const
-{
-  const auto pos = _elemental_data.find(elem_id);
-
-  if (pos != _elemental_data.end())
-    return pos->second;
-  else
-  {
-#if DEBUG
-    mooseDoOnce(Moose::out << "Elemental values not in structure for elem: " << elem_id << " this may be normal.");
-#endif
-    return _empty;
-  }
-}
-
 const std::vector<unsigned int> &
 GrainTracker::getOpToGrainsVector(dof_id_type elem_id) const
 {

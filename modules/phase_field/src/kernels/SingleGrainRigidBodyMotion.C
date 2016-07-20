@@ -5,18 +5,21 @@
 /*             See LICENSE for full restrictions                */
 /****************************************************************/
 #include "SingleGrainRigidBodyMotion.h"
+#include "GrainTrackerInterface.h"
 
 template<>
 InputParameters validParams<SingleGrainRigidBodyMotion>()
 {
   InputParameters params = validParams<GrainRigidBodyMotionBase>();
   params.addClassDescription("Adds rigid mody motion to a single grain");
-  params.addParam<unsigned int>("op_index",0, "Grain number for the kernel to be applied");
+  params.addParam<unsigned int>("op_index", 0, "Grain number for the kernel to be applied");
+  // params.addParam<UserObjectName>("grain_tracker_object", "The FeatureFloodCount UserObject to get values from.");
   return params;
 }
 
 SingleGrainRigidBodyMotion::SingleGrainRigidBodyMotion(const InputParameters & parameters) :
     GrainRigidBodyMotionBase(parameters),
+    // _grain_tracker(getUserObject<GrainTrackerInterface>("grain_tracker_object")),
     _op_index(getParam<unsigned int>("op_index"))
 {
 }
@@ -24,31 +27,43 @@ SingleGrainRigidBodyMotion::SingleGrainRigidBodyMotion(const InputParameters & p
 Real
 SingleGrainRigidBodyMotion::computeQpResidual()
 {
-  return _velocity_advection[_qp][_op_index] * _grad_u[_qp] * _test[_i][_qp]
-         + _div_velocity_advection[_qp][_op_index] * _u[_qp] * _test[_i][_qp];
+  unsigned int grain_num = _grain_tracker.getOpToGrainsVector(_current_elem->id())[_op_index];
+  if (grain_num != libMesh::invalid_uint)
+    return _velocity_advection[_qp][grain_num] * _grad_u[_qp] * _test[_i][_qp]
+           + _div_velocity_advection[_qp][grain_num] * _u[_qp] * _test[_i][_qp];
+
+  return 0.0;
 }
 
 Real
 SingleGrainRigidBodyMotion::computeQpJacobian()
 {
-  return _velocity_advection[_qp][_op_index] * _grad_phi[_j][_qp] * _test[_i][_qp]
-         + _velocity_advection_derivative_eta[_qp][_op_index] * _grad_u[_qp] * _phi[_j][_qp] *  _test[_i][_qp]
-         + _div_velocity_advection[_qp][_op_index] * _phi[_j][_qp] * _test[_i][_qp];
+  unsigned int grain_num = _grain_tracker.getOpToGrainsVector(_current_elem->id())[_op_index];
+  if (grain_num != libMesh::invalid_uint)
+    return _velocity_advection[_qp][grain_num] * _grad_phi[_j][_qp] * _test[_i][_qp]
+           + _velocity_advection_derivative_eta[_qp][grain_num] * _grad_u[_qp] * _phi[_j][_qp] *  _test[_i][_qp]
+           + _div_velocity_advection[_qp][grain_num] * _phi[_j][_qp] * _test[_i][_qp];
+
+  return 0.0;
 }
 
 Real
 SingleGrainRigidBodyMotion::computeQpOffDiagJacobian(unsigned int jvar)
 {
-  if (jvar == _c_var)
-    return _velocity_advection_derivative_c[_qp][_op_index] * _grad_u[_qp] * _phi[_j][_qp] * _test[_i][_qp]
-           + _div_velocity_advection_derivative_c[_qp][_op_index] * _u[_qp] * _phi[_j][_qp] * _test[_i][_qp];
-
-  for (unsigned int i=0; i<_ncrys; ++i)
+  unsigned int grain_num = _grain_tracker.getOpToGrainsVector(_current_elem->id())[_op_index];
+  if (grain_num != libMesh::invalid_uint)
   {
-    if (i != _op_index)
+    if (jvar == _c_var)
+      return _velocity_advection_derivative_c[_qp][grain_num] * _grad_u[_qp] * _phi[_j][_qp] * _test[_i][_qp]
+             + _div_velocity_advection_derivative_c[_qp][grain_num] * _u[_qp] * _phi[_j][_qp] * _test[_i][_qp];
+
+    for (unsigned int i=0; i<_ncrys; ++i)
     {
-      if (jvar == _vals_var[i])
-        return _velocity_advection_derivative_eta[_qp][_op_index] * _grad_u[_qp] * _phi[_j][_qp] * _test[_i][_qp];
+      if (i != grain_num)
+      {
+        if (jvar == _vals_var[i])
+          return _velocity_advection_derivative_eta[_qp][grain_num] * _grad_u[_qp] * _phi[_j][_qp] * _test[_i][_qp];
+      }
     }
   }
 

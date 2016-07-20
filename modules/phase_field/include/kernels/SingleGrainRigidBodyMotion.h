@@ -25,7 +25,6 @@ protected:
   virtual Real computeQpJacobian();
   virtual Real computeQpOffDiagJacobian(unsigned int jvar);
 
-  /// Grain number for the kernel to be applied
   unsigned int _op_index;
 };
 

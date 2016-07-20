@@ -63,6 +63,7 @@
   [./motion]
     type = MultiGrainRigidBodyMotion
     variable = w
+    grain_tracker_object = grain_center
     c = c
     v = eta
   [../]
@@ -72,6 +73,7 @@
   [../]
   [./vadv_eta]
     type = SingleGrainRigidBodyMotion
+    grain_tracker_object = grain_center
     variable = eta
     c = c
     v = eta
@@ -150,6 +152,7 @@
     type = GrainTracker
     variable = eta
     outputs = none
+    compute_op_maps = true
   [../]
   [./grain_force]
     type = ConstantGrainForceAndTorque
@@ -178,11 +181,12 @@
   nl_rel_tol = 1.0e-10
   start_time = 0.0
   dt = 0.5
-  num_steps = 1
+  num_steps = 10
 []
 
 [Outputs]
   exodus = true
+  file_base = out
 []
 
 [ICs]
