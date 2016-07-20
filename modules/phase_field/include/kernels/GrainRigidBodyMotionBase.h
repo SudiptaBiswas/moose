@@ -8,11 +8,12 @@
 #define GRAINRIGIDBODYMOTIONBASE_H
 
 #include "NonlocalKernel.h"
-#include "ComputeGrainCenterUserObject.h"
+// #include "ComputeGrainCenterUserObject.h"
 #include "GrainForceAndTorqueInterface.h"
 
 //Forward Declarations
 class GrainRigidBodyMotionBase;
+class GrainTrackerInterface;
 
 template<>
 InputParameters validParams<GrainRigidBodyMotionBase>();
@@ -34,6 +35,9 @@ protected:
   virtual Real computeQpNonlocalJacobian(dof_id_type /* dof_index */) { return 0.0; }
   virtual Real computeQpNonlocalOffDiagJacobian(unsigned int /* jvar */, dof_id_type /* dof_index */) { return 0.0; }
 
+  void getUserObjectCJacobians(dof_id_type dof_index, unsigned int grain_index);
+  void getUserObjectEtaJacobians(dof_id_type dof_index, unsigned int jvar_index, unsigned int grain_index);
+
   /// int label for the Concentration
   unsigned int _c_var;
 
@@ -53,11 +57,6 @@ protected:
   /// type of force density material
   std::string _base_name;
 
-  /// getting userobject for calculating grain centers and volumes
-  const ComputeGrainCenterUserObject & _grain_data;
-  const std::vector<Real> & _grain_volumes;
-  const std::vector<Point> & _grain_centers;
-
   /// getting userobject for calculating grain forces and torques
   const GrainForceAndTorqueInterface & _grain_force_torque;
   const std::vector<RealGradient> & _grain_forces;
@@ -70,6 +69,13 @@ protected:
 
   /// constant value corresponding to grain rotation
   Real _mr;
+  const GrainTrackerInterface & _grain_tracker;
+  unsigned int _grain_num;
+
+  RealGradient _force_c_jacobian;
+  RealGradient _torque_c_jacobian;
+  RealGradient _force_eta_jacobian;
+  RealGradient _torque_eta_jacobian;
 };
 
 #endif //GRAINRIGIDBODYMOTIONBASE_H
