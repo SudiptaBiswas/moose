@@ -57,7 +57,7 @@
     c = c
     v = 'eta0 eta1'
     grain_force = grain_force
-    grain_data = grain_center
+    grain_tracker_object = grain_center
   [../]
   [./eta0_dot]
     type = TimeDerivative
@@ -69,14 +69,13 @@
     c = c
     v = 'eta0 eta1'
     grain_force = grain_force
-    grain_data = grain_center
+    grain_tracker_object = grain_center
     op_index = 0
   [../]
   [./acint_eta0]
     type = ACInterface
     variable = eta0
     mob_name = M
-    #args = c
     kappa_name = kappa_eta
   [../]
   [./acbulk_eta0]
@@ -97,13 +96,12 @@
     v = 'eta0 eta1'
     op_index = 1
     grain_force = grain_force
-    grain_data = grain_center
+    grain_tracker_object = grain_center
   [../]
   [./acint_eta1]
     type = ACInterface
     variable = eta1
     mob_name = M
-    #args = c
     kappa_name = kappa_eta
   [../]
   [./acbulk_eta1]
@@ -140,6 +138,18 @@
 [AuxVariables]
   [./bnds]
   [../]
+  [./unique_grains]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./var_indices]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./centroids]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./df00]
     order = CONSTANT
     family = MONOMIAL
@@ -165,6 +175,27 @@
     var_name_base = eta
     op_num = 2.0
     v = 'eta0 eta1'
+  [../]
+  [./unique_grains]
+    type = FeatureFloodCountAux
+    variable = unique_grains
+    execute_on = 'initial timestep_end'
+    bubble_object = grain_center
+    field_display = UNIQUE_REGION
+  [../]
+  [./var_indices]
+    type = FeatureFloodCountAux
+    variable = var_indices
+    execute_on = 'initial timestep_end'
+    bubble_object = grain_center
+    field_display = VARIABLE_COLORING
+  [../]
+  [./centroids]
+    type = FeatureFloodCountAux
+    variable = centroids
+    execute_on = 'initial timestep_end'
+    bubble_object = grain_center
+    field_display = CENTROID
   [../]
   [./df01]
     type = MaterialStdVectorRealGradientAux
@@ -233,10 +264,6 @@
 []
 
 [VectorPostprocessors]
-  [./centers]
-    type = GrainCentersPostprocessor
-    grain_data = grain_center
-  [../]
   [./forces]
     type = GrainForcesPostprocessor
     grain_force = grain_force
@@ -246,8 +273,12 @@
 [UserObjects]
   [./grain_center]
     type = GrainTracker
-    variable = 'eta0 eta1'
     outputs = none
+    compute_op_maps = true
+    calculate_feature_volumes = true
+    execute_on = 'initial timestep_begin'
+    #flood_entity_type = NODAL
+    #execute_on = 'INITIAL linear TIMESTEP_END'
   [../]
   [./grain_force]
     type = ComputeGrainForceAndTorque
@@ -256,6 +287,23 @@
     force_density = force_density
     c = c
     etas = 'eta0 eta1'
+  [../]
+[]
+
+[Postprocessors]
+  #[./grain_tracker]
+  #  type = FeatureFloodCount
+  #  variable = 'eta0 eta1'
+  #  threshold = 0.1
+  #  execute_on = timestep_end
+  #  use_single_map = false
+  #  enable_var_coloring = true
+  #  condense_map_info = true
+  #  flood_entity_type = NODAL
+  #[../]
+  [./DOFs]
+    type = NumDOFs
+    execute_on = 'initial timestep_end'
   [../]
 []
 
@@ -270,14 +318,45 @@
   type = Transient
   scheme = bdf2
   solve_type = NEWTON
+  #petsc_options = '-snes_test_display'
+  #petsc_options_iname = '-snes_type'
+  #petsc_options_value = 'test'
   petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
   petsc_options_value = 'asm         31   preonly   lu      1'
   l_max_its = 30
   l_tol = 1.0e-4
   nl_rel_tol = 1.0e-10
   start_time = 0.0
-  num_steps = 1
+  num_steps = 4
   dt = 0.1
+[]
+
+[Adaptivity]
+  marker = error_marker
+  max_h_level = 1
+  [./Markers]
+    active = 'error_marker'
+    [./bnds_marker]
+      type = ValueThresholdMarker
+      invert = true
+      refine = 0.85
+      coarsen = 0.975
+      third_state = DO_NOTHING
+      variable = bnds
+    [../]
+    [./error_marker]
+      type = ErrorFractionMarker
+      coarsen = 0.1
+      indicator = bnds_error
+      refine = 0.7
+    [../]
+  [../]
+  [./Indicators]
+    [./bnds_error]
+      type = GradientJumpIndicator
+      variable = bnds
+    [../]
+  [../]
 []
 
 [Outputs]

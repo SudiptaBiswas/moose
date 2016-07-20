@@ -54,7 +54,7 @@ protected:
   /// provide UserObject for calculating grain volumes and centers
   unsigned int _op_num;
   const GrainTrackerInterface & _grain_tracker;
-  unsigned int _ncrys;
+  unsigned int _grain_num;
   unsigned int _ncomp;
   // unsigned int _num_etas;
 

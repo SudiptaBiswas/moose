@@ -8,11 +8,12 @@
 #define GRAINRIGIDBODYMOTIONBASE_H
 
 #include "NonlocalKernel.h"
-#include "ComputeGrainCenterUserObject.h"
+// #include "ComputeGrainCenterUserObject.h"
 #include "GrainForceAndTorqueInterface.h"
 
 //Forward Declarations
 class GrainRigidBodyMotionBase;
+class GrainTrackerInterface;
 
 template<>
 InputParameters validParams<GrainRigidBodyMotionBase>();
@@ -53,11 +54,6 @@ protected:
   /// type of force density material
   std::string _base_name;
 
-  /// getting userobject for calculating grain centers and volumes
-  const ComputeGrainCenterUserObject & _grain_data;
-  const std::vector<Real> & _grain_volumes;
-  const std::vector<Point> & _grain_centers;
-
   /// getting userobject for calculating grain forces and torques
   const GrainForceAndTorqueInterface & _grain_force_torque;
   const std::vector<RealGradient> & _grain_forces;
@@ -70,6 +66,8 @@ protected:
 
   /// constant value corresponding to grain rotation
   Real _mr;
+  const GrainTrackerInterface & _grain_tracker;
+  unsigned int _grain_num;
 };
 
 #endif //GRAINRIGIDBODYMOTIONBASE_H
