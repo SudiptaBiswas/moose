@@ -349,7 +349,7 @@ public:
   void prepareVariable(MooseVariable * var);
   void prepareNeighbor();
   void prepareBlock(unsigned int ivar, unsigned jvar, const std::vector<dof_id_type> & dof_indices);
-  void prepareBlockNonlocal(unsigned int ivar, unsigned jvar, const std::vector<dof_id_type> & idof_indices, const std::vector<dof_id_type> & jdof_indices);
+  void prepareBlockNonlocal(unsigned int ivar, unsigned jvar, const std::vector<dof_id_type> & dof_indices);
   void prepareScalar();
   void prepareOffDiagScalar();
 
@@ -398,7 +398,7 @@ public:
   void addJacobian(SparseMatrix<Number> & jacobian);
   void addJacobianNonlocal(SparseMatrix<Number> & jacobian);
   void addJacobianBlock(SparseMatrix<Number> & jacobian, unsigned int ivar, unsigned int jvar, const DofMap & dof_map, std::vector<dof_id_type> & dof_indices);
-  void addJacobianBlockNonlocal(SparseMatrix<Number> & jacobian, unsigned int ivar, unsigned int jvar, const DofMap & dof_map, std::vector<dof_id_type> & idof_indices, std::vector<dof_id_type> & jdof_indices);
+  void addJacobianBlockNonlocal(SparseMatrix<Number> & jacobian, unsigned int ivar, unsigned int jvar, const DofMap & dof_map, std::vector<dof_id_type> & dof_indices);
   void addJacobianNeighbor(SparseMatrix<Number> & jacobian);
   void addJacobianNeighbor(SparseMatrix<Number> & jacobian, unsigned int ivar, unsigned int jvar, const DofMap & dof_map, std::vector<dof_id_type> & dof_indices, std::vector<dof_id_type> & neighbor_dof_indices);
   void addJacobianScalar(SparseMatrix<Number> & jacobian);

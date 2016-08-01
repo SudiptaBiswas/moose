@@ -6,13 +6,13 @@
   [../]
 
   [./simple_shape_element_uo]
-    type = RunApp
+    type = PetscJacobianTester
     input = 'simple_shape_element_uo_test.i'
     recover = false
   [../]
 
   [./jacobian]
-    type = PetscJacobianTester
+    type = RunApp
     input = 'jacobian.i'
     recover = false
   [../]

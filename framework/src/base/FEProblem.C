@@ -770,19 +770,13 @@ FEProblem::prepare(const Elem * elem, unsigned int ivar, unsigned int jvar, cons
   _aux.prepare(tid);
   _assembly[tid]->prepareBlock(ivar, jvar, dof_indices);
   if (_has_nonlocal_coupling)
-  {
-    MooseVariable & jv = getVariable(tid, _nl.getVariableNames()[jvar]);
-    _assembly[tid]->prepareBlockNonlocal(ivar, jvar, dof_indices, jv.allDofIndices());
-  }
+    _assembly[tid]->prepareBlockNonlocal(ivar, jvar, dof_indices);
 
   if (_displaced_problem != NULL && (_reinit_displaced_elem || _reinit_displaced_face))
   {
     _displaced_problem->prepare(_displaced_mesh->elemPtr(elem->id()), ivar, jvar, dof_indices, tid);
     if (_has_nonlocal_coupling)
-    {
-      MooseVariable & jv = getVariable(tid, _nl.getVariableNames()[jvar]);
-      _displaced_problem->prepareBlockNonlocal(ivar, jvar, dof_indices, jv.allDofIndices(), tid);
-    }
+      _displaced_problem->prepareBlockNonlocal(ivar, jvar, dof_indices, tid);
   }
 }
 
@@ -954,19 +948,13 @@ FEProblem::addJacobianBlock(SparseMatrix<Number> & jacobian, unsigned int ivar, 
 {
   _assembly[tid]->addJacobianBlock(jacobian, ivar, jvar, dof_map, dof_indices);
   if (_has_nonlocal_coupling)
-  {
-    MooseVariable & jv = getVariable(tid, _nl.getVariableNames()[jvar]);
-    _assembly[tid]->addJacobianBlockNonlocal(jacobian, ivar, jvar, dof_map, dof_indices, jv.allDofIndices());
-  }
+    _assembly[tid]->addJacobianBlockNonlocal(jacobian, ivar, jvar, dof_map, dof_indices);
 
   if (_displaced_problem)
   {
     _displaced_problem->addJacobianBlock(jacobian, ivar, jvar, dof_map, dof_indices, tid);
     if (_has_nonlocal_coupling)
-    {
-      MooseVariable & jv = getVariable(tid, _nl.getVariableNames()[jvar]);
-      _displaced_problem->addJacobianBlockNonlocal(jacobian, ivar, jvar, dof_map, dof_indices, jv.allDofIndices(), tid);
-    }
+      _displaced_problem->addJacobianBlockNonlocal(jacobian, ivar, jvar, dof_map, dof_indices, tid);
   }
 }
 

@@ -4,9 +4,9 @@
 
 [Mesh]
   type = GeneratedMesh
-  dim = 2
+  dim = 1
   nx = 2
-  ny = 2
+  #ny = 2
 []
 
 [Variables]
@@ -68,8 +68,8 @@
   [./smp]
     type = SMP
     #full = true
-    off_diag_row = ' w w'
-    off_diag_column = 'u v'
+    off_diag_row =    'u'
+    off_diag_column = 'v'
   [../]
 []
 

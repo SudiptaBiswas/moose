@@ -68,14 +68,3 @@ ExampleShapeElementKernel::computeQpNonlocalOffDiagJacobian(unsigned int jvar, d
 
   return 0.0;
 }
-
-Real
-ExampleShapeElementKernel::computeQpNonlocalOffDiagJacobian(unsigned int jvar, dof_id_type dof_index)
-{
-  if (jvar == _v_var)
-    return _test[_i][_qp] * _shp_jacobian[dof_index];
-  if (jvar == _u_var)
-    return _test[_i][_qp] * _shp_jacobian[dof_index];
-
-  return 0.0;
-}

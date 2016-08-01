@@ -56,7 +56,7 @@ NonlocalKernel::computeJacobian()
       auto it = local_dofindices.find(var_alldofindices[_k]);
       if (it == local_dofindices.end()) // eleminating the local components
         for (_qp = 0; _qp < _qrule->n_points(); _qp++)
-          _nonlocal_ke(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalJacobian(var_alldofindices[_k]);
+          _nonlocal_ke(_i, var_alldofindices[_k]) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalJacobian(var_alldofindices[_k]);
     }
   keg += _nonlocal_ke;
 }
@@ -64,16 +64,19 @@ NonlocalKernel::computeJacobian()
 void
 NonlocalKernel::computeOffDiagJacobian(unsigned int jvar)
 {
-  Kernel::computeOffDiagJacobian(jvar);
+  if (jvar == _var.number())
+    computeJacobian();
+  else
+  {
+    Kernel::computeOffDiagJacobian(jvar);
 
-  MooseVariable & jv = _sys.getVariable(_tid, jvar);
-
-  DenseMatrix<Number> & keg = _assembly.jacobianBlockNonlocal(_var.number(), jvar);
-  // compiling set of global IDs for the local DOFs on the element
-  std::set<dof_id_type> local_dofindices(jv.dofIndices().begin(), jv.dofIndices().end());
-  // storing the global IDs for all the DOFs of the variable
-  std::vector<dof_id_type> jv_alldofindices(jv.allDofIndices());
-  unsigned int n_total_dofs = jv_alldofindices.size();
+    MooseVariable & jv = _sys.getVariable(_tid, jvar);
+    DenseMatrix<Number> & keg = _assembly.jacobianBlockNonlocal(_var.number(), jvar);
+    // compiling set of global IDs for the local DOFs on the element
+    std::set<dof_id_type> local_dofindices(jv.dofIndices().begin(), jv.dofIndices().end());
+    // storing the global IDs for all the DOFs of the variable
+    std::vector<dof_id_type> jv_alldofindices(jv.allDofIndices());
+    unsigned int n_total_dofs = jv_alldofindices.size();
 
     for (_i = 0; _i < _test.size(); _i++)
       for (_k = 0; _k < n_total_dofs; _k++)
@@ -81,7 +84,7 @@ NonlocalKernel::computeOffDiagJacobian(unsigned int jvar)
         auto it = local_dofindices.find(jv_alldofindices[_k]);
         if (it == local_dofindices.end()) // eleminating the local components
           for (_qp = 0; _qp < _qrule->n_points(); _qp++)
-            keg(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalOffDiagJacobian(jvar, jv_alldofindices[_k]);
+            keg(_i, jv_alldofindices[_k]) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalOffDiagJacobian(jvar, jv_alldofindices[_k]);
       }
   }
 }

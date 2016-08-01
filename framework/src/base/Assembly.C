@@ -991,7 +991,7 @@ Assembly::prepareNonlocal()
     unsigned int vi = ivar.number();
     unsigned int vj = jvar.number();
 
-    jacobianBlockNonlocal(vi,vj).resize(ivar.dofIndices().size(), jvar.allDofIndices().size());
+    jacobianBlockNonlocal(vi,vj).resize(ivar.dofIndices().size(), _dof_map.n_dofs());
     jacobianBlockNonlocal(vi,vj).zero();
     _jacobian_block_nonlocal_used[vi][vj] = 0;
   }
@@ -1011,7 +1011,7 @@ Assembly::prepareVariable(MooseVariable * var)
     if (vi == var->number() || vj == var->number())
     {
       jacobianBlock(vi,vj).resize(ivar.dofIndices().size(), jvar.dofIndices().size());
-      jacobianBlockNonlocal(vi,vj).resize(ivar.dofIndices().size(), jvar.allDofIndices().size());
+      jacobianBlockNonlocal(vi,vj).resize(ivar.dofIndices().size(), _dof_map.n_dofs());
     }
   }
 
@@ -1069,9 +1069,9 @@ Assembly::prepareBlock(unsigned int ivar, unsigned int jvar, const std::vector<d
 }
 
 void
-Assembly::prepareBlockNonlocal(unsigned int ivar, unsigned int jvar, const std::vector<dof_id_type> & idof_indices, const std::vector<dof_id_type> & jdof_indices)
+Assembly::prepareBlockNonlocal(unsigned int ivar, unsigned int jvar, const std::vector<dof_id_type> & dof_indices)
 {
-  jacobianBlockNonlocal(ivar,jvar).resize(idof_indices.size(), jdof_indices.size());
+  jacobianBlockNonlocal(ivar,jvar).resize(dof_indices.size(), _dof_map.n_dofs());
   jacobianBlockNonlocal(ivar,jvar).zero();
   _jacobian_block_nonlocal_used[ivar][jvar] = 0;
 }
@@ -1477,11 +1477,14 @@ Assembly::addJacobian(SparseMatrix<Number> & jacobian)
 void
 Assembly::addJacobianNonlocal(SparseMatrix<Number> & jacobian)
 {
+  std::vector<dof_id_type> jdof_indices(_dof_map.n_dofs());
+  for (unsigned int i = 0; i < _dof_map.n_dofs(); ++i)
+    jdof_indices[i] = i;
   const std::vector<MooseVariable *> & vars = _sys.getVariables(_tid);
   for (const auto & ivar : vars)
     for (const auto & jvar : vars)
       if ((*_cm)(ivar->number(), jvar->number()) != 0 && _jacobian_block_nonlocal_used[ivar->number()][jvar->number()])
-        addJacobianBlock(jacobian, jacobianBlockNonlocal(ivar->number(), jvar->number()), ivar->dofIndices(), jvar->allDofIndices(), ivar->scalingFactor());
+        addJacobianBlock(jacobian, jacobianBlockNonlocal(ivar->number(), jvar->number()), ivar->dofIndices(), jdof_indices, ivar->scalingFactor());
 }
 
 void
@@ -1546,11 +1549,14 @@ Assembly::cacheJacobian()
 void
 Assembly::cacheJacobianNonlocal()
 {
+  std::vector<dof_id_type> jdof_indices(_dof_map.n_dofs());
+  for (unsigned int i = 0; i < _dof_map.n_dofs(); ++i)
+    jdof_indices[i] = i;
   const std::vector<MooseVariable *> & vars = _sys.getVariables(_tid);
   for (const auto & ivar : vars)
     for (const auto & jvar : vars)
       if ((*_cm)(ivar->number(), jvar->number()) != 0 && _jacobian_block_nonlocal_used[ivar->number()][jvar->number()])
-        cacheJacobianBlockNonlocal(jacobianBlockNonlocal(ivar->number(), jvar->number()), ivar->dofIndices(), jvar->allDofIndices(), ivar->scalingFactor());
+        cacheJacobianBlockNonlocal(jacobianBlockNonlocal(ivar->number(), jvar->number()), ivar->dofIndices(), jdof_indices, ivar->scalingFactor());
 }
 
 void
@@ -1588,12 +1594,14 @@ Assembly::addJacobianBlock(SparseMatrix<Number> & jacobian, unsigned int ivar, u
 }
 
 void
-Assembly::addJacobianBlockNonlocal(SparseMatrix<Number> & jacobian, unsigned int ivar, unsigned int jvar, const DofMap & dof_map, std::vector<dof_id_type> & idof_indices, std::vector<dof_id_type> & jdof_indices)
+Assembly::addJacobianBlockNonlocal(SparseMatrix<Number> & jacobian, unsigned int ivar, unsigned int jvar, const DofMap & dof_map, std::vector<dof_id_type> & dof_indices)
 {
   DenseMatrix<Number> & keg = jacobianBlockNonlocal(ivar, jvar);
 
-  std::vector<dof_id_type> di(idof_indices);
-  std::vector<dof_id_type> dg(jdof_indices);
+  std::vector<dof_id_type> di(dof_indices);
+  std::vector<dof_id_type> dg(_dof_map.n_dofs());
+  for (unsigned int i = 0; i < _dof_map.n_dofs(); ++i)
+    dg[i] = i;
   dof_map.constrain_element_matrix(keg, di, dg, false);
 
   Real scaling_factor = _sys.getVariable(_tid, ivar).scalingFactor();
