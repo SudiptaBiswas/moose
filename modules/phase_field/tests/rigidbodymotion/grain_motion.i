@@ -65,6 +65,8 @@
     variable = w
     c = c
     v = eta
+    grain_data = grain_center
+    grain_force = grain_force
   [../]
   [./eta_dot]
     type = TimeDerivative
@@ -75,6 +77,8 @@
     variable = eta
     c = c
     v = eta
+    grain_data = grain_center
+    grain_force = grain_force
   [../]
   [./acint_eta]
     type = ACInterface
@@ -149,11 +153,11 @@
   [./grain_center]
     type = ComputeGrainCenterUserObject
     etas = eta
-    execute_on = 'initial timestep_end'
+    execute_on = 'initial timestep_begin'
   [../]
   [./grain_force]
     type = ConstantGrainForceAndTorque
-    execute_on = 'initial timestep_end'
+    execute_on = 'initial linear nonlinear'
     force = '0.5 0.0 0.0 '
     torque = '0.0 0.0 10.0 '
   [../]
@@ -170,7 +174,7 @@
   type = Transient
   nl_max_its = 30
   scheme = bdf2
-  solve_type = PJFNK
+  solve_type = NEWTON
   petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
   petsc_options_value = 'asm         31   preonly   lu      1'
   l_max_its = 30
