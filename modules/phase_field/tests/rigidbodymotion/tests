@@ -5,18 +5,6 @@
     exodiff = 'grain_center_out.e'
   [../]
 
-  [./grain_force]
-    type = 'Exodiff'
-    input = 'grain_constforce.i'
-    exodiff = 'grain_constforce_out.e'
-  [../]
-
-  [./grain_advection]
-    type = 'Exodiff'
-    input = 'grain_advection_constforce.i'
-    exodiff = 'grain_advection_constforce_out.e'
-  [../]
-
   [./grain_motion]
     type = 'Exodiff'
     input = 'grain_motion.i'
