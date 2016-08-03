@@ -6,12 +6,13 @@
   xmax = 1000
   ymax = 1000
   elem_type = QUAD4
-  uniform_refine = 2
+  uniform_refine = 3
 []
 
 [GlobalParams]
   op_num = 2
   var_name_base = gr
+  displacements = 'disp_x disp_y'
 []
 
 [Variables]
@@ -71,6 +72,21 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./stress_yy]
+    order = CONSTANT
+    family = MONOMIAL
+    block = 0
+  [../]
+  [./peeq]
+    order = CONSTANT
+    family = MONOMIAL
+    block = 0
+  [../]
+  [./fp_yy]
+    order = CONSTANT
+    family = MONOMIAL
+    block = 0
+  [../]
 []
 
 [Kernels]
@@ -80,6 +96,7 @@
   [../]
   [./TensorMechanics]
     displacements = 'disp_x disp_y'
+    use_displaced_mesh = true
   [../]
 []
 
@@ -151,14 +168,45 @@
     GrainTracker_object = grain_tracker
     output_euler_angle = 'phi1'
   [../]
+  [./stress_yy]
+    type = RankTwoAux
+    variable = stress_yy
+    rank_two_tensor = stress
+    index_j = 1
+    index_i = 1
+    execute_on = timestep_end
+    block = 0
+  [../]
+  [./fp_yy]
+    type = RankTwoAux
+    variable = fp_yy
+    rank_two_tensor = fp
+    index_j = 1
+    index_i = 1
+    execute_on = timestep_end
+    block = 0
+  [../]
+  [./peeq]
+    type = MaterialRealAux
+    variable = peeq
+    property = ep_eqv
+    execute_on = timestep_end
+    block = 0
+  [../]
 []
 
 [BCs]
-  [./top_displacement]
-    type = PresetBC
+  #[./top_displacement]
+  #  type = PresetBC
+  #  variable = disp_y
+  #  boundary = top
+  #  value = -10.0
+  #[../]
+  [./tdisp]
+    type = FunctionPresetBC
     variable = disp_y
     boundary = top
-    value = -10.0
+    function = '0.01*t'
   [../]
   [./x_anchor]
     type = PresetBC
@@ -179,7 +227,7 @@
     type = GBEvolution
     block = 0
     T = 500 # K
-    wGB = 75 # nm
+    wGB = 7.5 # nm
     GBmob0 = 2.5e-6 #m^4/(Js) from Schoenfelder 1997
     Q = 0.23 #Migration energy in eV
     GBenergy = 0.708 #GB energy in J/m^2
@@ -195,14 +243,30 @@
     grain_num = 2
     euler_angle_provider = euler_angle_file
   [../]
+  #[./strain]
+  #  type = ComputeSmallStrain
+  #  block = 0
+  #  displacements = 'disp_x disp_y'
+  #[../]
+  #[./stress]
+  #  type = ComputeLinearElasticStress
+  #  block = 0
+  #[../]
   [./strain]
-    type = ComputeSmallStrain
+    type = ComputeFiniteStrain
     block = 0
-    displacements = 'disp_x disp_y'
   [../]
-  [./stress]
-    type = ComputeLinearElasticStress
+  [./viscop]
+    type = FiniteStrainHyperElasticViscoPlastic
     block = 0
+    resid_abs_tol = 1e-18
+    resid_rel_tol = 1e-8
+    maxiters = 50
+    max_substep_iteration = 5
+    flow_rate_user_objects = 'flowrate'
+    strength_user_objects = 'flowstress'
+    internal_var_user_objects = 'ep_eqv'
+    internal_var_rate_user_objects = 'ep_eqv_rate'
   [../]
 []
 
@@ -219,6 +283,27 @@
     type = EulerAngleFileReader
     file_name = test.tex
   [../]
+  [./flowstress]
+    type = HEVPLinearHardening
+    yield_stress = 0.3
+    slope = 1
+    intvar_prop_name = ep_eqv
+  [../]
+  [./flowrate]
+    type = HEVPFlowRatePowerLawJ2
+    reference_flow_rate = 0.0001
+    flow_rate_exponent = 10.0
+    flow_rate_tol = 1
+    strength_prop_name = flowstress
+  [../]
+  [./ep_eqv]
+     type = HEVPEqvPlasticStrain
+     intvar_rate_prop_name = ep_eqv_rate
+  [../]
+  [./ep_eqv_rate]
+     type = HEVPEqvPlasticStrainRate
+     flow_rate_prop_name = flowrate
+  [../]
 []
 
 [Postprocessors]
@@ -228,6 +313,21 @@
   [./gr0_area]
     type = ElementIntegralVariablePostprocessor
     variable = gr0
+  [../]
+  [./stress_yy]
+    type = ElementAverageValue
+    variable = stress_yy
+    #block = 'ANY_BLOCK_ID 0'
+  [../]
+  [./fp_zz]
+    type = ElementAverageValue
+    variable = fp_yy
+    #block = 'ANY_BLOCK_ID 0'
+  [../]
+  [./peeq]
+    type = ElementAverageValue
+    variable = peeq
+    #block = 'ANY_BLOCK_ID 0'
   [../]
 []
 
@@ -249,17 +349,18 @@
   l_tol = 1e-4
   nl_max_its = 30
   nl_rel_tol = 1e-9
+  nl_abs_tol = 1e-8
 
   start_time = 0.0
-  num_steps = 200
+  num_steps = 2000
   dt = 0.02
 
-  [./Adaptivity]
-   initial_adaptivity = 2
-    refine_fraction = 0.7
-    coarsen_fraction = 0.1
-    max_h_level = 2
-  [../]
+  #[./Adaptivity]
+  # initial_adaptivity = 2
+  #  refine_fraction = 0.7
+  #  coarsen_fraction = 0.1
+  #  max_h_level = 2
+  #[../]
 []
 
 [Outputs]

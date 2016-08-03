@@ -215,7 +215,7 @@
   l_max_its = 20
 
   dt = 1
-  num_steps = 5
+  num_steps = 50
 []
 
 [Preconditioning]

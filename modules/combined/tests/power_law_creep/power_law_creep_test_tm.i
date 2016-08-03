@@ -250,8 +250,8 @@
   nl_abs_tol = 1e-6
   l_tol = 1e-5
   start_time = 0.0
-  end_time = 1.0
-  num_steps = 10
+  #end_time = 1.0
+  num_steps = 100
   dt = 1.e-1
 []
 

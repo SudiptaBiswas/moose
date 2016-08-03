@@ -154,11 +154,17 @@
 []
 
 [BCs]
-  [./top_displacement]
-    type = PresetBC
+  #[./top_displacement]
+  #  type = PresetBC
+  #  variable = disp_y
+  #  boundary = top
+  #  value = -10.0
+  #[../]
+  [./tdisp]
+    type = FunctionPresetBC
     variable = disp_y
     boundary = top
-    value = -10.0
+    function = '0.01*t'
   [../]
   [./x_anchor]
     type = PresetBC
