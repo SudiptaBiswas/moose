@@ -63,6 +63,11 @@ MooseVariableBase::allDofIndices()
   }
   _all_dof_indices.assign(all_dofs.begin(), all_dofs.end());
 
+  // AllLocalDofIndicesThread aldit(_sys.system(), { name() });
+  // ConstElemRange & elem_range = *_mesh.getActiveLocalElementRange();
+  // Threads::parallel_reduce(elem_range, aldit);
+  // _all_dof_indices.assign(aldit._all_dof_indices.begin(), aldit._all_dof_indices.end());
+
   return _all_dof_indices;
 }
 

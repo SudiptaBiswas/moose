@@ -38,6 +38,7 @@
 class DisplacedProblem;
 class FEProblem;
 class MooseMesh;
+class SystemBase;
 class NonlinearSystem;
 class RandomInterface;
 class RandomData;
@@ -260,6 +261,7 @@ public:
    * @return Flag indicating nonlocal coupling exists or not.
    */
   void checkNonlocalCoupling();
+  void checkUserObjectJacobianRequirement();
 
   virtual Assembly & assembly(THREAD_ID tid) override { return *_assembly[tid]; }
 
@@ -1204,6 +1206,9 @@ protected:
   /// Indicates if nonlocal coupling is required/exists
   bool _requires_nonlocal_coupling;
   bool _has_nonlocal_coupling;
+  bool _calculate_jacobian_in_UO;
+
+  std::vector<MooseVariable *> _jacobian_moose_vars;
 
   SolverParams _solver_params;
 
@@ -1241,6 +1246,8 @@ protected:
   /// PETSc option storage
   Moose::PetscSupport::PetscOptions _petsc_options;
 #endif //LIBMESH_HAVE_PETSC
+
+std::map<std::string, std::vector<dof_id_type> > _var_dof_map;
 
 private:
   bool _use_legacy_uo_aux_computation;

@@ -26,10 +26,9 @@ InputParameters validParams<ShapeElementUserObject>()
 
 ShapeElementUserObject::ShapeElementUserObject(const InputParameters & parameters) :
     ElementUserObject(parameters),
+    _compute_jacobians(getParam<bool>("compute_jacobians")),
     _phi(_assembly.phi()),
-    _grad_phi(_assembly.gradPhi()),
-    // _currently_computing_jacobian(_fe_problem.currentlyComputingJacobian()),
-    _compute_jacobians(getParam<bool>("compute_jacobians"))
+    _grad_phi(_assembly.gradPhi())
 {
   // mooseWarning("Jacobian calculation in UserObjects is an experimental capability with a potentially unstable interface.");
 }

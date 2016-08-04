@@ -19,6 +19,7 @@
 #include "Factory.h"
 #include "MooseUtils.h"
 #include "DisplacedProblem.h"
+#include "SystemBase.h"
 #include "MaterialData.h"
 #include "ComputeUserObjectsThread.h"
 #include "ComputeNodalUserObjectsThread.h"
@@ -73,6 +74,7 @@
 #include "XFEMInterface.h"
 #include "ConsoleUtils.h"
 #include "NonlocalKernel.h"
+#include "ShapeElementUserObject.h"
 
 #include "libmesh/exodusII_io.h"
 #include "libmesh/quadrature.h"
@@ -141,6 +143,7 @@ FEProblem::FEProblem(const InputParameters & parameters) :
     _has_jacobian(false),
     _requires_nonlocal_coupling(false),
     _has_nonlocal_coupling(false),
+    _calculate_jacobian_in_UO(false),
     _kernel_coverage_check(false),
     _material_coverage_check(false),
     _max_qps(std::numeric_limits<unsigned int>::max()),
@@ -334,6 +337,14 @@ void FEProblem::initialSetup()
 
   // Check whether nonlocal couling is required or not
   checkNonlocalCoupling();
+  checkUserObjectJacobianRequirement();
+
+  if (_calculate_jacobian_in_UO)
+    for (unsigned int i = 0; i < _jacobian_moose_vars.size(); ++i)
+    {
+      VariableName jacobian_var = _jacobian_moose_vars[i]->name();
+      _var_dof_map[jacobian_var] = _nl.getVariableGlobalDoFs(jacobian_var);
+    }
 
   // Perform output related setups
   _app.getOutputWarehouse().initialSetup();
@@ -481,7 +492,6 @@ void FEProblem::initialSetup()
       // Call initialSetup on both Material and Material objects
       _all_materials.initialSetup(tid);
     }
-
 
     ConstElemRange & elem_range = *_mesh.getActiveLocalElementRange();
     ComputeMaterialsObjectThread cmt(*this, _nl, _material_data, _bnd_material_data, _neighbor_material_data,
@@ -729,6 +739,24 @@ FEProblem::checkNonlocalCoupling()
         _nonlocal_kernels.addObject(kernel, tid);
       }
     }
+  }
+}
+
+void
+FEProblem::checkUserObjectJacobianRequirement()
+{
+  std::set<MooseVariable *> jacobian_moose_vars;
+  const std::vector<MooseSharedPointer<ElementUserObject> > & e_objects = _elemental_user_objects.getActiveObjects();
+  for (auto it = e_objects.begin(); it != e_objects.end(); ++it)
+  {
+    MooseSharedPointer<ShapeElementUserObject> shape_element_uo = MooseSharedNamespace::dynamic_pointer_cast<ShapeElementUserObject>(*it);
+    if (shape_element_uo)
+    {
+      _calculate_jacobian_in_UO = shape_element_uo->_compute_jacobians;
+      const std::set<MooseVariable *> & mv_deps = shape_element_uo->jacobianMooseVariables();
+      jacobian_moose_vars.insert(mv_deps.begin(), mv_deps.end());
+    }
+    _jacobian_moose_vars.assign(jacobian_moose_vars.begin(), jacobian_moose_vars.end());
   }
 }
 

@@ -62,6 +62,7 @@
 #include "Predictor.h"
 #include "Assembly.h"
 #include "ElementPairLocator.h"
+#include "AllLocalDofIndicesThread.h"
 
 // libMesh
 #include "libmesh/nonlinear_solver.h"
@@ -2056,6 +2057,17 @@ NonlinearSystem::computeJacobianInternal(SparseMatrix<Number> &  jacobian)
 
   if (hasDiagSaveIn())
     _fe_problem.getAuxiliarySystem().update();
+}
+
+std::vector<dof_id_type>
+NonlinearSystem::getVariableGlobalDoFs(std::string var_name)
+{
+  AllLocalDofIndicesThread aldit(system(), { var_name });
+  ConstElemRange & elem_range = *_mesh.getActiveLocalElementRange();
+  Threads::parallel_reduce(elem_range, aldit);
+  _var_all_dof_indices.assign(aldit._all_dof_indices.begin(), aldit._all_dof_indices.end());
+
+  return _var_all_dof_indices;
 }
 
 void

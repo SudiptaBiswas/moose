@@ -47,6 +47,8 @@ public:
    */
   virtual void executeJacobianWrapper(unsigned int jvar, const std::vector<dof_id_type> & dof_indices);
 
+  const bool _compute_jacobians;
+
 protected:
   /**
    * Implement this function to compute Jacobian terms for this UserObject. The
@@ -78,7 +80,6 @@ protected:
   // const bool _currently_computing_jacobian;
 
 private:
-  const bool _compute_jacobians;
   std::set<MooseVariable *> _jacobian_moose_variables;
 };
 
