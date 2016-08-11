@@ -33,6 +33,9 @@ public:
   virtual void computeOffDiagJacobian(unsigned int jvar) override;
   virtual void computeOffDiagJacobianScalar(unsigned int jvar) override;
 
+  virtual void computeNonlocalJacobian() override {}
+  virtual void computeNonlocalOffDiagJacobian(unsigned int /* jvar */) override {}
+
 protected:
   /// Compute this Kernel's contribution to the residual at the current quadrature point
   virtual Real computeQpResidual() = 0;
