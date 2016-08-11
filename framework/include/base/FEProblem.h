@@ -154,9 +154,13 @@ public:
   void setCouplingMatrix(CouplingMatrix * cm);
   CouplingMatrix * & couplingMatrix() { return _cm; }
 
+  void setNonlocalCouplingMatrix();
+  CouplingMatrix * & nonlocalCouplingMatrix() { return _nonlocal_cm; }
+
   bool areCoupled(unsigned int ivar, unsigned int jvar);
 
   std::vector<std::pair<MooseVariable *, MooseVariable *> > & couplingEntries(THREAD_ID tid);
+  std::vector<std::pair<MooseVariable *, MooseVariable *> > & nonlocalCouplingEntries(THREAD_ID tid);
 
   /**
    * Check for converence of the nonlinear solution
@@ -1065,7 +1069,6 @@ protected:
 
   Moose::CouplingType _coupling;                        ///< Type of variable coupling
   CouplingMatrix * _cm;                                 ///< Coupling matrix for variables. It is diagonal, since we do only block diagonal preconditioning.
-
   // Dimension of the subspace spanned by the vectors with a given prefix
   std::map<std::string,unsigned int> _subspace_dim;
 

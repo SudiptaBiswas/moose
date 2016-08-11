@@ -37,6 +37,8 @@ public:
   virtual void computeJacobian() override;
   virtual void computeOffDiagJacobian(unsigned int /*jvar*/) override {}
   virtual void computeOffDiagJacobianScalar(unsigned int /*jvar*/) override {}
+  virtual void computeNonlocalJacobian() override {}
+  virtual void computeNonlocalOffDiagJacobian(unsigned int /*jvar*/) override {}
 
   EigenKernel(const InputParameters & parameters);
   virtual bool enabled() override;

@@ -655,6 +655,13 @@ void FEProblem::initialSetup()
   _app.getOutputWarehouse().mooseConsole();
 
   Moose::perf_log.pop("initialSetup()", "Setup");
+
+  if (_calculate_jacobian_in_uo)
+  {
+    setNonlocalCouplingMatrix();
+    for (THREAD_ID tid = 0; tid < n_threads; ++tid)
+        _assembly[tid]->initNonlocalCoupling();
+  }
 }
 
 void FEProblem::timestepSetup()
@@ -691,7 +698,7 @@ void FEProblem::timestepSetup()
    // Timestep setup of output objects
   _app.getOutputWarehouse().timestepSetup();
 
-  if (_requires_nonlocal_coupling)
+  if (_calculate_jacobian_in_uo)
     if (_nonlocal_kernels.hasActiveObjects())
       _has_nonlocal_coupling = true;
 }
@@ -761,7 +768,8 @@ FEProblem::setVariableAllDoFMap(const std::vector<MooseVariable *> moose_vars)
   for (unsigned int i = 0; i < moose_vars.size(); ++i)
   {
     VariableName var_name = moose_vars[i]->name();
-    _var_dof_map[var_name] = _nl.getVariableGlobalDoFs(var_name);
+    _nl.setVariableGlobalDoFs(var_name);
+    _var_dof_map[var_name] = _nl.getVariableGlobalDoFs();
   }
 }
 
@@ -803,23 +811,21 @@ FEProblem::prepare(const Elem * elem, unsigned int ivar, unsigned int jvar, cons
   _aux.prepare(tid);
   _assembly[tid]->prepareBlock(ivar, jvar, dof_indices);
   if (_has_nonlocal_coupling)
-  {
-    MooseVariable & jv = _nl.getVariable(tid, jvar);
-    const auto it = _var_dof_map.find(jv.name());
-    if (it != _var_dof_map.end())
+    if ((*_nonlocal_cm)(ivar, jvar) != 0)
+    {
+      MooseVariable & jv = _nl.getVariable(tid, jvar);
       _assembly[tid]->prepareBlockNonlocal(ivar, jvar, dof_indices, jv.allDofIndices());
-  }
+    }
 
   if (_displaced_problem != NULL && (_reinit_displaced_elem || _reinit_displaced_face))
   {
     _displaced_problem->prepare(_displaced_mesh->elemPtr(elem->id()), ivar, jvar, dof_indices, tid);
     if (_has_nonlocal_coupling)
-    {
-      MooseVariable & jv = _nl.getVariable(tid, jvar);
-      const auto it = _var_dof_map.find(jv.name());
-      if (it != _var_dof_map.end())
+      if ((*_nonlocal_cm)(ivar, jvar) != 0)
+      {
+        MooseVariable & jv = _nl.getVariable(tid, jvar);
         _displaced_problem->prepareBlockNonlocal(ivar, jvar, dof_indices, jv.allDofIndices(), tid);
-    }
+      }
   }
 }
 
@@ -991,23 +997,21 @@ FEProblem::addJacobianBlock(SparseMatrix<Number> & jacobian, unsigned int ivar, 
 {
   _assembly[tid]->addJacobianBlock(jacobian, ivar, jvar, dof_map, dof_indices);
   if (_has_nonlocal_coupling)
-  {
-    MooseVariable & jv = _nl.getVariable(tid, jvar);
-    const auto it = _var_dof_map.find(jv.name());
-    if (it != _var_dof_map.end())
+    if ((*_nonlocal_cm)(ivar, jvar) != 0)
+    {
+      MooseVariable & jv = _nl.getVariable(tid, jvar);
       _assembly[tid]->addJacobianBlockNonlocal(jacobian, ivar, jvar, dof_map, dof_indices, jv.allDofIndices());
-  }
+    }
 
   if (_displaced_problem)
   {
     _displaced_problem->addJacobianBlock(jacobian, ivar, jvar, dof_map, dof_indices, tid);
     if (_has_nonlocal_coupling)
-    {
-      MooseVariable & jv = _nl.getVariable(tid, jvar);
-      const auto it = _var_dof_map.find(jv.name());
-      if (it != _var_dof_map.end())
+      if ((*_nonlocal_cm)(ivar, jvar) != 0)
+      {
+        MooseVariable & jv = _nl.getVariable(tid, jvar);
         _displaced_problem->addJacobianBlockNonlocal(jacobian, ivar, jvar, dof_map, dof_indices, jv.allDofIndices(), tid);
-    }
+      }
   }
 }
 
@@ -3094,6 +3098,30 @@ FEProblem::setCouplingMatrix(CouplingMatrix * cm)
   _cm = cm;
 }
 
+void
+FEProblem::setNonlocalCouplingMatrix()
+{
+  unsigned int n_vars = _nl.nVariables();
+  _nonlocal_cm = new CouplingMatrix(n_vars);
+  const std::vector<MooseVariable *> & vars = _nl.getVariables(0);
+  const std::vector<MooseSharedPointer<KernelBase> > & nonlocal_kernel = _nonlocal_kernels.getObjects();
+  for (const auto & ivar : vars)
+    for (const auto & kernel : nonlocal_kernel)
+    {
+      unsigned int i = ivar->number();
+      if (i == kernel->variable().number())
+        for (const auto & jvar : vars)
+        {
+          const auto it = _var_dof_map.find(jvar->name());
+          if (it != _var_dof_map.end())
+          {
+            unsigned int j = jvar->number();
+            (*_nonlocal_cm)(i,j) = 1;
+          }
+        }
+    }
+}
+
 bool
 FEProblem::areCoupled(unsigned int ivar, unsigned int jvar)
 {
@@ -3104,6 +3132,12 @@ std::vector<std::pair<MooseVariable *, MooseVariable *> > &
 FEProblem::couplingEntries(THREAD_ID tid)
 {
   return _assembly[tid]->couplingEntries();
+}
+
+std::vector<std::pair<MooseVariable *, MooseVariable *> > &
+FEProblem::nonlocalCouplingEntries(THREAD_ID tid)
+{
+  return _assembly[tid]->nonlocalCouplingEntries();
 }
 
 void
@@ -3911,6 +3945,7 @@ FEProblem::meshChanged()
 
   if (_calculate_jacobian_in_uo)
     setVariableAllDoFMap(_uo_jacobian_moose_vars[0]);
+
   _has_jacobian = false;                    // we have to recompute jacobian when mesh changed
 
   for (const auto & mci : _notify_when_mesh_changes)
