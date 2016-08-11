@@ -12,37 +12,35 @@
 /*            See COPYRIGHT for full restrictions               */
 /****************************************************************/
 
-#ifndef NONLOCALKERNEL_H
-#define NONLOCALKERNEL_H
+#ifndef EXAMPLESHAPEELEMENTKERNEL_H
+#define EXAMPLESHAPEELEMENTKERNEL_H
 
-#include "Kernel.h"
+#include "NonlocalKernel.h"
+#include "ExampleShapeElementUserObject.h"
 
-class NonlocalKernel;
-
-template<>
-InputParameters validParams<NonlocalKernel>();
-
-/**
- * NonlocalKernel is used for solving integral terms in integro-differential equations.
- * Integro-differential equations includes spatial integral terms over variables in the domain.
- * In this case the jacobian calculation is not restricted to local dofs of an element, it requires
- * additional contributions from all the dofs in the domain. NonlocalKernel adds nonlocal jacobians
- * to the local jacobians calculated in kernels.
- */
-class NonlocalKernel : public Kernel
+class ExampleShapeElementKernel : public NonlocalKernel
 {
 public:
-  NonlocalKernel(const InputParameters & parameters);
-
-  virtual void computeNonlocalJacobian();
-  virtual void computeNonlocalOffDiagJacobian(unsigned int jvar);
+  ExampleShapeElementKernel(const InputParameters & parameters);
 
 protected:
-  /// Compute this Kernel's contribution to the Jacobian corresponding to nolocal dof at the current quadrature point
+  virtual Real computeQpResidual();
+  virtual Real computeQpJacobian();
+  virtual Real computeQpOffDiagJacobian(unsigned int jvar);
+  /// new method for on-diagonal jacobian contributions corresponding to non-local dofs
   virtual Real computeQpNonlocalJacobian(dof_id_type dof_index);
+  /// new method for off-diagonal jacobian contributions corresponding to non-local dofs
   virtual Real computeQpNonlocalOffDiagJacobian(unsigned int jvar, dof_id_type dof_index);
 
-  unsigned int _k;
+  const ExampleShapeElementUserObject & _shp;
+  const Real & _shp_integral;
+  const std::vector<Real> & _shp_jacobian;
+
+  unsigned int _v_var;
+  const std::vector<dof_id_type> & _v_dofs;
 };
 
-#endif /* NONLOCALKERNEL_H */
+template<>
+InputParameters validParams<ExampleShapeElementKernel>();
+
+#endif //EXAMPLESHAPEELEMENTKERNEL_H
