@@ -73,6 +73,12 @@ public:
   /// Computes d-residual / d-jvar... storing the result in Ke.
   virtual void computeOffDiagJacobian(unsigned int jvar) = 0;
 
+  /// Compute this Kernel's contribution to the diagonal Jacobian entries
+  virtual void computeNonlocalJacobian() = 0;
+
+  /// Computes d-residual / d-jvar... storing the result in Ke.
+  virtual void computeNonlocalOffDiagJacobian(unsigned int jvar) = 0;
+
   /**
    * Computes jacobian block with respect to a scalar variable
    * @param jvar The number of the scalar variable
