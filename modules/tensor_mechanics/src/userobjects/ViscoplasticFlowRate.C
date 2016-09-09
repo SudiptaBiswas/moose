@@ -50,7 +50,7 @@ ViscoplasticFlowRate::computeDirection(unsigned int qp, RankTwoTensor & val) con
 
   val.zero();
   if (eqv_stress > 0.0)
-    val = 1.5/eqv_stress * _ce[qp] * sdev;
+    val = 1.5/eqv_stress * _ce[qp] * sdev * _ce[qp];
 
   return true;
 }
@@ -91,5 +91,5 @@ ViscoplasticFlowRate::computeEqvStress(const RankTwoTensor & pk2, const RankTwoT
   RankTwoTensor sdiff = pk2 - back_stress;
   RankTwoTensor sdev = computeDeviatoricStress(sdiff, ce);
   Real val = sdev.doubleContraction(sdev.transpose());
-  return std::pow(1.5 * val, 0.5);
+  return std::sqrt(1.5 * val);
 }

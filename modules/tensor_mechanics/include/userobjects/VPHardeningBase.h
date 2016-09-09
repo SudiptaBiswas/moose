@@ -26,7 +26,7 @@ public:
 
   virtual bool computeValue(unsigned int, Real, Real &) const = 0;
   virtual bool computeTensorValue(unsigned int, Real, RankTwoTensor &) const = 0;
-  virtual bool computeDerivative(unsigned int, Real, const std::vector<std::string> &, Real &) const = 0;
+  virtual bool computeDerivative(unsigned int, Real, const std::string &, Real &) const = 0;
   virtual bool computeTensorDerivative(unsigned int, Real, const std::vector<std::string> &, RankTwoTensor &) const = 0;
 
   // // Use this if the hardening rate or flow rate is a tensor

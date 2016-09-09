@@ -5,6 +5,7 @@
 /*             See LICENSE for full restrictions                */
 /****************************************************************/
 #include "VPHardeningRateBase.h"
+#include "libmesh/utility.h"
 
 template<>
 InputParameters validParams<VPHardeningRateBase>()
