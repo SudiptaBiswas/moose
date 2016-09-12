@@ -24,18 +24,12 @@ class VPHardeningRateBase : public DiscreteElementUserObject
 public:
   VPHardeningRateBase(const InputParameters & parameters);
 
-  virtual bool computeValue(unsigned int, Real &) const = 0;
-  virtual bool computeTensorValue(unsigned int, Real &) const = 0;
-  virtual bool computeDerivative(unsigned int, const std::string &, Real &) const = 0;
-  virtual bool computeTensorDerivative(unsigned int, const std::string &, RankTwoTensor &) const = 0;
-  virtual bool computeDirection(unsigned int, RankTwoTensor &) const = 0;
-
-
-  // Use this if the hardening rate or flow rate is a tensor
-  // virtual bool computeValueT(unsigned int, RankTwoTensor &) const = 0;
-  // virtual bool computeDerivativeT(unsigned int, const std::string &, RankTwoTensor &) const = 0;
-  // virtual bool computeStressDerivativeT(unsigned int, RankTwoTensor &) const = 0;
-
+  virtual bool computeValue(unsigned int, Real &) const { return false; }
+  virtual bool computeTensorValue(unsigned int, RankTwoTensor &) const { return false; }
+  virtual bool computeDerivative(unsigned int, const std::string &, Real &) const { return false; }
+  virtual bool computeTensorDerivative(unsigned int, const std::string &, RankTwoTensor &) const { return false; }
+  virtual bool computeDirection(unsigned int, RankTwoTensor &) const { return false; }
+  virtual bool computeRankFourTensorDerivative(unsigned int, const std::string &, RankFourTensor &) const { return false; }
 
 protected:
   std::string _base_name;
@@ -51,10 +45,17 @@ protected:
 
   std::string _strength_prop_name;
   const MaterialProperty<Real> & _strength;
+
+  std::string _flow_rate_prop_name;
+  const MaterialProperty<Real> & _flow_rate;
+  /// The multiplier used in back stress calculation
+  const Real _C;
   std::string _pk2_prop_name;
   const MaterialProperty<RankTwoTensor> & _pk2;
   const MaterialProperty<RankTwoTensor> & _ce;
 
+  Real computeEqvStress(const RankTwoTensor &, const RankTwoTensor &) const;
+  RankTwoTensor computeDeviatoricStress(const RankTwoTensor &, const RankTwoTensor &) const;
 };
 
 #endif //VPHARDENINGRATEBASE_H

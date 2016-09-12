@@ -27,7 +27,7 @@ VPStrength::VPStrength(const InputParameters & parameters) :
 bool
 VPStrength::computeValue(unsigned int qp, Real & val) const
 {
-  val =  _h * _intvar[qp];
+  val =  _h + _a * _intvar[qp];
   return true;
 }
 
@@ -37,7 +37,7 @@ VPStrength::computeDerivative(unsigned int /*qp*/, const std::string & coupled_v
   val = 0;
 
   if (_intvar_prop_name == coupled_var_name)
-    val = _h;
+    val = _a;
 
   return true;
 }

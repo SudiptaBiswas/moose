@@ -27,12 +27,8 @@ public:
 
 protected:
   /// Isotropic hardening exponent for Chaboche's Viscoplasticity Model
-  Real _exponent;
-  /// The multiplier used in back stress calculation
-  Real _C;
+  const Real _exponent;
 
-  Real computeEqvStress(const RankTwoTensor &, const RankTwoTensor &, const RankTwoTensor &) const;
-  RankTwoTensor computeDeviatoricStress(const RankTwoTensor &, const RankTwoTensor &) const;
   Real macaulayBracket(Real) const;
 };
 

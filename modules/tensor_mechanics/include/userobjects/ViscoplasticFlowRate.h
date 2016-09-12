@@ -32,14 +32,10 @@ public:
   virtual bool computeTensorDerivative(unsigned int, const std::string &, RankTwoTensor &) const;
 
 protected:
-  UserObjectName _vp_strain_rate_uo_name;
-  const VPIsotropicHardeningRate & _vp_strain_rate_uo;
+  // UserObjectName _vp_strain_rate_uo_name;
+  // const VPHardeningRateBase & _vp_strain_rate_uo;
   Real _C;
   Real _flow_rate_tol;
-
-  RankTwoTensor computeDeviatoricStress(const RankTwoTensor &, const RankTwoTensor &) const;
-  Real computeEqvStress(const RankTwoTensor &, const RankTwoTensor &, const RankTwoTensor &) const;
-
 };
 
 #endif //VISCOPLASTICFLOWRATE_H

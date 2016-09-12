@@ -100,27 +100,39 @@
 
 [UserObjects]
   [./flowstress]
-    type = HEVPRambergOsgoodHardening
-    yield_stress = 100
-    hardening_exponent = 0.1
-    reference_plastic_strain = 0.002
+    type = VPStrength
+    H = 100
+    A = 10
     intvar_prop_name = ep_eqv
   [../]
   [./flowrate]
-    type = HEVPFlowRatePowerLawJ2
-    reference_flow_rate = 0.0001
-    flow_rate_exponent = 50.0
+    type = ViscoplasticFlowRate
+    #reference_flow_rate = 0.0001
+    #flow_rate_exponent = 50.0
     flow_rate_tol = 1
     strength_prop_name = flowstress
-    base_name = test
+    cumulative_strain_rate = ep_eqv_rate
   [../]
   [./ep_eqv]
-     type = HEVPEqvPlasticStrain
+     type = VPHardening
      intvar_rate_prop_name = ep_eqv_rate
   [../]
   [./ep_eqv_rate]
-     type = HEVPEqvPlasticStrainRate
+     type = VPIsotropicHardeningRate
      flow_rate_prop_name = flowrate
+     hardening_exponent = 50.0
+     intvar_prop_tensor_name = alpha
+     strength_prop_name = flowstress
+  [../]
+  [./alpha]
+     type = VPTensorHardening
+     intvar_rate_prop_name = alpha_rate
+  [../]
+  [./alpha_rate]
+     type = VPKinematicHardeningRate
+     flow_rate_prop_name = flowrate
+     intvar_prop_tensor_name = alpha
+     hardening_exponent = 50.0
   [../]
 []
 

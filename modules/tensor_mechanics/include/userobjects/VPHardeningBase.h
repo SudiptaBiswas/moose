@@ -24,10 +24,11 @@ class VPHardeningBase : public DiscreteElementUserObject
 public:
   VPHardeningBase(const InputParameters & parameters);
 
-  virtual bool computeValue(unsigned int, Real, Real &) const = 0;
-  virtual bool computeTensorValue(unsigned int, Real, RankTwoTensor &) const = 0;
-  virtual bool computeDerivative(unsigned int, Real, const std::string &, Real &) const = 0;
-  virtual bool computeTensorDerivative(unsigned int, Real, const std::vector<std::string> &, RankTwoTensor &) const = 0;
+  virtual bool computeValue(unsigned int, Real, Real &) const { return false; }
+  virtual bool computeTensorValue(unsigned int, Real, RankTwoTensor &) const { return false; }
+  virtual bool computeDerivative(unsigned int, Real, const std::string &, Real &) const { return false; }
+  virtual bool computeTensorDerivative(unsigned int, Real, const std::string &, RankTwoTensor &) const { return false; }
+  virtual bool computeRankFourTensorDerivative(unsigned int, Real, const std::string &, RankFourTensor &) const { return false; }
 
   // // Use this if the hardening rate or flow rate is a tensor
   // virtual bool computeValueT(unsigned int, Real, RankTwoTensor &) const = 0;

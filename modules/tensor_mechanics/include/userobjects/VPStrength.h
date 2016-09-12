@@ -4,8 +4,8 @@
 /*          All contents are licensed under LGPL V2.1           */
 /*             See LICENSE for full restrictions                */
 /****************************************************************/
-#ifndef HEVPLINEARHARDENING_H
-#define HEVPLINEARHARDENING_H
+#ifndef VPSTRENGTH_H
+#define VPSTRENGTH_H
 
 #include "HEVPStrengthUOBase.h"
 
@@ -32,4 +32,4 @@ protected:
   const MaterialProperty<Real> & _intvar_old;
 };
 
-#endif
+#endif // VPSTRENGTH_H

@@ -23,25 +23,12 @@ public:
   VPKinematicHardeningRate(const InputParameters & parameters);
 
   virtual bool computeTensorValue(unsigned int, RankTwoTensor &) const;
-  virtual bool computeDerivative(unsigned int, const std::string &, Real &) const;
   virtual bool computeTensorDerivative(unsigned int, const std::string &, RankTwoTensor &) const;
-  // virtual bool computeStressDerivativeT(unsigned int, RankTwoTensor &) const;
+  virtual bool computeRankFourTensorDerivative(unsigned int, const std::string &, RankFourTensor &) const;
 
 protected:
-  // const MaterialProperty<std::vector<RankTwoTensor> > & _intvar;
-  // // UserObjectName _intvar_uo_name;
-  // // const VPHardeningBase * _intvar_uo;
-  // // const MaterialProperty<std::vector<RankTwoTensor> > & _dintvar_dstress;
-  // const MaterialProperty<std::vector<Real> > & _intvar_rate;
-  // const MaterialProperty<std::vector<RankTwoTensor> > & _dintvarrate_dstress;
-  // UserObjectName _vp_strain_rate_uo_name;
-  // const VPHardeningRateBase * _vp_strain_rate_uo;
-
-  std::string _flow_rate_prop_name;
-  const MaterialProperty<RankTwoTensor> & _flow_rate;
-  // const MaterialProperty<RankTwoTensor> & _dflowrate_dstress;
-  // UserObjectName _flow_rate_uo_name;
-  // const VPHardeningRateBase * _flow_rate_uo;
+  UserObjectName _flow_rate_uo_name;
+  const VPHardeningRateBase & _flow_rate_uo;
 
   Real _D;
 

@@ -134,8 +134,14 @@ protected:
   /// This function call user objects to calculate rate of internal variables
   virtual bool computeIntVarRates();
 
+  /// This function call user objects to calculate rate of internal variables
+  virtual bool computeIntVarTensorRates();
+
   /// This function call user objects to integrate internal variables
   virtual bool computeIntVar();
+
+  /// This function call user objects to integrate internal variables
+  virtual bool computeIntVarTensor();
 
   /// This function call user objects to compute strength
   virtual bool computeStrength();
@@ -214,10 +220,10 @@ protected:
   std::vector< MaterialProperty<Real> * > _int_var_rate_prop;
   std::vector<Real> _int_var_old;
 
-  std::vector< MaterialProperty<Real> * > _int_var_tensor_stateful_prop;
-  std::vector< MaterialProperty<Real> * > _int_var_tensor_stateful_prop_old;
-  std::vector< MaterialProperty<Real> * > _int_var_rate_tensor_prop;
-  std::vector<Real> _int_var_tensor_old;
+  std::vector< MaterialProperty<RankTwoTensor> * > _int_var_tensor_stateful_prop;
+  std::vector< MaterialProperty<RankTwoTensor> * > _int_var_tensor_stateful_prop_old;
+  std::vector< MaterialProperty<RankTwoTensor> * > _int_var_rate_tensor_prop;
+  std::vector<RankTwoTensor> _int_var_tensor_old;
 
   /// Jacobian variables
   RankTwoTensor _dfgrd_tmp;
@@ -232,6 +238,7 @@ protected:
   std::vector<RankTwoTensor> _dflowrate_dpk2;
   std::vector<RankTwoTensor> _dpk2_dflowrate;
   std::vector<RankTwoTensor> _dfpinv_dflowrate;
+  std::vector< std::vector<RankTwoTensor> > _dflowrate_dintvartensor;
 
   DenseVector<Real> _dflow_rate;
   DenseVector<Real> _flow_rate;
@@ -249,15 +256,13 @@ protected:
   DenseMatrix<Real> _dflowrate_dstrength;
   DenseVector<Real> _dintvar_dintvar_x;
 
-  std::vector< DenseVector<Real> > _dintvarratetensor_dflowrate;
-  std::vector< DenseVector<Real> > _dintvartensor_dflowrate_tmp;
-  DenseMatrix<Real> _dintvarratetensor_dintvartensor;
-  DenseMatrix<Real> _dintvartensor_dintvarratetensor;
-  DenseMatrix<Real> _dintvartensor_dintvartensor;
-  DenseMatrix<Real> _dintvartensor_dintvar;
-  DenseMatrix<Real> _dintvartensor_dflowrate;
-  DenseMatrix<Real> _dstrength_dintvartensor;
-  DenseVector<Real> _dintvartensor_dintvar_x;
+  std::vector< std::vector<RankTwoTensor> > _dintvarratetensor_dflowrate;
+  std::vector< std::vector<RankTwoTensor> > _dintvartensor_dflowrate_tmp;
+  std::vector< std::vector<RankTwoTensor> > _dintvartensor_dflowrate;
+  std::vector< std::vector<RankFourTensor> > _dintvarratetensor_dintvartensor;
+  std::vector< std::vector<RankFourTensor> > _dintvartensor_dintvarratetensor;
+  std::vector<RankFourTensor> _dintvarratetensor_dpk2;
+  std::vector< std::vector<RankFourTensor> > _dintvartensor_dintvartensor;
 
   DenseMatrix<Real> _jac;
 

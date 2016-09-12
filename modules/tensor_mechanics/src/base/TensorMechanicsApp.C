@@ -85,6 +85,7 @@
 #include "ComputeVolumetricEigenstrain.h"
 #include "ComputeConcentrationDependentElasticityTensor.h"
 #include "FiniteStrainHyperElasticViscoPlastic.h"
+#include "FiniteStrainViscoPlastic.h"
 #include "LinearIsoElasticPFDamage.h"
 #include "HyperElasticPhaseFieldIsoDamage.h"
 #include "ComputeVolumetricDeformGrad.h"
@@ -140,6 +141,12 @@
 #include "HEVPEqvPlasticStrain.h"
 #include "HEVPEqvPlasticStrainRate.h"
 #include "HEVPFlowRatePowerLawJ2.h"
+#include "ViscoplasticFlowRate.h"
+#include "VPHardening.h"
+#include "VPIsotropicHardeningRate.h"
+#include "VPKinematicHardeningRate.h"
+#include "VPStrength.h"
+#include "VPTensorHardening.h"
 
 #include "CylindricalRankTwoAux.h"
 #include "RankTwoAux.h"
@@ -291,6 +298,7 @@ TensorMechanicsApp::registerObjects(Factory & factory)
   registerMaterial(ComputeVolumetricEigenstrain);
   registerMaterial(ComputeConcentrationDependentElasticityTensor);
   registerMaterial(FiniteStrainHyperElasticViscoPlastic);
+  registerMaterial(FiniteStrainViscoPlastic);
   registerMaterial(LinearIsoElasticPFDamage);
   registerMaterial(HyperElasticPhaseFieldIsoDamage);
   registerMaterial(ComputeVolumetricDeformGrad);
@@ -352,6 +360,13 @@ TensorMechanicsApp::registerObjects(Factory & factory)
   registerUserObject(CrystalPlasticityStateVariable);
   registerUserObject(CrystalPlasticityStateVarRateComponentGSS);
   registerUserObject(GeneralizedPlaneStrainUserObject);
+  registerUserObject(ViscoplasticFlowRate);
+  registerUserObject(VPHardening);
+  registerUserObject(VPIsotropicHardeningRate);
+  registerUserObject(VPKinematicHardeningRate);
+  registerUserObject(VPStrength);
+  // registerUserObject(VPStrength);
+  registerUserObject(VPTensorHardening);
 
   registerAux(CylindricalRankTwoAux);
   registerAux(RankTwoAux);

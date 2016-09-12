@@ -26,12 +26,11 @@ public:
   VPTensorHardening(const InputParameters & parameters);
 
   virtual bool computeTensorValue(unsigned int, Real, RankTwoTensor &) const;
-  virtual bool computeDerivative(unsigned int, Real, const std::string &, Real &) const;
+  virtual bool computeRankFourTensorDerivative(unsigned int, Real, const std::string &, RankFourTensor &) const;
 
 protected:
   const MaterialProperty<RankTwoTensor> & _intvar_rate;
   const MaterialProperty<RankTwoTensor> & _this_old;
-
 };
 
 #endif //VPTENSORHARDENING_H

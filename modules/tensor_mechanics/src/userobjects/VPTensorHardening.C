@@ -29,11 +29,38 @@ VPTensorHardening::computeTensorValue(unsigned int qp, Real dt, RankTwoTensor & 
 }
 
 bool
-VPTensorHardening::computeDerivative(unsigned int qp, Real dt, const std::string & coupled_var_name, Real & val) const
+VPTensorHardening::computeRankFourTensorDerivative(unsigned int qp, Real dt, const std::string & coupled_var_name, RankFourTensor & val) const
 {
-  val = 0;
+  val.zero();
   if (_intvar_rate_prop_name == coupled_var_name)
-      val = dt;
+  {
+    RankFourTensor dintvartensor_dintvarratetensor;
+    for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
+      for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
+        for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
+          for (unsigned int l = 0; l < LIBMESH_DIM; ++l)
+          {
+            dintvartensor_dintvarratetensor(i, j, k, l) = 0.0;
+            if (i==k && j==l)
+              dintvartensor_dintvarratetensor(i, j, k, l) = 1.0;
+          }
+      val = dintvartensor_dintvarratetensor * dt;
+    }
+
+    if (_name == coupled_var_name)
+    {
+      RankFourTensor dintvartensor_dintvartensor;
+      for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
+        for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
+          for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
+            for (unsigned int l = 0; l < LIBMESH_DIM; ++l)
+            {
+              dintvartensor_dintvartensor(i, j, k, l) = 0.0;
+              if (i==k && j==l)
+                dintvartensor_dintvartensor(i, j, k, l) = 1.0;
+            }
+        val = dintvartensor_dintvartensor;
+      }
 
   return true;
 }
