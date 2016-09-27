@@ -68,6 +68,8 @@
 #include "OptionallyCoupledForce.h"
 #include "FDDiffusion.h"
 #include "FDAdvection.h"
+#include "Advection.h"
+#include "IntegroDiffKernel.h"
 #include "MaterialEigenKernel.h"
 #include "PHarmonic.h"
 #include "PMassEigenKernel.h"
@@ -186,6 +188,7 @@
 #include "TestShapeElementUserObject.h"
 #include "ExampleShapeElementUserObject.h"
 #include "SimpleTestShapeElementUserObject.h"
+#include "ShapeElementUserObjectTest.h"
 
 // Postprocessors
 #include "TestCopyInitialSolution.h"
@@ -342,6 +345,7 @@ MooseTestApp::registerObjects(Factory & factory)
   registerKernel(OptionallyCoupledForce);
   registerKernel(FDDiffusion);
   registerKernel(FDAdvection);
+  registerKernel(Advection);
   registerKernel(MaterialEigenKernel);
   registerKernel(PHarmonic);
   registerKernel(PMassEigenKernel);
@@ -353,6 +357,7 @@ MooseTestApp::registerObjects(Factory & factory)
   registerKernel(ExampleShapeElementKernel);
   registerKernel(ExampleShapeElementKernel2);
   registerKernel(SimpleTestShapeElementKernel);
+  registerKernel(IntegroDiffKernel);
 
   // Aux kernels
   registerAux(CoupledAux);
@@ -493,6 +498,7 @@ MooseTestApp::registerObjects(Factory & factory)
   registerUserObject(TestShapeElementUserObject);
   registerUserObject(ExampleShapeElementUserObject);
   registerUserObject(SimpleTestShapeElementUserObject);
+  registerUserObject(ShapeElementUserObjectTest);
 
   registerPostprocessor(InsideValuePPS);
   registerPostprocessor(TestCopyInitialSolution);

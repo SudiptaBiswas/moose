@@ -155,7 +155,7 @@
 []
 
 [Preconditioning]
-  active = ' '
+  #active = ' '
   [./prec]
     type = SMP
     full = true
@@ -163,7 +163,7 @@
 []
 
 [Postprocessors]
-  active='L2u L2v'
+  #active='L2u L2v'
   [./dofs]
     type = NumDOFs
   [../]
@@ -183,16 +183,16 @@
     variable = v
     function = slnv
   [../]
-  [./H1error]
-    type = ElementH1Error
-    variable = u
-    function = solution
-  [../]
-  [./H1Semierror]
-    type = ElementH1SemiError
-    variable = u
-    function = solution
-  [../]
+  #[./H1error]
+  #  type = ElementH1Error
+  #  variable = u
+  #  function = solution
+  #[../]
+  #[./H1Semierror]
+  #  type = ElementH1SemiError
+  #  variable = u
+  #  function = solution
+  #[../]
 []
 
 [Executioner]

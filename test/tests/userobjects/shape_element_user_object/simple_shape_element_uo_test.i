@@ -1,9 +1,9 @@
 [Mesh]
   type = GeneratedMesh
-  dim = 3
-  nx = 2
-  ny = 2
-  nz = 2
+  dim = 1
+  nx = 3
+  #ny = 2
+  #nz = 2
 []
 
 [Variables]

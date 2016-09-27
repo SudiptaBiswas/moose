@@ -13,8 +13,8 @@
   xmax = 1
   ymin = -1
   ymax = 1
-  nx = 10
-  ny = 10
+  nx = 100
+  ny = 100
   elem_type = QUAD4
 []
 
