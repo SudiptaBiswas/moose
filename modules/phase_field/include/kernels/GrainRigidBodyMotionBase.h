@@ -34,8 +34,14 @@ protected:
   virtual Real computeQpNonlocalJacobian(dof_id_type /* dof_index */) { return 0.0; }
   virtual Real computeQpNonlocalOffDiagJacobian(unsigned int /* jvar */, dof_id_type /* dof_index */) { return 0.0; }
 
-  void getUserObjectCJacobians(dof_id_type dof_index, unsigned int grain_index);
-  void getUserObjectEtaJacobians(dof_id_type dof_index, unsigned int jvar_index, unsigned int grain_index);
+  // virtual void getCustomizedDoFs(MooseVariable & jv);
+  virtual bool globalDoFEnabled(MooseVariable & var, dof_id_type dof_index);
+
+  virtual void precalculateResidual();
+  virtual void precalculateJacobian();
+  virtual void precalculateOffDiagJacobian(unsigned int jvar);
+
+  virtual void calculateAdvectionVelocity() {}
 
   /// Variable's local dof indices
   const std::vector<dof_id_type> & _var_dofs;
@@ -65,6 +71,8 @@ protected:
   const std::vector<RealGradient> & _grain_torques;
   const std::vector<Real> & _grain_force_c_jacobians;
   const std::vector<std::vector<Real> > & _grain_force_eta_jacobians;
+  const std::vector<dof_id_type> & _c_nonzerojac_dofs;
+  const std::vector<std::vector<dof_id_type> > & _eta_nonzerojac_dofs;
 
   /// constant value corresponding to grain translation
   const Real _mt;
@@ -81,10 +89,13 @@ protected:
   unsigned int _total_dofs;
 
   /// storing the jacobian entries calculated in userobjects
-  RealGradient _force_c_jacobian;
-  RealGradient _torque_c_jacobian;
-  RealGradient _force_eta_jacobian;
-  RealGradient _torque_eta_jacobian;
+  RealGradient _force_jacobian;
+  RealGradient _torque_jacobian;
+
+  RealGradient _velocity_advection;
+  RealGradient _velocity_advection_jacobian;
+
+  std::vector<unsigned int> _grain_ids;
 };
 
 #endif //GRAINRIGIDBODYMOTIONBASE_H

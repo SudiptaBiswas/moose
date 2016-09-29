@@ -171,6 +171,14 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./vadv_x]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./vadv_y]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
 []
 
 [AuxKernels]
@@ -229,6 +237,20 @@
     execute_on = timestep_begin
     field_display = CENTROID
     flood_counter = grain_center
+  [../]
+  [./vadv_x]
+    type = GrainAdvectionVelocityAux
+    component = x
+    grain_data = grain_center
+    grain_force = grain_force
+    variable = vadv_x
+  [../]
+  [./vadv_y]
+    type = GrainAdvectionVelocityAux
+    component = y
+    grain_data = grain_center
+    grain_force = grain_force
+    variable = vadv_y
   [../]
 []
 
@@ -308,6 +330,9 @@
   type = Transient
   scheme = bdf2
   solve_type = NEWTON
+  #petsc_options = '-snes_test_display'
+  #petsc_options_iname = '-snes_type'
+  #petsc_options_value = 'test'
   petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
   petsc_options_value = 'asm         31   preonly   lu      1'
   l_max_its = 30

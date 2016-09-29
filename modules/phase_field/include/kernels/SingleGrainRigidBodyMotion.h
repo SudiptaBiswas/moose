@@ -28,6 +28,9 @@ protected:
   virtual Real computeQpNonlocalJacobian(dof_id_type dof_index);
   virtual Real computeQpNonlocalOffDiagJacobian(unsigned int jvar, dof_id_type dof_index);
 
+  virtual void calculateAdvectionVelocity();
+  virtual void getUserObjectJacobian(unsigned int jvar, dof_id_type dof_index);
+
   /// Grain number for the kernel to be applied
   unsigned int _op_index;
 };

@@ -28,15 +28,12 @@ protected:
   virtual Real computeQpNonlocalJacobian(dof_id_type dof_index);
   virtual Real computeQpNonlocalOffDiagJacobian(unsigned int jvar, dof_id_type dof_index);
 
-  /**
-   * Calculates jacobian entry for variable c seperately
-   * can be used for both on/off diagonal jacobian corrsponding to c
-   * can be used with both split/non-split version of CH kernels
-   */
-  virtual Real computeCVarJacobianEntry(dof_id_type jdof);
-  virtual Real computeCVarNonlocalJacobianEntry(dof_id_type jdof);
-  virtual Real computeEtaVarJacobianEntry(dof_id_type jdof, unsigned int var_num);
-  virtual Real computeEtaVarNonlocalJacobianEntry(dof_id_type jdof, unsigned int var_num);
+  virtual void calculateAdvectionVelocity();
+  virtual void getUserObjectJacobian(unsigned int jvar, dof_id_type dof_index);
+
+  RealGradient _velocity_advection;
+  RealGradient _velocity_advection_jacobian_c;
+  RealGradient _velocity_advection_jacobian_eta;
 };
 
 #endif //MULTIGRAINRIGIDBODYMOTION_H

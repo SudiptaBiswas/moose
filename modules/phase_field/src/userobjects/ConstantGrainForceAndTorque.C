@@ -46,9 +46,14 @@ ConstantGrainForceAndTorque::initialize()
   if (_fe_problem.currentlyComputingJacobian())
   {
     _c_jacobians.assign(6*_grain_num*total_dofs, 0.0);
+    _c_nonzerojac_dofs.reserve(total_dofs);
     _eta_jacobians.resize(_grain_num);
+    _eta_nonzerojac_dofs.resize(_grain_num);
     for (unsigned int i = 0; i < _grain_num; ++i)
+    {
       _eta_jacobians[i].assign(6*_grain_num*total_dofs, 0.0);
+      _eta_nonzerojac_dofs[i].reserve(total_dofs);
+    }
   }
 }
 
@@ -74,4 +79,16 @@ const std::vector<std::vector<Real> > &
 ConstantGrainForceAndTorque::getForceEtaJacobians() const
 {
   return _eta_jacobians;
+}
+
+const std::vector<dof_id_type> &
+ConstantGrainForceAndTorque::getCNonzeroDofs() const
+{
+  return _c_nonzerojac_dofs;
+}
+
+const std::vector<std::vector<dof_id_type> > &
+ConstantGrainForceAndTorque::getEtaNonzeroDofs() const
+{
+  return _eta_nonzerojac_dofs;
 }

@@ -42,6 +42,7 @@ private:
 
   unsigned int _op_num;
   std::vector<const VariableValue *> _vals;
+  std::vector<const VariableGradient *> _grad_vals;
   std::vector<VariableName> _vals_name;
 
   /// force density material
