@@ -31,6 +31,7 @@ ExternalForceDensityMaterial::ExternalForceDensityMaterial(const InputParameters
    _k(getParam<Real>("k")),
    _op_num(coupledComponents("etas")), //determine number of grains from the number of names passed in.
    _vals(_op_num), //Size variable arrays
+   _grad_vals(_op_num),
    _vals_name(_op_num),
    _dF(declareProperty<std::vector<RealGradient> >("force_density_ext")),
    _dFdc(declarePropertyDerivative<std::vector<RealGradient> >("force_density_ext", _c_name)),
@@ -40,6 +41,7 @@ ExternalForceDensityMaterial::ExternalForceDensityMaterial(const InputParameters
   for (unsigned int i = 0; i < _op_num; ++i)
   {
     _vals[i] = &coupledValue("etas", i);
+    _grad_vals[i] = &coupledGradient("etas", i);
     _vals_name[i] = getVar("etas", i)->name();
     _dFdeta[i] = &declarePropertyDerivative<std::vector<Real> >("force_density_ext", _vals_name[i]);
   }
@@ -51,21 +53,40 @@ ExternalForceDensityMaterial::computeQpProperties()
   _dF[_qp].resize(_op_num);
   _dFdc[_qp].resize(_op_num);
 
+  const Real mag = std::sqrt((_force_x.value(_t, _q_point[_qp])) * (_force_x.value(_t, _q_point[_qp]))
+                             + (_force_y.value(_t, _q_point[_qp])) * (_force_y.value(_t, _q_point[_qp]))
+                             + (_force_z.value(_t, _q_point[_qp])) * (_force_z.value(_t, _q_point[_qp])));
+
   for (unsigned int i = 0; i < _op_num; ++i)
   {
-    _dF[_qp][i](0) = _k * _c[_qp] * _force_x.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];
-    _dF[_qp][i](1) = _k * _c[_qp] * _force_y.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];
-    _dF[_qp][i](2) = _k * _c[_qp] * _force_z.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];
+    // if ((*_grad_vals[i])[_qp](0) > 0)
+    // {
+    //   _dF[_qp][i](0) = _k * _c[_qp] * mag * std::abs((*_grad_vals[i])[_qp](0));
+    //   _dF[_qp][i](1) = _k * _c[_qp] * mag * std::abs((*_grad_vals[i])[_qp](0));
+    //   _dF[_qp][i](2) = _k * _c[_qp] * mag * std::abs((*_grad_vals[i])[_qp](0));
+    // }
 
-    _dFdc[_qp][i](0) = _k * _force_x.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];
-    _dFdc[_qp][i](1) = _k * _force_y.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];
-    _dFdc[_qp][i](2) = _k * _force_z.value(_t, _q_point[_qp]) * (*_vals[i])[_qp];
+    _dF[_qp][i](0) = _k * _c[_qp] * mag * (*_vals[i])[_qp];
+    _dF[_qp][i](1) = _k * _c[_qp] * mag * (*_vals[i])[_qp];
+    _dF[_qp][i](2) = _k * _c[_qp] * mag * (*_vals[i])[_qp];
+
+    // _dFdc[_qp][i] = _k * mag * (*_grad_vals[i])[_qp];
+
+    _dFdc[_qp][i](0) = _k * mag * (*_vals[i])[_qp];
+    _dFdc[_qp][i](1) = _k * mag * (*_vals[i])[_qp];
+    _dFdc[_qp][i](2) = _k * mag * (*_vals[i])[_qp];
+    // if ((*_grad_vals[i])[_qp](0) > 0)
+    // {
+    //   _dFdc[_qp][i](0) = _k * mag * std::abs((*_grad_vals[i])[_qp](0));
+    //   _dFdc[_qp][i](1) = _k * mag * std::abs((*_grad_vals[i])[_qp](0));
+    //   _dFdc[_qp][i](2) = _k * mag * std::abs((*_grad_vals[i])[_qp](0));
+    // }
   }
 
   for (unsigned int i = 0; i < _op_num; ++i)
   {
     (*_dFdeta[i])[_qp].resize(_op_num);
     for (unsigned int j = 0; j < _op_num; ++j)
-      (*_dFdeta[i])[_qp][j] = _k * _c[_qp];
+      (*_dFdeta[i])[_qp][j] = _k * _c[_qp] * mag;
   }
 }

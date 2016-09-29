@@ -62,7 +62,7 @@ private:
   MaterialProperty<std::vector<RealGradient> > & _velocity_advection;
 
   /// Material storing divergence of advection velocities of grains
-  MaterialProperty<std::vector<Real> > & _div_velocity_advection;
+  // MaterialProperty<std::vector<Real> > & _div_velocity_advection;
 };
 
 #endif //GRAINADVECTIONVELOCITY_H

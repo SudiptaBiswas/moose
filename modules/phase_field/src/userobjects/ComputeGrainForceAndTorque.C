@@ -6,6 +6,7 @@
 /****************************************************************/
 #include "ComputeGrainForceAndTorque.h"
 #include "GrainTrackerInterface.h"
+#include<iostream>
 
 // libmesh includes
 #include "libmesh/quadrature.h"
@@ -154,6 +155,13 @@ ComputeGrainForceAndTorque::finalize()
     for (unsigned int i = 0; i < _op_num; ++i)
       gatherSum(_force_torque_eta_jacobian_store[i]);
   }
+//
+//   unsigned int count = 0;
+//   for (unsigned int i = 0; i < _force_torque_c_jacobian_store.size(); ++i)
+//     if (_force_torque_c_jacobian_store[i] !=0)
+//       count++;
+//
+// std::cout << count << "out of" << _force_torque_c_jacobian_store.size() << "are non zero" << std::endl;
 }
 
 void

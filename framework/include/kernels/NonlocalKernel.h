@@ -42,6 +42,9 @@ protected:
   virtual Real computeQpNonlocalJacobian(dof_id_type dof_index);
   virtual Real computeQpNonlocalOffDiagJacobian(unsigned int jvar, dof_id_type dof_index);
 
+  virtual void getVariableAllDoFs(MooseVariable & jv);
+  std::vector<dof_id_type> _jvar_alldofindices;
+
   unsigned int _k;
 };
 

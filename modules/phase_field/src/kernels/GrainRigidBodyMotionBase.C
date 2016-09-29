@@ -79,3 +79,20 @@ GrainRigidBodyMotionBase::getUserObjectEtaJacobians(dof_id_type dof_index, unsig
   _torque_eta_jacobian(1) = _grain_force_eta_jacobians[jvar_index][(6*grain_index+4)*_total_dofs+dof_index];
   _torque_eta_jacobian(2) = _grain_force_eta_jacobians[jvar_index][(6*grain_index+5)*_total_dofs+dof_index];
 }
+
+void
+NonlocalKernel::getVariableAllDoFs(MooseVariable & jv)
+{
+  if (jv.number() == _var.number())
+    _jvar_alldofindices = _var.allDofIndices();
+
+  if (jv.number() == _c_var)
+  {
+    for (unsigned int i = 0; i < _grain_force_c_jacobians.size(); ++i)
+      if (_grain_force_c_jacobians[i] != 0)
+          _jvar_alldofindices.push_back()
+  }
+    _jvar_alldofindices = _var.allDofIndices();
+  else
+    _jvar_alldofindices = jv.allDofIndices();
+}

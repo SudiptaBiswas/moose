@@ -42,19 +42,19 @@ void
 NonlocalKernel::computeNonlocalJacobian()
 {
   DenseMatrix<Number> & keg = _assembly.jacobianBlockNonlocal(_var.number(), _var.number());
+  // get the dof indices of the jacobian variable
+  getVariableAllDoFs(_var);
   // compiling set of global IDs for the local DOFs on the element
   std::set<dof_id_type> local_dofindices(_var.dofIndices().begin(), _var.dofIndices().end());
-  // storing the global IDs for all the DOFs of the variable
-  const std::vector<dof_id_type> & var_alldofindices = _var.allDofIndices();
-  unsigned int n_total_dofs = var_alldofindices.size();
+  unsigned int n_total_dofs = _jvar_alldofindices.size();
 
   for (_k = 0; _k < n_total_dofs; _k++) // looping order for _i & _k are reversed for performance improvement
   {
-    auto it = local_dofindices.find(var_alldofindices[_k]);
+    auto it = local_dofindices.find(_jvar_alldofindices[_k]);
     if (it == local_dofindices.end()) // eliminating the local components
       for (_i = 0; _i < _test.size(); _i++)
         for (_qp = 0; _qp < _qrule->n_points(); _qp++)
-          keg(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalJacobian(var_alldofindices[_k]);
+          keg(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalJacobian(_jvar_alldofindices[_k]);
   }
 }
 
@@ -65,21 +65,21 @@ NonlocalKernel::computeNonlocalOffDiagJacobian(unsigned int jvar)
     computeNonlocalJacobian();
   else
   {
-    MooseVariable & jv = _sys.getVariable(_tid, jvar);
     DenseMatrix<Number> & keg = _assembly.jacobianBlockNonlocal(_var.number(), jvar);
+    MooseVariable & jv = _sys.getVariable(_tid, jvar);
+    // get the dof indices of the jacobian variable
+    getVariableAllDoFs(jv);
     // compiling set of global IDs for the local DOFs on the element
     std::set<dof_id_type> local_dofindices(jv.dofIndices().begin(), jv.dofIndices().end());
-    // storing the global IDs for all the DOFs of the variable
-    const std::vector<dof_id_type> & jv_alldofindices = jv.allDofIndices();
-    unsigned int n_total_dofs = jv_alldofindices.size();
+    unsigned int n_total_dofs = _jvar_alldofindices.size();
 
     for (_k = 0; _k < n_total_dofs; _k++) // looping order for _i & _k are reversed for performance improvement
     {
-      auto it = local_dofindices.find(jv_alldofindices[_k]);
+      auto it = local_dofindices.find(_jvar_alldofindices[_k]);
       if (it == local_dofindices.end()) // eliminating the local components
         for (_i = 0; _i < _test.size(); _i++)
           for (_qp = 0; _qp < _qrule->n_points(); _qp++)
-            keg(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalOffDiagJacobian(jvar, jv_alldofindices[_k]);
+            keg(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalOffDiagJacobian(jvar, _jvar_alldofindices[_k]);
     }
   }
 }
@@ -94,4 +94,13 @@ Real
 NonlocalKernel::computeQpNonlocalOffDiagJacobian(unsigned int /*jvar*/, dof_id_type /*dof_index*/)
 {
   return 0.0;
+}
+
+void
+NonlocalKernel::getVariableAllDoFs(MooseVariable & jv)
+{
+  if (jv.number() == _var.number())
+    _jvar_alldofindices = _var.allDofIndices();
+  else
+    _jvar_alldofindices = jv.allDofIndices();
 }

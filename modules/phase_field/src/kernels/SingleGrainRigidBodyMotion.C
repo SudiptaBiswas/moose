@@ -34,10 +34,11 @@ SingleGrainRigidBodyMotion::computeQpResidual()
     const auto force = _mt / volume * _grain_forces[grain_index];
     const auto torque = _mr / volume * (_grain_torques[grain_index].cross(_q_point[_qp] - centroid));
 
-    const RealGradient velocity_advection = (force + torque) * _u[_qp];
-    const Real div_velocity_advection = (force + torque) * _grad_u[_qp];
+    const RealGradient velocity_advection = (force + torque);
+    // const Real div_velocity_advection = (force + torque) * d_u[_qp];
 
-    return velocity_advection * _grad_u[_qp] * _test[_i][_qp] + div_velocity_advection * _u[_qp] * _test[_i][_qp];
+    return velocity_advection * _grad_u[_qp] * _test[_i][_qp];
+    //  + div_velocity_advection * _u[_qp] * _test[_i][_qp];
   }
 
   return 0.0;
@@ -58,13 +59,15 @@ SingleGrainRigidBodyMotion::computeQpJacobian()
     const auto force_jac = _mt / volume * _force_eta_jacobian;
     const auto torque_jac = _mr / volume * _torque_eta_jacobian.cross(_q_point[_qp] - centroid);
 
-    const RealGradient velocity_advection = (force + torque) * _u[_qp];
-    const Real div_velocity_advection = (force + torque) * _grad_u[_qp];
-    const RealGradient velocity_advection_jacobian_eta = (force + torque) * _phi[_j][_qp] + (force_jac + torque_jac) * _u[_qp];
-    const Real div_velocity_advection_jacobian_eta = (force + torque) * _grad_phi[_j][_qp] + (force_jac + torque_jac) * _grad_u[_qp];
+    const RealGradient velocity_advection = (force + torque);
+    // const Real div_velocity_advection = (force + torque) * _grad_u[_qp];
+    const RealGradient velocity_advection_jacobian_eta = (force_jac + torque_jac);
+    // const Real div_velocity_advection_jacobian_eta = (force + torque) * _grad_phi[_j][_qp] + (force_jac + torque_jac) * _grad_u[_qp];
 
-    return (velocity_advection * _grad_phi[_j][_qp] + div_velocity_advection * _phi[_j][_qp]) * _test[_i][_qp]
-           + (velocity_advection_jacobian_eta * _grad_u[_qp] + div_velocity_advection_jacobian_eta * _u[_qp]) * _test[_i][_qp];
+    return velocity_advection * _grad_phi[_j][_qp] * _test[_i][_qp]
+      // + div_velocity_advection * _phi[_j][_qp]) * _test[_i][_qp]
+           + velocity_advection_jacobian_eta * _grad_u[_qp] * _test[_i][_qp];
+              // + div_velocity_advection_jacobian_eta * _u[_qp]) * _test[_i][_qp];
   }
 
   return 0.0;
@@ -85,11 +88,11 @@ SingleGrainRigidBodyMotion::computeQpOffDiagJacobian(unsigned int jvar)
       const auto force_jac = _mt / volume * _force_c_jacobian;
       const auto torque_jac = _mr / volume * _torque_c_jacobian.cross(_q_point[_qp] - centroid);
 
-      const RealGradient velocity_advection_jacobian_c = (force_jac + torque_jac) * _u[_qp];
-      const Real div_velocity_advection_jacobian_c = (force_jac + torque_jac) * _grad_u[_qp];
+      const RealGradient velocity_advection_jacobian_c = (force_jac + torque_jac);
+      // const Real div_velocity_advection_jacobian_c = (force_jac + torque_jac) * _grad_u[_qp];
 
-      return velocity_advection_jacobian_c * _grad_u[_qp] * _test[_i][_qp]
-             + div_velocity_advection_jacobian_c * _u[_qp] * _test[_i][_qp];
+      return velocity_advection_jacobian_c * _grad_u[_qp] * _test[_i][_qp];
+            //  + div_velocity_advection_jacobian_c * _u[_qp] * _test[_i][_qp];
     }
   }
 
@@ -107,11 +110,11 @@ SingleGrainRigidBodyMotion::computeQpOffDiagJacobian(unsigned int jvar)
         const auto force_jac = _mt / volume * _force_eta_jacobian;
         const auto torque_jac = _mr / volume * _torque_eta_jacobian.cross(_q_point[_qp] - centroid);
 
-        const RealGradient velocity_advection_jacobian_eta = (force_jac + torque_jac) * _u[_qp];
-        const Real div_velocity_advection_jacobian_eta = (force_jac + torque_jac) * _grad_u[_qp];
+        const RealGradient velocity_advection_jacobian_eta = (force_jac + torque_jac);
+        // const Real div_velocity_advection_jacobian_eta = (force_jac + torque_jac) * _grad_u[_qp];
 
-        return velocity_advection_jacobian_eta * _grad_u[_qp] * _test[_i][_qp]
-               + div_velocity_advection_jacobian_eta * _u[_qp] * _test[_i][_qp];
+        return velocity_advection_jacobian_eta * _grad_u[_qp] * _test[_i][_qp];
+              //  + div_velocity_advection_jacobian_eta * _u[_qp] * _test[_i][_qp];
      }
    }
 
@@ -131,11 +134,11 @@ SingleGrainRigidBodyMotion::computeQpNonlocalJacobian(dof_id_type dof_index)
     const auto force_jac = _mt / volume * _force_eta_jacobian;
     const auto torque_jac = _mr / volume * _torque_eta_jacobian.cross(_q_point[_qp] - centroid);
 
-    const RealGradient velocity_advection_jacobian_eta = (force_jac + torque_jac) * _u[_qp];
-    const Real div_velocity_advection_jacobian_eta = (force_jac + torque_jac) * _grad_u[_qp];
+    const RealGradient velocity_advection_jacobian_eta = (force_jac + torque_jac);
+    // const Real div_velocity_advection_jacobian_eta = (force_jac + torque_jac) * _grad_u[_qp];
 
-    return velocity_advection_jacobian_eta * _grad_u[_qp] * _test[_i][_qp]
-           + div_velocity_advection_jacobian_eta * _u[_qp] * _test[_i][_qp];
+    return velocity_advection_jacobian_eta * _grad_u[_qp] * _test[_i][_qp];
+          //  + div_velocity_advection_jacobian_eta * _u[_qp] * _test[_i][_qp];
    }
 
    return 0.0;
@@ -156,11 +159,11 @@ SingleGrainRigidBodyMotion::computeQpNonlocalOffDiagJacobian(unsigned int jvar, 
       const auto force_jac = _mt / volume * _force_c_jacobian;
       const auto torque_jac = _mr / volume * _torque_c_jacobian.cross(_q_point[_qp] - centroid);
 
-      const RealGradient velocity_advection_jacobian_c = (force_jac + torque_jac) * _u[_qp];
-      const Real div_velocity_advection_jacobian_c = (force_jac + torque_jac) * _grad_u[_qp];
+      const RealGradient velocity_advection_jacobian_c = (force_jac + torque_jac);
+      // const Real div_velocity_advection_jacobian_c = (force_jac + torque_jac) * _grad_u[_qp];
 
-      return velocity_advection_jacobian_c * _grad_u[_qp] * _test[_i][_qp]
-             + div_velocity_advection_jacobian_c * _u[_qp] * _test[_i][_qp];
+      return velocity_advection_jacobian_c * _grad_u[_qp] * _test[_i][_qp];
+            //  + div_velocity_advection_jacobian_c * _u[_qp] * _test[_i][_qp];
     }
   }
 
@@ -177,11 +180,11 @@ SingleGrainRigidBodyMotion::computeQpNonlocalOffDiagJacobian(unsigned int jvar, 
         const auto force_jac = _mt / volume * _force_eta_jacobian;
         const auto torque_jac = _mr / volume * _torque_eta_jacobian.cross(_q_point[_qp] - centroid);
 
-        const RealGradient velocity_advection_jacobian_eta = (force_jac + torque_jac) * _u[_qp];
-        const Real div_velocity_advection_jacobian_eta = (force_jac + torque_jac) * _grad_u[_qp];
+        const RealGradient velocity_advection_jacobian_eta = (force_jac + torque_jac);
+        // const Real div_velocity_advection_jacobian_eta = (force_jac + torque_jac) * _grad_u[_qp];
 
-        return velocity_advection_jacobian_eta * _grad_u[_qp] * _test[_i][_qp]
-               + div_velocity_advection_jacobian_eta * _u[_qp] * _test[_i][_qp];
+        return velocity_advection_jacobian_eta * _grad_u[_qp] * _test[_i][_qp];
+              //  + div_velocity_advection_jacobian_eta * _u[_qp] * _test[_i][_qp];
       }
   }
 
