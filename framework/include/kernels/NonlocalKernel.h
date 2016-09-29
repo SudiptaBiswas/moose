@@ -39,9 +39,10 @@ public:
 
 protected:
   /// Compute this Kernel's contribution to the Jacobian corresponding to nolocal dof at the current quadrature point
-  virtual Real computeQpNonlocalJacobian(dof_id_type dof_index);
-  virtual Real computeQpNonlocalOffDiagJacobian(unsigned int jvar, dof_id_type dof_index);
+  virtual Real computeQpNonlocalJacobian(dof_id_type dof_index) { return 0; }
+  virtual Real computeQpNonlocalOffDiagJacobian(unsigned int jvar, dof_id_type dof_index) { return 0; }
 
+  virtual bool globalDoFEnabled(MooseVariable & var, dof_id_type dof_index) { return true; }
   unsigned int _k;
 };
 

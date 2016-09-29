@@ -34,6 +34,9 @@ protected:
   virtual Real computeQpNonlocalJacobian(dof_id_type /* dof_index */) { return 0.0; }
   virtual Real computeQpNonlocalOffDiagJacobian(unsigned int /* jvar */, dof_id_type /* dof_index */) { return 0.0; }
 
+  // virtual void getCustomizedDoFs(MooseVariable & jv);
+  virtual bool globalDoFEnabled(MooseVariable & var, dof_id_type dof_index);
+
   void getUserObjectCJacobians(dof_id_type dof_index, unsigned int grain_index);
   void getUserObjectEtaJacobians(dof_id_type dof_index, unsigned int jvar_index, unsigned int grain_index);
 
@@ -65,6 +68,8 @@ protected:
   const std::vector<RealGradient> & _grain_torques;
   const std::vector<Real> & _grain_force_c_jacobians;
   const std::vector<std::vector<Real> > & _grain_force_eta_jacobians;
+  const std::vector<dof_id_type> & _c_nonzerojac_dofs;
+  const std::vector<std::vector<dof_id_type> > & _eta_nonzerojac_dofs;
 
   /// constant value corresponding to grain translation
   const Real _mt;
@@ -85,6 +90,8 @@ protected:
   RealGradient _torque_c_jacobian;
   RealGradient _force_eta_jacobian;
   RealGradient _torque_eta_jacobian;
+
+  // const std::vector<unsigned int> _grain_indices;
 };
 
 #endif //GRAINRIGIDBODYMOTIONBASE_H

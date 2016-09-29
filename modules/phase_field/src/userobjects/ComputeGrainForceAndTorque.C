@@ -6,6 +6,7 @@
 /****************************************************************/
 #include "ComputeGrainForceAndTorque.h"
 #include "GrainTrackerInterface.h"
+#include<iostream>
 
 // libmesh includes
 #include "libmesh/quadrature.h"
@@ -58,10 +59,16 @@ ComputeGrainForceAndTorque::initialize()
   {
     _total_dofs = _subproblem.es().n_dofs();
     _force_torque_c_jacobian_store.assign(_ncomp*_total_dofs, 0.0);
-    _force_torque_eta_jacobian_store.resize(_op_num);
+    _c_nonzerojac_dofs.reserve(_total_dofs);
 
+    _force_torque_eta_jacobian_store.resize(_op_num);
+    _nonzerojac_dofs_eta.resize(_op_num);
+    _eta_nonzerojac_dofs.resize(_op_num);
     for (unsigned int i = 0; i < _op_num; ++i)
+    {
       _force_torque_eta_jacobian_store[i].assign(_ncomp*_total_dofs, 0.0);
+      _eta_nonzerojac_dofs[i].reserve(_total_dofs);
+    }
   }
 }
 
@@ -112,6 +119,13 @@ ComputeGrainForceAndTorque::executeJacobian(unsigned int jvar)
               _force_torque_c_jacobian_store[(6*i+4)*_total_dofs+_j_global] += compute_torque_jacobian_c(1);
               _force_torque_c_jacobian_store[(6*i+5)*_total_dofs+_j_global] += compute_torque_jacobian_c(2);
             }
+          if (_force_torque_c_jacobian_store[(6*i+0)*_total_dofs+_j_global] != 0 ||
+              _force_torque_c_jacobian_store[(6*i+1)*_total_dofs+_j_global] != 0 ||
+              _force_torque_c_jacobian_store[(6*i+2)*_total_dofs+_j_global] != 0 ||
+              _force_torque_c_jacobian_store[(6*i+3)*_total_dofs+_j_global] != 0 ||
+              _force_torque_c_jacobian_store[(6*i+4)*_total_dofs+_j_global] != 0 ||
+              _force_torque_c_jacobian_store[(6*i+5)*_total_dofs+_j_global] != 0)
+              _nonzerojac_dofs_c.insert(_j_global);
         }
 
   for (unsigned int i = 0; i < _op_num; ++i)
@@ -133,6 +147,13 @@ ComputeGrainForceAndTorque::executeJacobian(unsigned int jvar)
                 _force_torque_eta_jacobian_store[i][(6*j+4)*_total_dofs+_j_global] += compute_torque_jacobian_eta(1);
                 _force_torque_eta_jacobian_store[i][(6*j+5)*_total_dofs+_j_global] += compute_torque_jacobian_eta(2);
               }
+              if (_force_torque_eta_jacobian_store[i][(6*i+0)*_total_dofs+_j_global] != 0 ||
+                  _force_torque_eta_jacobian_store[i][(6*i+1)*_total_dofs+_j_global] != 0 ||
+                  _force_torque_eta_jacobian_store[i][(6*i+2)*_total_dofs+_j_global] != 0 ||
+                  _force_torque_eta_jacobian_store[i][(6*i+3)*_total_dofs+_j_global] != 0 ||
+                  _force_torque_eta_jacobian_store[i][(6*i+4)*_total_dofs+_j_global] != 0 ||
+                  _force_torque_eta_jacobian_store[i][(6*i+5)*_total_dofs+_j_global] != 0)
+                  _nonzerojac_dofs_eta[i].insert(_j_global);
           }
 }
 
@@ -153,8 +174,14 @@ ComputeGrainForceAndTorque::finalize()
   if (_fe_problem.currentlyComputingJacobian())
   {
     gatherSum(_force_torque_c_jacobian_store);
+    _communicator.set_union(_nonzerojac_dofs_c);
+    _c_nonzerojac_dofs.assign(_nonzerojac_dofs_c.begin(), _nonzerojac_dofs_c.end());
     for (unsigned int i = 0; i < _op_num; ++i)
+    {
       gatherSum(_force_torque_eta_jacobian_store[i]);
+      _communicator.set_union(_nonzerojac_dofs_eta[i]);
+      _eta_nonzerojac_dofs[i].assign(_nonzerojac_dofs_eta[i].begin(), _nonzerojac_dofs_eta[i].end());
+    }
   }
 }
 
@@ -168,9 +195,13 @@ ComputeGrainForceAndTorque::threadJoin(const UserObject & y)
   {
     for (unsigned int i = 0; i < _ncomp*_total_dofs; ++i)
       _force_torque_c_jacobian_store[i] += pps._force_torque_c_jacobian_store[i];
+    _nonzerojac_dofs_c.insert(pps._nonzerojac_dofs_c.begin(),pps._nonzerojac_dofs_c.end());
     for (unsigned int i = 0; i < _op_num; ++i)
+    {
       for (unsigned int j = 0; j < _ncomp*_total_dofs; ++j)
         _force_torque_eta_jacobian_store[i][j] += pps._force_torque_eta_jacobian_store[i][j];
+      _nonzerojac_dofs_eta[i].insert(pps._nonzerojac_dofs_eta[i].begin(),pps._nonzerojac_dofs_eta[i].end());
+    }
   }
 }
 
@@ -195,4 +226,16 @@ const std::vector<std::vector<Real> > &
 ComputeGrainForceAndTorque::getForceEtaJacobians() const
 {
   return _force_torque_eta_jacobian_store;
+}
+
+const std::vector<dof_id_type> &
+ComputeGrainForceAndTorque::getCNonzeroDofs() const
+{
+  return _c_nonzerojac_dofs;
+}
+
+const std::vector<std::vector<dof_id_type> > &
+ComputeGrainForceAndTorque::getEtaNonzeroDofs() const
+{
+  return _eta_nonzerojac_dofs;
 }

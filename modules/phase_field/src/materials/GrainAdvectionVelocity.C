@@ -23,21 +23,19 @@ InputParameters validParams<GrainAdvectionVelocity>()
 }
 
 GrainAdvectionVelocity::GrainAdvectionVelocity(const InputParameters & parameters) :
-    DerivativeMaterialInterface<Material>(parameters),
-    _grain_tracker(getUserObject<GrainTrackerInterface>("grain_data")),
-    _grain_force_torque(getUserObject<GrainForceAndTorqueInterface>("grain_force")),
-    _grain_volumes(getVectorPostprocessorValue("grain_volumes", "feature_volumes")),
-    _grain_forces(_grain_force_torque.getForceValues()),
-    _grain_torques(_grain_force_torque.getTorqueValues()),
-    _mt(getParam<Real>("translation_constant")),
-    _mr(getParam<Real>("rotation_constant")),
-    _op_num(coupledComponents("etas")),
-    _vals(_op_num),
-    _grad_vals(_op_num),
-    _c_name(getVar("c", 0)->name()),
-    _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : "" ),
-    _velocity_advection(declareProperty<std::vector<RealGradient> >(_base_name + "advection_velocity")),
-    _div_velocity_advection(declareProperty<std::vector<Real> >(_base_name + "advection_velocity_divergence"))
+   DerivativeMaterialInterface<Material>(parameters),
+   _grain_tracker(getUserObject<GrainTrackerInterface>("grain_data")),
+   _grain_force_torque(getUserObject<GrainForceAndTorqueInterface>("grain_force")),
+   _grain_forces(_grain_force_torque.getForceValues()),
+   _grain_torques(_grain_force_torque.getTorqueValues()),
+   _mt(getParam<Real>("translation_constant")),
+   _mr(getParam<Real>("rotation_constant")),
+   _op_num(coupledComponents("etas")),
+   _vals(_op_num),
+   _grad_vals(_op_num),
+   _c_name(getVar("c", 0)->name()),
+   _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : "" ),
+   _velocity_advection(declareProperty<std::vector<RealGradient> >(_base_name + "advection_velocity"))
 {
   //Loop through grains and load coupled variables into the arrays
   for (unsigned int i = 0; i < _op_num; ++i)
@@ -57,6 +55,10 @@ GrainAdvectionVelocity::computeQpProperties()
   _div_velocity_advection[_qp].resize(grain_num);
 
   const auto & op_to_grains = _grain_tracker.getVarToFeatureVector(_current_elem->id());
+void
+GrainAdvectionVelocity::computeQpProperties()
+{
+  _velocity_advection[_qp].resize(_grain_num);
 
   for (unsigned int i = 0; i < _grain_volumes.size(); ++i)
   {
@@ -67,13 +69,10 @@ GrainAdvectionVelocity::computeQpProperties()
     for (unsigned int j = 0; j < _op_num; ++j)
       if (i == op_to_grains[j])
       {
-        const RealGradient velocity_translation = _mt / volume * ((*_vals[j])[_qp] * _grain_forces[i]);
-        const Real div_velocity_translation = _mt / volume * ((*_grad_vals[j])[_qp] * _grain_forces[i]);
-        const RealGradient velocity_rotation = _mr / volume * (_grain_torques[i].cross(_q_point[_qp] - centroid)) * (*_vals[j])[_qp];
-        const Real div_velocity_rotation = _mr / volume * (_grain_torques[i].cross(_q_point[_qp] - centroid)) * (*_grad_vals[j])[_qp];
+        const RealGradient velocity_translation = _mt / volume * _grain_forces[i];
+        const RealGradient velocity_rotation = _mr / volume * (_grain_torques[i].cross(_q_point[_qp] - centroid));
 
         _velocity_advection[_qp][i] = velocity_translation + velocity_rotation;
-        _div_velocity_advection[_qp][i] = div_velocity_translation + div_velocity_rotation;
       }
   }
 }

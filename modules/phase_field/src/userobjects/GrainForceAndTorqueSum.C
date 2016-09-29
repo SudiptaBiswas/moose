@@ -49,18 +49,26 @@ GrainForceAndTorqueSum::initialize()
   {
     unsigned int total_dofs = _subproblem.es().n_dofs();
     _c_jacobians.resize(6*_grain_num*total_dofs, 0.0);
+    _c_nonzerojac_dofs.reserve(total_dofs);
     _eta_jacobians.resize(_grain_num);
 
     for (unsigned int i = 0; i < _c_jacobians.size(); ++i)
       for (unsigned int j = 0; j < _num_forces; ++j)
         _c_jacobians[i] += (_sum_forces[j]->getForceCJacobians())[i];
+    for (unsigned int j = 0; j < _num_forces; ++j)
+      _nonzerojac_dofs_c.insert((_sum_forces[j]->getCNonzeroDofs()).begin(),(_sum_forces[j]->getCNonzeroDofs()).end());
+    _c_nonzerojac_dofs.assign(_nonzerojac_dofs_c.begin(), _nonzerojac_dofs_c.end());
 
     for (unsigned int i = 0; i < _grain_num; ++i)
     {
       _eta_jacobians[i].resize(6*_grain_num*total_dofs, 0.0);
+      _eta_nonzerojac_dofs[i].reserve(total_dofs);
       for (unsigned int j = 0; j < _eta_jacobians[i].size(); ++j)
         for (unsigned int k = 0; k < _num_forces; ++k)
           _eta_jacobians[i][j] += (_sum_forces[k]->getForceEtaJacobians())[i][j];
+      for (unsigned int k = 0; k < _num_forces; ++k)
+        _nonzerojac_dofs_eta[i].insert((_sum_forces[k]->getEtaNonzeroDofs())[i].begin(),(_sum_forces[k]->getEtaNonzeroDofs())[i].end());
+      _eta_nonzerojac_dofs[i].assign(_nonzerojac_dofs_eta[i].begin(), _nonzerojac_dofs_eta[i].end());
     }
   }
 }
@@ -87,4 +95,16 @@ const std::vector<std::vector<Real> > &
 GrainForceAndTorqueSum::getForceEtaJacobians() const
 {
   return _eta_jacobians;
+}
+
+const std::vector<dof_id_type> &
+GrainForceAndTorqueSum::getCNonzeroDofs() const
+{
+  return _c_nonzerojac_dofs;
+}
+
+const std::vector<std::vector<dof_id_type> > &
+GrainForceAndTorqueSum::getEtaNonzeroDofs() const
+{
+  return _eta_nonzerojac_dofs;
 }

@@ -29,7 +29,9 @@ MaskedGrainForceAndTorque::MaskedGrainForceAndTorque(const InputParameters & par
     _num_pinned_grains(_pinned_grains.size()),
     _grain_num(_grain_forces_input.size()),
     _force_values(_grain_num),
-    _torque_values(_grain_num)
+    _torque_values(_grain_num),
+    _c_nonzerojac_dofs(_grain_force_torque_input.getCNonzeroDofs()),
+    _eta_nonzerojac_dofs(_grain_force_torque_input.getEtaNonzeroDofs())
 {
 }
 
@@ -38,7 +40,7 @@ MaskedGrainForceAndTorque::initialize()
 {
   for (unsigned int i = 0; i < _grain_num; ++i)
   {
-    _force_values[i] = _grain_forces_input [i];
+    _force_values[i] = _grain_forces_input[i];
     _torque_values[i] = _grain_torques_input[i];
 
     if (_num_pinned_grains != 0)
@@ -58,6 +60,7 @@ MaskedGrainForceAndTorque::initialize()
   {
     unsigned int total_dofs = _subproblem.es().n_dofs();
     _c_jacobians.resize(6*_grain_num*total_dofs, 0.0);
+    // _c_nonzerojac_dofs.reserve(total_dofs);
     _eta_jacobians.resize(_grain_num);
     for (unsigned int i = 0; i < _grain_num; ++i)
       for (unsigned int j = 0; j < total_dofs; ++j)
@@ -79,6 +82,9 @@ MaskedGrainForceAndTorque::initialize()
               _c_jacobians[(6*i+3)*total_dofs+j] = 0.0;
               _c_jacobians[(6*i+4)*total_dofs+j] = 0.0;
               _c_jacobians[(6*i+5)*total_dofs+j] = 0.0;
+              std::vector<dof_id_type>::iterator it = std::find(_c_nonzerojac_dofs.begin(), _c_nonzerojac_dofs.end(), j);
+              if (it != _c_nonzerojac_dofs.end()) // == myVector.end() means the element was not found
+                  _c_nonzerojac_dofs.erase(it);
             }
       }
 
@@ -105,6 +111,9 @@ MaskedGrainForceAndTorque::initialize()
                 _eta_jacobians[i][(6*j+3)*total_dofs+k] = 0.0;
                 _eta_jacobians[i][(6*j+4)*total_dofs+k] = 0.0;
                 _eta_jacobians[i][(6*j+5)*total_dofs+k] = 0.0;
+                std::vector<dof_id_type>::iterator it = std::find(_eta_nonzerojac_dofs[i].begin(), _eta_nonzerojac_dofs[i].end(), j);
+                if (it != _eta_nonzerojac_dofs[i].end()) // == myVector.end() means the element was not found
+                    _eta_nonzerojac_dofs[i].erase(it);
               }
         }
       }
@@ -133,4 +142,16 @@ const std::vector<std::vector<Real> > &
 MaskedGrainForceAndTorque::getForceEtaJacobians() const
 {
   return _eta_jacobians;
+}
+
+const std::vector<dof_id_type> &
+MaskedGrainForceAndTorque::getCNonzeroDofs() const
+{
+  return _c_nonzerojac_dofs;
+}
+
+const std::vector<std::vector<dof_id_type> > &
+MaskedGrainForceAndTorque::getEtaNonzeroDofs() const
+{
+  return _eta_nonzerojac_dofs;
 }

@@ -166,6 +166,7 @@
 #include "CrossTermGradientFreeEnergy.h"
 #include "EulerAngleVariables2RGBAux.h"
 #include "FeatureFloodCountAux.h"
+#include "GrainAdvectionVelocityAux.h"
 #include "KKSGlobalFreeEnergy.h"
 #include "KKSMultiFreeEnergy.h"
 #include "PFCEnergyDensity.h"
@@ -421,6 +422,7 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerAux(EulerAngleProvider2RGBAux);
   registerAux(EulerAngleVariables2RGBAux);
   registerAux(FeatureFloodCountAux);
+  registerAux(GrainAdvectionVelocityAux);
   registerAux(KKSGlobalFreeEnergy);
   registerAux(KKSMultiFreeEnergy);
   registerAux(OutputEulerAngles);

@@ -86,6 +86,12 @@
     function = 16*barr_height*(c-cv_eq)^2*(1-cv_eq-c)^2
     derivative_order = 2
   [../]
+  [./force_density]
+    type = ForceDensityMaterial
+    c = c
+    etas ='eta0 eta1'
+  [../]
+
 []
 
 [AuxVariables]
@@ -132,10 +138,10 @@
 []
 
 [VectorPostprocessors]
-  [./forces_cosnt]
-    type = GrainForcesPostprocessor
-    grain_force = grain_force_const
-  [../]
+  #[./forces_cosnt]
+  #  type = GrainForcesPostprocessor
+  #  grain_force = grain_force_const
+  #[../]
   [./forces_total]
     type = GrainForcesPostprocessor
     grain_force = grain_force
@@ -154,17 +160,25 @@
     compute_var_to_feature_map = true
     execute_on = 'initial timestep_begin'
   [../]
-  [./grain_force_const]
-    type = ConstantGrainForceAndTorque
-    execute_on = 'linear nonlinear'
-    force =  '5.0 10.0 0.0 1.0 0.0 0.0'
-    torque = '0.0 0.0 50.0 0.0 0.0 5.0'
+  #[./grain_force_const]
+  #  type = ConstantGrainForceAndTorque
+  #  execute_on = 'initial linear nonlinear'
+  #  force =  '5.0 10.0 0.0 1.0 0.0 0.0'
+  #  torque = '0.0 0.0 50.0 0.0 0.0 5.0'
+  #[../]
+  [./grain_force_app]
+    type = ComputeGrainForceAndTorque
+    execute_on = 'initial linear nonlinear'
+    grain_data = grain_center
+    force_density = force_density
+    c = c
+    etas = 'eta0 eta1'
   [../]
   [./grain_force]
     type = MaskedGrainForceAndTorque
-    grain_force = grain_force_const
+    grain_force = grain_force_app
     pinned_grains = 0
-    execute_on = 'linear nonlinear'
+    execute_on = 'initial linear nonlinear'
   [../]
 []
 

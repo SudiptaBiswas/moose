@@ -40,6 +40,8 @@ GrainRigidBodyMotionBase::GrainRigidBodyMotionBase(const InputParameters & param
     _grain_torques(_grain_force_torque.getTorqueValues()),
     _grain_force_c_jacobians(_grain_force_torque.getForceCJacobians()),
     _grain_force_eta_jacobians(_grain_force_torque.getForceEtaJacobians()),
+    _c_nonzerojac_dofs(_grain_force_torque.getCNonzeroDofs()),
+    _eta_nonzerojac_dofs(_grain_force_torque.getEtaNonzeroDofs()),
     _mt(getParam<Real>("translation_constant")),
     _mr(getParam<Real>("rotation_constant")),
     _grain_tracker(getUserObject<GrainTrackerInterface>("grain_tracker_object")),
@@ -58,6 +60,37 @@ void
 GrainRigidBodyMotionBase::timestepSetup()
 {
   _total_dofs = _subproblem.es().n_dofs();
+}
+
+bool
+GrainRigidBodyMotionBase::globalDoFEnabled(MooseVariable & var, dof_id_type dof_index)
+{
+  const auto & grain_indices = _grain_tracker.getOpToGrainsVector(_current_elem->id());
+  for (unsigned int i = 0; i < grain_indices.size(); ++i)
+  {
+    unsigned int grain_index = grain_indices[i];
+    if (grain_index != libMesh::invalid_uint)
+    {
+      if (var.number() == _c_var)
+      {
+        getUserObjectCJacobians(dof_index, grain_index);
+        if (_force_c_jacobian(0) == 0 || _force_c_jacobian(1) == 0 || _force_c_jacobian(0) == 0 ||
+            _torque_c_jacobian(0) == 0 || _torque_c_jacobian(1) == 0 || _torque_c_jacobian(2) == 0)
+          return false;
+      }
+
+      for (unsigned int op = 0; op < _op_num; ++op)
+        if (var.number() == _vals_var[op])
+        {
+          getUserObjectEtaJacobians(dof_index, op, grain_index);
+          if (_force_eta_jacobian(0) == 0 || _force_eta_jacobian(1) == 0 || _force_eta_jacobian(0) == 0 ||
+              _torque_eta_jacobian(0) == 0 || _torque_eta_jacobian(1) == 0 || _torque_eta_jacobian(2) == 0)
+            return false;
+        }
+    }
+  }
+
+  return true;
 }
 
 void

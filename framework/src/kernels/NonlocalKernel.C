@@ -19,6 +19,7 @@
 #include "SubProblem.h"
 #include "SystemBase.h"
 #include "MooseMesh.h"
+#include <iostream>
 
 // libmesh includes
 #include "libmesh/threads.h"
@@ -50,8 +51,13 @@ NonlocalKernel::computeNonlocalJacobian()
 
   for (_k = 0; _k < n_total_dofs; _k++) // looping order for _i & _k are reversed for performance improvement
   {
+    // skip global DOFs that do not contribute to the jacobian
+    if (!globalDoFEnabled(_var, var_alldofindices[_k]))
+      continue;
+
+    // eliminating the local components
     auto it = local_dofindices.find(var_alldofindices[_k]);
-    if (it == local_dofindices.end()) // eliminating the local components
+    if (it == local_dofindices.end())
       for (_i = 0; _i < _test.size(); _i++)
         for (_qp = 0; _qp < _qrule->n_points(); _qp++)
           keg(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalJacobian(var_alldofindices[_k]);
@@ -75,6 +81,9 @@ NonlocalKernel::computeNonlocalOffDiagJacobian(unsigned int jvar)
 
     for (_k = 0; _k < n_total_dofs; _k++) // looping order for _i & _k are reversed for performance improvement
     {
+      if (!globalDoFEnabled(jv, jv_alldofindices[_k]))
+        continue;
+
       auto it = local_dofindices.find(jv_alldofindices[_k]);
       if (it == local_dofindices.end()) // eliminating the local components
         for (_i = 0; _i < _test.size(); _i++)
@@ -82,16 +91,4 @@ NonlocalKernel::computeNonlocalOffDiagJacobian(unsigned int jvar)
             keg(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalOffDiagJacobian(jvar, jv_alldofindices[_k]);
     }
   }
-}
-
-Real
-NonlocalKernel::computeQpNonlocalJacobian(dof_id_type /*dof_index*/)
-{
-  return 0.0;
-}
-
-Real
-NonlocalKernel::computeQpNonlocalOffDiagJacobian(unsigned int /*jvar*/, dof_id_type /*dof_index*/)
-{
-  return 0.0;
 }

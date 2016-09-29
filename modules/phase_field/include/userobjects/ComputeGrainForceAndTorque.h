@@ -39,6 +39,8 @@ public:
   virtual const std::vector<RealGradient> & getTorqueValues() const;
   virtual const std::vector<Real> & getForceCJacobians() const;
   virtual const std::vector<std::vector<Real> > & getForceEtaJacobians() const;
+  virtual const std::vector<dof_id_type> & getCNonzeroDofs() const;
+  virtual const std::vector<std::vector<dof_id_type> > & getEtaNonzeroDofs() const;
 
 protected:
   unsigned int _qp;
@@ -73,6 +75,11 @@ protected:
   std::vector<std::vector<Real> > _force_torque_eta_jacobian_store;
 
   unsigned int _total_dofs;
+  std::set<dof_id_type> _nonzerojac_dofs_c;
+  std::vector<std::set<dof_id_type> > _nonzerojac_dofs_eta;
+  std::vector<dof_id_type> _c_nonzerojac_dofs;
+  std::vector<std::vector<dof_id_type> > _eta_nonzerojac_dofs;
+
 };
 
 #endif //COMPUTEGRAINFORCEANDTORQUE_H

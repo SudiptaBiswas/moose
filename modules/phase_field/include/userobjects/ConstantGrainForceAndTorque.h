@@ -34,6 +34,8 @@ public:
   virtual const std::vector<RealGradient> & getTorqueValues() const;
   virtual const std::vector<Real> & getForceCJacobians() const;
   virtual const std::vector<std::vector<Real> > & getForceEtaJacobians() const;
+  virtual const std::vector<dof_id_type> & getCNonzeroDofs() const;
+  virtual const std::vector<std::vector<dof_id_type> > & getEtaNonzeroDofs() const;
 
 protected:
   /// Applied force on particles, size should be 3 times no. of grains
@@ -50,6 +52,9 @@ protected:
   std::vector<Real> _c_jacobians;
   std::vector<std::vector<Real> > _eta_jacobians;
   ///@}
+
+  std::vector<dof_id_type> _c_nonzerojac_dofs;
+  std::vector<std::vector<dof_id_type> > _eta_nonzerojac_dofs;
 };
 
 #endif //CONSTANTGRAINFORCEANDTORQUE_H
