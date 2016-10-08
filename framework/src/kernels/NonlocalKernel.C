@@ -19,6 +19,7 @@
 #include "SubProblem.h"
 #include "SystemBase.h"
 #include "MooseMesh.h"
+#include <iostream>
 
 // libmesh includes
 #include "libmesh/threads.h"
@@ -39,6 +40,58 @@ NonlocalKernel::NonlocalKernel(const InputParameters & parameters) :
 }
 
 void
+NonlocalKernel::computeJacobian()
+{
+  DenseMatrix<Number> & ke = _assembly.jacobianBlock(_var.number(), _var.number());
+  _local_ke.resize(ke.m(), ke.n());
+  _local_ke.zero();
+
+  precalculateJacobian();
+  for (_j = 0; _j < _phi.size(); _j++)
+  {
+    getUserObjectJacobian(_var.number(), _var.dofIndices()[_j]);
+    for (_i = 0; _i < _test.size(); _i++)
+      for (_qp = 0; _qp < _qrule->n_points(); _qp++)
+        _local_ke(_i, _j) += _JxW[_qp] * _coord[_qp] * computeQpJacobian();
+    }
+
+  ke += _local_ke;
+
+  if (_has_diag_save_in)
+  {
+    unsigned int rows = ke.m();
+    DenseVector<Number> diag(rows);
+    for (unsigned int i=0; i<rows; i++)
+      diag(i) = _local_ke(i,i);
+
+    Threads::spin_mutex::scoped_lock lock(Threads::spin_mtx);
+    for (const auto & var : _diag_save_in)
+      var->sys().solution().add_vector(diag, var->dofIndices());
+  }
+}
+
+void
+NonlocalKernel::computeOffDiagJacobian(unsigned int jvar)
+{
+  if (jvar == _var.number())
+    computeJacobian();
+  else
+  {
+    MooseVariable & jv = _sys.getVariable(_tid, jvar);
+    DenseMatrix<Number> & ke = _assembly.jacobianBlock(_var.number(), jvar);
+
+    precalculateOffDiagJacobian(jvar);
+    for (_j = 0; _j < _phi.size(); _j++)
+    {
+      getUserObjectJacobian(jvar, jv.dofIndices()[_j]);
+      for (_i = 0; _i < _test.size(); _i++)
+        for (_qp = 0; _qp < _qrule->n_points(); _qp++)
+          ke(_i, _j) += _JxW[_qp] * _coord[_qp] * computeQpOffDiagJacobian(jvar);
+      }
+  }
+}
+
+void
 NonlocalKernel::computeNonlocalJacobian()
 {
   DenseMatrix<Number> & keg = _assembly.jacobianBlockNonlocal(_var.number(), _var.number());
@@ -48,13 +101,26 @@ NonlocalKernel::computeNonlocalJacobian()
   const std::vector<dof_id_type> & var_alldofindices = _var.allDofIndices();
   unsigned int n_total_dofs = var_alldofindices.size();
 
+  precalculateJacobian();
   for (_k = 0; _k < n_total_dofs; _k++) // looping order for _i & _k are reversed for performance improvement
   {
+    // eliminating the local components
     auto it = local_dofindices.find(var_alldofindices[_k]);
-    if (it == local_dofindices.end()) // eliminating the local components
+    if (it == local_dofindices.end())
+    {
+      getUserObjectJacobian(_var.number(), var_alldofindices[_k]);
+      // skip global DOFs that do not contribute to the jacobian
+      if (!globalDoFEnabled(_var, var_alldofindices[_k]))
+        continue;
+
       for (_i = 0; _i < _test.size(); _i++)
+      // if (_var.dofIndices()[_i] == 286 && var_alldofindices[_k] == 334)
+      {
         for (_qp = 0; _qp < _qrule->n_points(); _qp++)
           keg(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalJacobian(var_alldofindices[_k]);
+        // std::cout << "keg(" << _var.dofIndices()[_i] << "," << var_alldofindices[_k] << ") = " << keg(_i, _k) << std::endl;
+      }
+    }
   }
 }
 
@@ -73,25 +139,23 @@ NonlocalKernel::computeNonlocalOffDiagJacobian(unsigned int jvar)
     const std::vector<dof_id_type> & jv_alldofindices = jv.allDofIndices();
     unsigned int n_total_dofs = jv_alldofindices.size();
 
+    precalculateOffDiagJacobian(jvar);
     for (_k = 0; _k < n_total_dofs; _k++) // looping order for _i & _k are reversed for performance improvement
     {
+      // eliminating the local components
       auto it = local_dofindices.find(jv_alldofindices[_k]);
-      if (it == local_dofindices.end()) // eliminating the local components
+      if (it == local_dofindices.end())
+      {
+        getUserObjectJacobian(jvar, jv_alldofindices[_k]);
+        // skip global DOFs that do not contribute to the jacobian
+        if (!globalDoFEnabled(jv, jv_alldofindices[_k]))
+          continue;
+
         for (_i = 0; _i < _test.size(); _i++)
           for (_qp = 0; _qp < _qrule->n_points(); _qp++)
+          // if (_var.dofIndices()[_i] == 286 && jv_alldofindices[_k] == 332)
             keg(_i, _k) += _JxW[_qp] * _coord[_qp] * computeQpNonlocalOffDiagJacobian(jvar, jv_alldofindices[_k]);
+      }
     }
   }
-}
-
-Real
-NonlocalKernel::computeQpNonlocalJacobian(dof_id_type /*dof_index*/)
-{
-  return 0.0;
-}
-
-Real
-NonlocalKernel::computeQpNonlocalOffDiagJacobian(unsigned int /*jvar*/, dof_id_type /*dof_index*/)
-{
-  return 0.0;
 }

@@ -51,15 +51,15 @@
     variable = w
     v = c
   [../]
-  [./motion]
-    type = MultiGrainRigidBodyMotion
-    variable = w
-    c = c
-    v = 'eta0 eta1'
-    grain_force = grain_force
-    grain_tracker_object = grain_center
-    grain_volumes = grain_volumes
-  [../]
+  #[./motion]
+  #  type = MultiGrainRigidBodyMotion
+  #  variable = w
+  #  c = c
+  #  v = 'eta0 eta1'
+  #  grain_force = grain_force
+  #  grain_tracker_object = grain_center
+  #  grain_volumes = grain_volumes
+  #[../]
   [./eta0_dot]
     type = TimeDerivative
     variable = eta0
@@ -92,16 +92,16 @@
     type = TimeDerivative
     variable = eta1
   [../]
-  [./vadv_eta1]
-    type = SingleGrainRigidBodyMotion
-    variable = eta1
-    c = c
-    v = 'eta0 eta1'
-    op_index = 1
-    grain_force = grain_force
-    grain_tracker_object = grain_center
-    grain_volumes = grain_volumes
-  [../]
+  #[./vadv_eta1]
+  #  type = SingleGrainRigidBodyMotion
+  #  variable = eta1
+  #  c = c
+  #  v = 'eta0 eta1'
+  #  op_index = 1
+  #  grain_force = grain_force
+  #  grain_tracker_object = grain_center
+  #  grain_volumes = grain_volumes
+  #[../]
   [./acint_eta1]
     type = ACInterface
     variable = eta1
@@ -308,9 +308,12 @@
   type = Transient
   scheme = bdf2
   solve_type = NEWTON
-  petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
-  petsc_options_value = 'asm         31   preonly   lu      1'
-  l_max_its = 30
+  petsc_options = '-snes_test_display'
+  petsc_options_iname = '-snes_type'
+  petsc_options_value = 'test'
+  #petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
+  #petsc_options_value = 'asm         31   preonly   lu      1'
+  #l_max_its = 30
   l_tol = 1.0e-4
   nl_rel_tol = 1.0e-10
   start_time = 0.0
