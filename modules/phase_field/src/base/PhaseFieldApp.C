@@ -123,6 +123,7 @@
 #include "DiscreteNucleation.h"
 #include "ElasticEnergyMaterial.h"
 #include "ExternalForceDensityMaterial.h"
+#include "ExternalForceDensityMaterial2.h"
 #include "ForceDensityMaterial.h"
 #include "GBAnisotropy.h"
 #include "GBDependentAnisotropicTensor.h"
@@ -184,6 +185,7 @@
 /*
  * User Objects
  */
+#include "ComputeExternalGrainForceAndTorque.h"
 #include "ComputeGrainCenterUserObject.h"
 #include "ComputeGrainForceAndTorque.h"
 #include "ConservedMaskedNormalNoise.h"
@@ -381,6 +383,7 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerMaterial(DiscreteNucleation);
   registerMaterial(ElasticEnergyMaterial);
   registerMaterial(ExternalForceDensityMaterial);
+  registerMaterial(ExternalForceDensityMaterial2);
   registerMaterial(ForceDensityMaterial);
   registerMaterial(GBAnisotropy);
   registerMaterial(GBEvolution);
@@ -431,6 +434,7 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerAux(TotalFreeEnergy);
 
   registerDeprecatedObjectName(FauxGrainTracker, "ComputeGrainCenterUserObject", "11/01/2016 00:00");
+  registerUserObject(ComputeExternalGrainForceAndTorque);
   registerUserObject(ComputeGrainForceAndTorque);
   registerUserObject(ConservedMaskedNormalNoise);
   registerUserObject(ConservedMaskedUniformNoise);
