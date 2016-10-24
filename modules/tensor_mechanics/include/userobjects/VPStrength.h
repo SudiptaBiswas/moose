@@ -27,8 +27,8 @@ public:
   virtual bool computeDerivative(unsigned int, const std::string &, Real &) const;
 
 protected:
-  Real _h;
-  Real _a;
+  const MaterialProperty<Real> & _yield;
+  Real _slope;
   const MaterialProperty<Real> & _intvar_old;
 };
 

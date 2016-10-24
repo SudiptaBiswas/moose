@@ -10,16 +10,16 @@ template<>
 InputParameters validParams<VPStrength>()
 {
   InputParameters params = validParams<HEVPStrengthUOBase>();
-  params.addParam<Real>("H", "Yield strength");
-  params.addParam<Real>("A", "Gradient co-efficient");
+  params.addParam<MaterialPropertyName>("yield", "yield", "Yield strength");
+  params.addParam<Real>("slope", "Hardening rate co-efficient");
   params.addClassDescription("User Object for linear hardening");
   return params;
 }
 
 VPStrength::VPStrength(const InputParameters & parameters) :
     HEVPStrengthUOBase(parameters),
-    _h(getParam<Real>("H")),
-    _a(getParam<Real>("A")),
+    _yield(getMaterialProperty<Real>("yield")),
+    _slope(getParam<Real>("slope")),
     _intvar_old(getMaterialPropertyOld<Real>(_intvar_prop_name))
 {
 }
@@ -27,7 +27,7 @@ VPStrength::VPStrength(const InputParameters & parameters) :
 bool
 VPStrength::computeValue(unsigned int qp, Real & val) const
 {
-  val =  _h + _a * _intvar[qp];
+  val =  _yield[qp] + _slope * _intvar[qp];
   return true;
 }
 
@@ -37,7 +37,7 @@ VPStrength::computeDerivative(unsigned int /*qp*/, const std::string & coupled_v
   val = 0;
 
   if (_intvar_prop_name == coupled_var_name)
-    val = _a;
+    val = _slope;
 
   return true;
 }
