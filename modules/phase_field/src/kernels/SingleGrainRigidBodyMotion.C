@@ -24,33 +24,28 @@ SingleGrainRigidBodyMotion::SingleGrainRigidBodyMotion(const InputParameters & p
 Real
 SingleGrainRigidBodyMotion::computeQpResidual()
 {
-  return   _velocity_advection[_qp][_op_index] * _grad_u[_qp] * _test[_i][_qp]
-         + _div_velocity_advection[_qp][_op_index] * _u[_qp] * _test[_i][_qp];
+  return   _velocity_advection[_qp][_op_index] * _grad_u[_qp] * _test[_i][_qp];
+        //  + _div_velocity_advection[_qp][_op_index] * _u[_qp] * _test[_i][_qp];
 }
 
 Real
 SingleGrainRigidBodyMotion::computeQpJacobian()
 {
-  return   _velocity_advection[_qp][_op_index] * _grad_phi[_j][_qp] * _test[_i][_qp]
-         + _velocity_advection_derivative_eta[_qp][_op_index] * _grad_u[_qp] * _phi[_j][_qp] *  _test[_i][_qp]
-         + _div_velocity_advection[_qp][_op_index] * _phi[_j][_qp] * _test[_i][_qp];
+  return _velocity_advection[_qp][_op_index] * _grad_phi[_j][_qp] * _test[_i][_qp]
+         + (*_velocity_advection_derivative_eta[_op_index])[_qp][_op_index].cross(_grad_phi[_j][_qp]) * _grad_u[_qp] * _test[_i][_qp];
+        //  + _div_velocity_advection[_qp][_op_index] * _phi[_j][_qp] * _test[_i][_qp];
 }
 
 Real
 SingleGrainRigidBodyMotion::computeQpOffDiagJacobian(unsigned int jvar)
 {
   if (jvar == _c_var)
-    return   _velocity_advection_derivative_c[_qp][_op_index] * _grad_u[_qp] * _phi[_j][_qp] * _test[_i][_qp]
-           + _div_velocity_advection_derivative_c[_qp][_op_index] * _u[_qp] * _phi[_j][_qp] * _test[_i][_qp];
+    return   _velocity_advection_derivative_c[_qp][_op_index] * _grad_u[_qp] * _phi[_j][_qp] * _test[_i][_qp];
+          //  + _div_velocity_advection_derivative_c[_qp][_op_index] * _u[_qp] * _phi[_j][_qp] * _test[_i][_qp];
 
   for (unsigned int i = 0; i < _op_num; ++i)
-  {
-    if (i != _op_index)
-    {
-      if (jvar == _vals_var[i])
-        return _velocity_advection_derivative_eta[_qp][_op_index] * _grad_u[_qp] * _phi[_j][_qp] * _test[_i][_qp];
-    }
-  }
+    if (i != _op_index && jvar == _vals_var[i])
+        return (*_velocity_advection_derivative_eta[i])[_qp][_op_index].cross(_grad_phi[_j][_qp]) * _grad_u[_qp] * _test[_i][_qp];
 
   return 0.0;
 }

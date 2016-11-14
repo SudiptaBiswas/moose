@@ -22,19 +22,21 @@ ConstantGrainForceAndTorque::ConstantGrainForceAndTorque(const InputParameters &
     GeneralUserObject(parameters),
     _F(getParam<std::vector<Real> >("force")),
     _M(getParam<std::vector<Real> >("torque")),
-    _ncrys(_F.size()/3),
-    _ncomp(6*_ncrys),
-    _force_values(_ncrys),
-    _torque_values(_ncrys),
-    _force_derivatives(_ncrys),
-    _torque_derivatives(_ncrys)
+    _op_num(_F.size()/3),
+    _ncomp(6*_op_num),
+    _force_values(_op_num),
+    _torque_values(_op_num),
+    _force_derivatives(_op_num),
+    _torque_derivatives(_op_num),
+    _force_derivatives_eta(_op_num),
+    _torque_derivatives_eta(_op_num)
 {
 }
 
 void
 ConstantGrainForceAndTorque::initialize()
 {
-  for (unsigned int i = 0; i < _ncrys; ++i)
+  for (unsigned int i = 0; i < _op_num; ++i)
   {
     _force_values[i](0) = _F[3*i+0];
     _force_values[i](1) = _F[3*i+1];
@@ -45,6 +47,9 @@ ConstantGrainForceAndTorque::initialize()
 
     _force_derivatives[i] = 0.0;
     _torque_derivatives[i] = 0.0;
+
+    _force_derivatives_eta[i].resize(_op_num);
+    _torque_derivatives_eta[i].resize(_op_num);
   }
 }
 
@@ -70,4 +75,16 @@ const std::vector<RealGradient> &
 ConstantGrainForceAndTorque::getTorqueDerivatives() const
 {
   return _torque_derivatives;
+}
+
+const std::vector<RealGradient> &
+ConstantGrainForceAndTorque::getForceEtaDerivatives(unsigned int jvar) const
+{
+  return _force_derivatives_eta[jvar];
+}
+
+const std::vector<RealGradient> &
+ConstantGrainForceAndTorque::getTorqueEtaDerivatives(unsigned int jvar) const
+{
+  return _torque_derivatives_eta[jvar];
 }

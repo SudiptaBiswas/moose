@@ -27,23 +27,27 @@ MaskedGrainForceAndTorque::MaskedGrainForceAndTorque(const InputParameters & par
     _grain_torque_derivatives_input(_grain_force_torque_input.getTorqueDerivatives()),
     _pinned_grains(getParam<std::vector<unsigned int> >("pinned_grains")),
     _num_pinned_grains(_pinned_grains.size()),
-    _ncrys(_grain_forces_input.size()),
-    _force_values(_ncrys),
-    _torque_values(_ncrys),
-    _force_derivatives(_ncrys),
-    _torque_derivatives(_ncrys)
+    _op_num(_grain_forces_input.size()),
+    _force_values(_op_num),
+    _torque_values(_op_num),
+    _force_derivatives(_op_num),
+    _torque_derivatives(_op_num),
+    _force_derivatives_eta(_op_num),
+    _torque_derivatives_eta(_op_num)
 {
 }
 
 void
 MaskedGrainForceAndTorque::initialize()
 {
-  for (unsigned int i = 0; i < _ncrys; ++i)
+  for (unsigned int i = 0; i < _op_num; ++i)
   {
     _force_values[i] = _grain_forces_input [i];
     _torque_values[i] = _grain_torques_input[i];
     _force_derivatives[i] = _grain_force_derivatives_input[i];
     _torque_derivatives[i] = _grain_torque_derivatives_input[i];
+    _force_derivatives_eta[i].resize(_op_num);
+    _torque_derivatives_eta[i].resize(_op_num);
 
     if (_num_pinned_grains != 0)
     {
@@ -83,4 +87,16 @@ const std::vector<RealGradient> &
 MaskedGrainForceAndTorque::getTorqueDerivatives() const
 {
   return _torque_derivatives;
+}
+
+const std::vector<RealGradient> &
+MaskedGrainForceAndTorque::getForceEtaDerivatives(unsigned int jvar) const
+{
+  return _force_derivatives_eta[jvar];
+}
+
+const std::vector<RealGradient> &
+MaskedGrainForceAndTorque::getTorqueEtaDerivatives(unsigned int jvar) const
+{
+  return _torque_derivatives_eta[jvar];
 }

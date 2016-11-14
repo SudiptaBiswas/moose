@@ -253,6 +253,7 @@
   [./grain_force_dns]
     type = ComputeGrainForceAndTorque
     c = c
+    etas = 'eta0 eta1'
     execute_on = 'initial timestep_end linear'
     grain_data = grain_center
     force_density = force_density

@@ -262,6 +262,7 @@
     execute_on = 'initial timestep_end'
     grain_data = grain_center
     c = c
+    etas = 'eta0 eta1'
     force_density = force_density_ext
   [../]
 []

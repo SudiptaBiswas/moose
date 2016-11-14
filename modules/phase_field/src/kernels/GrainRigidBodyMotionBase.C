@@ -12,6 +12,7 @@ InputParameters validParams<GrainRigidBodyMotionBase>()
   InputParameters params = validParams<Kernel>();
   params.addClassDescription("Base class for adding rigid mody motion to grains");
   params.addRequiredCoupledVar("c", "Concentration");
+  params.addParam<MaterialPropertyName>("advection_velocity", "advection_velocity", "advection velocity material");
   params.addRequiredCoupledVarWithAutoBuild("v", "var_name_base", "op_num", "Array of coupled variable names");
   params.addParam<std::string>("base_name", "Optional parameter that allows the user to define type of force density under consideration");
   return params;
@@ -26,17 +27,21 @@ GrainRigidBodyMotionBase::GrainRigidBodyMotionBase(const InputParameters & param
     _op_num(coupledComponents("v")),
     _vals(_op_num),
     _vals_var(_op_num),
+    _vals_name(_op_num),
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : "" ),
     _velocity_advection(getMaterialProperty<std::vector<RealGradient> >(_base_name + "advection_velocity")),
+    _vadv_name(getParam<MaterialPropertyName>(_base_name + "advection_velocity")),
     _div_velocity_advection(getMaterialProperty<std::vector<Real> >(_base_name + "advection_velocity_divergence")),
     _velocity_advection_derivative_c(getMaterialPropertyByName<std::vector<RealGradient> >(propertyNameFirst(_base_name + "advection_velocity", _c_name))),
     _div_velocity_advection_derivative_c(getMaterialPropertyByName<std::vector<Real> >(propertyNameFirst(_base_name + "advection_velocity_divergence", _c_name))),
-    _velocity_advection_derivative_eta(getMaterialPropertyByName<std::vector<RealGradient> >(propertyNameFirst(_base_name + "advection_velocity", "eta")))
+    _velocity_advection_derivative_eta(_op_num)
 {
   //Loop through grains and load coupled variables into the arrays
   for (unsigned int i = 0; i < _op_num; ++i)
   {
     _vals[i] = &coupledValue("v", i);
     _vals_var[i] = coupled("v", i);
+    _vals_name[i] = getVar("v", i)->name();
+    _velocity_advection_derivative_eta[i] = &getMaterialPropertyByName<std::vector<RealGradient> >(propertyNameFirst(_vadv_name, _vals_name[i]));
   }
 }

@@ -35,6 +35,8 @@ public:
   virtual const std::vector<RealGradient> & getTorqueValues() const;
   virtual const std::vector<RealGradient> & getForceDerivatives() const;
   virtual const std::vector<RealGradient> & getTorqueDerivatives() const;
+  virtual const std::vector<RealGradient> & getForceEtaDerivatives(unsigned int jvar) const;
+  virtual const std::vector<RealGradient> & getTorqueEtaDerivatives(unsigned int javr) const;
 
 protected:
 
@@ -46,13 +48,15 @@ protected:
 
   std::vector<unsigned int> _pinned_grains;
   unsigned int _num_pinned_grains;
-  unsigned int _ncrys;
+  unsigned int _op_num;
 
   ///@{ providing sum of all grain forces, torques & their derivatives
   std::vector<RealGradient> _force_values;
   std::vector<RealGradient> _torque_values;
   std::vector<RealGradient> _force_derivatives;
   std::vector<RealGradient> _torque_derivatives;
+  std::vector<std::vector<RealGradient> > _force_derivatives_eta;
+  std::vector<std::vector<RealGradient> > _torque_derivatives_eta;
   ///@}
 };
 

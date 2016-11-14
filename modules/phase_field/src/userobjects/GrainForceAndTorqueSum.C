@@ -22,13 +22,14 @@ GrainForceAndTorqueSum::GrainForceAndTorqueSum(const InputParameters & parameter
     GeneralUserObject(parameters),
     _sum_objects(getParam<std::vector<UserObjectName> >("grain_forces")),
     _num_forces(_sum_objects.size()),
-    _ncrys(getParam<unsigned int>("op_num")),
+    _op_num(getParam<unsigned int>("op_num")),
     _sum_forces(_num_forces),
-    _force_values(_ncrys),
-    _torque_values(_ncrys),
-    _force_derivatives(_ncrys),
-    _torque_derivatives(_ncrys)
-
+    _force_values(_op_num),
+    _torque_values(_op_num),
+    _force_derivatives(_op_num),
+    _torque_derivatives(_op_num),
+    _force_derivatives_eta(_op_num),
+    _torque_derivatives_eta(_op_num)
 {
   for (unsigned int i = 0; i < _num_forces; ++i)
     _sum_forces[i] = & getUserObjectByName<GrainForceAndTorqueInterface>(_sum_objects[i]);
@@ -38,12 +39,14 @@ void
 GrainForceAndTorqueSum::initialize()
 {
 
-  for (unsigned int i = 0; i < _ncrys; ++i)
+  for (unsigned int i = 0; i < _op_num; ++i)
   {
     _force_values[i] = 0.0;
     _torque_values[i] = 0.0;
     _force_derivatives[i] = 0.0;
     _torque_derivatives[i] = 0.0;
+    _force_derivatives_eta[i].resize(_op_num);
+    _torque_derivatives_eta[i].resize(_op_num);
 
     for (unsigned int j = 0; j < _num_forces; ++j)
     {
@@ -77,4 +80,16 @@ const std::vector<RealGradient> &
 GrainForceAndTorqueSum::getTorqueDerivatives() const
 {
   return _torque_derivatives;
+}
+
+const std::vector<RealGradient> &
+GrainForceAndTorqueSum::getForceEtaDerivatives(unsigned int jvar) const
+{
+  return _force_derivatives_eta[jvar];
+}
+
+const std::vector<RealGradient> &
+GrainForceAndTorqueSum::getTorqueEtaDerivatives(unsigned int jvar) const
+{
+  return _torque_derivatives_eta[jvar];
 }

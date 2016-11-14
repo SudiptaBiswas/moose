@@ -44,14 +44,17 @@ protected:
 
 private:
   /// constant value corresponding to grain translation
-  Real _mt;
+  const Real _mt;
 
   /// constant value corresponding to grain rotation
-  Real _mr;
+  const Real _mr;
 
-  unsigned int _ncrys;
+  const Real _v_thrsld;
+
+  unsigned int _op_num;
   std::vector<const VariableValue *> _vals;
   std::vector<const VariableGradient *> _grad_vals;
+  std::vector<VariableName> _vals_name;
   VariableName _c_name;
   /// type of force density material
   std::string _base_name;
@@ -67,7 +70,9 @@ private:
   /// Material storing derivative of divergence of advection velocities of grains w r. t. c
   MaterialProperty<std::vector<Real> > & _div_velocity_advection_derivative_c;
   /// Material storing derivative of advection velocities of grains w r. t. eta
-  MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_eta;
+  // MaterialProperty<std::vector<RealGradient> > & _velocity_advection_derivative_eta;
+  std::vector<MaterialProperty<std::vector<RealGradient> > *> _velocity_advection_derivative_eta;
+
 };
 
 #endif //GRAINADVECTIONVELOCITY_H

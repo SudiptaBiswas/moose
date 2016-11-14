@@ -251,6 +251,7 @@
     grain_data = grain_center
     force_density = force_density
     c = c
+    etas = 'eta0 eta1'
   [../]
 []
 
