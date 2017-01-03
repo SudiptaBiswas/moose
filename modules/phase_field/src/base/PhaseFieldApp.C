@@ -58,6 +58,7 @@
 #include "MatDiffusion.h"
 #include "MatReaction.h"
 #include "MultiGrainRigidBodyMotion.h"
+#include "OldMultiGrainRigidBodyMotion.h"
 #include "PFFracBulkRate.h"
 #include "PFFracCoupledInterface.h"
 #include "SimpleACInterface.h"
@@ -65,6 +66,7 @@
 #include "SimpleCoupledACInterface.h"
 #include "SimpleSplitCHWRes.h"
 #include "SingleGrainRigidBodyMotion.h"
+#include "OldSingleGrainRigidBodyMotion.h"
 #include "SoretDiffusion.h"
 #include "SplitCHMath.h"
 #include "SplitCHParsed.h"
@@ -204,6 +206,7 @@
 #include "ComputeExternalGrainForceAndTorque.h"
 #include "ComputeGrainCenterUserObject.h"
 #include "ComputeGrainForceAndTorque.h"
+#include "OldComputeGrainForceAndTorque.h"
 #include "ConservedMaskedNormalNoise.h"
 #include "ConservedMaskedUniformNoise.h"
 #include "ConservedNormalNoise.h"
@@ -344,6 +347,7 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerKernel(MatDiffusion);
   registerKernel(MatReaction);
   registerKernel(MultiGrainRigidBodyMotion);
+  registerKernel(OldMultiGrainRigidBodyMotion);
   registerKernel(PFFracBulkRate);
   registerKernel(PFFracCoupledInterface);
   registerKernel(SimpleACInterface);
@@ -351,6 +355,7 @@ PhaseFieldApp::registerObjects(Factory & factory)
   registerKernel(SimpleCoupledACInterface);
   registerKernel(SimpleSplitCHWRes);
   registerKernel(SingleGrainRigidBodyMotion);
+  registerKernel(OldSingleGrainRigidBodyMotion);
   registerKernel(SoretDiffusion);
   registerKernel(SplitCHMath);
   registerKernel(SplitCHParsed);
@@ -462,6 +467,7 @@ PhaseFieldApp::registerObjects(Factory & factory)
 
   registerUserObject(ComputeExternalGrainForceAndTorque);
   registerUserObject(ComputeGrainForceAndTorque);
+  registerUserObject(OldComputeGrainForceAndTorque);
   registerUserObject(ConservedMaskedNormalNoise);
   registerUserObject(ConservedMaskedUniformNoise);
   registerUserObject(ConservedNormalNoise);
