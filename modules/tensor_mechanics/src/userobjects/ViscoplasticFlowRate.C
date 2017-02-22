@@ -39,7 +39,7 @@ ViscoplasticFlowRate::computeValue(unsigned int qp, Real & val) const
     RankTwoTensor sdev = computeDeviatoricStress(sdiff, _ce[qp]);
     Real eqv_stress = computeEqvStress(sdev, _ce[qp]);
 
-    mooseWarning("Flow rate greater than " << _flow_rate_tol << " " << val << " " << eqv_stress << " " << _strength[qp]);
+    mooseWarning("Flow rate greater than ",  _flow_rate_tol, " ", val, " ", eqv_stress, " ", _strength[qp]);
 #endif
     return false;
   }

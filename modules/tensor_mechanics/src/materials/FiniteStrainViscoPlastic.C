@@ -120,7 +120,7 @@ FiniteStrainViscoPlastic::initUserObjects(const std::vector<UserObjectName> & uo
   uo.resize(uo_num);
 
   if (uo_num == 0)
-    mooseError("Specify atleast one user object of type" << typeid(T).name());
+    mooseError("Specify atleast one user object of type", typeid(T).name());
 
   for (unsigned int i = 0; i < uo_num; ++i)
     uo[i] = &getUserObjectByName<T>(uo_names[i]);
@@ -247,7 +247,7 @@ FiniteStrainViscoPlastic::computeQpStress()
     }
 
     if (substep_iter > _max_substep_iter)
-      mooseError("Constitutive failure with substepping at quadrature point " << _q_point[_qp](0) << " " << _q_point[_qp](1) << " " << _q_point[_qp](2));
+      mooseError("Constitutive failure with substepping at quadrature point ", _q_point[_qp](0), " ", _q_point[_qp](1), " ", _q_point[_qp](2));
   }
   while (!converge);
 
