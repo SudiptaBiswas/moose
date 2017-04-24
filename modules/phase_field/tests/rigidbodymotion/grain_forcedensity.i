@@ -297,6 +297,12 @@
   [../]
 []
 
+[Problem]
+  #error_on_jacobian_nonzero_reallocation = true
+  update_jacobian_preallocation = true
+  ignore_zeros_in_jacobian = true
+[]
+
 [Preconditioning]
   [./SMP]
     type = SMP
@@ -310,6 +316,7 @@
   solve_type = NEWTON
   petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
   petsc_options_value = 'asm         31   preonly   lu      1'
+  petsc_options = '-snes_view'
   l_max_its = 30
   l_tol = 1.0e-4
   nl_rel_tol = 1.0e-10
