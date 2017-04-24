@@ -243,6 +243,8 @@ public:
   findImplicitGeometricCouplingEntries(GeometricSearchData & geom_search_data,
                                        std::map<dof_id_type, std::vector<dof_id_type>> & graph);
 
+  void findNonlocalCouplingEntries(std::map<dof_id_type, std::vector<dof_id_type> > & graph);
+
   /**
    * Adds entries to the Jacobian in the correct positions for couplings coming from dofs being
    * coupled that

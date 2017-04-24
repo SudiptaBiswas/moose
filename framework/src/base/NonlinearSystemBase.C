@@ -1372,6 +1372,33 @@ NonlinearSystemBase::findImplicitGeometricCouplingEntries(
 }
 
 void
+NonlinearSystemBase::findNonlocalCouplingEntries(std::map<dof_id_type, std::vector<dof_id_type> > & graph)
+{
+  std::vector<std::pair<MooseVariable *, MooseVariable *> > & cne = _fe_problem.nonlocalCouplingEntries(0);
+  for (const auto & it : cne)
+  {
+    MooseVariable & ivar = *(it.first);
+    MooseVariable & jvar = *(it.second);
+
+    const std::vector<dof_id_type> & ivar_indices = ivar.dofIndices();
+    const std::vector<dof_id_type> & jvar_indices = jvar.allDofIndices();
+
+    for (const auto & vi : ivar_indices)
+      for (const auto & vj : jvar_indices)
+        graph[vi].push_back(vj);
+  }
+
+  // Make every entry sorted and unique
+  for (auto & it : graph)
+  {
+    std::vector<dof_id_type> & row = it.second;
+    std::sort(row.begin(), row.end());
+    std::vector<dof_id_type>::iterator uit = std::unique(row.begin(), row.end());
+    row.resize(uit - row.begin());
+  }
+}
+
+void
 NonlinearSystemBase::addImplicitGeometricCouplingEntries(SparseMatrix<Number> & jacobian,
                                                          GeometricSearchData & geom_search_data)
 {
@@ -2263,17 +2290,22 @@ NonlinearSystemBase::augmentSparsity(SparsityPattern::Graph & sparsity,
                                      std::vector<dof_id_type> & n_nz,
                                      std::vector<dof_id_type> & n_oz)
 {
-  if (_add_implicit_geometric_coupling_entries_to_jacobian)
+  if (_add_implicit_geometric_coupling_entries_to_jacobian || _fe_problem.checkNonlocalCouplingRequirement())
   {
-    _fe_problem.updateGeomSearch();
+    std::map<dof_id_type, std::vector<dof_id_type> > graph;
 
-    std::map<dof_id_type, std::vector<dof_id_type>> graph;
+    if (_add_implicit_geometric_coupling_entries_to_jacobian)
+    {
+      _fe_problem.updateGeomSearch();
 
-    findImplicitGeometricCouplingEntries(_fe_problem.geomSearchData(), graph);
+      findImplicitGeometricCouplingEntries(_fe_problem.geomSearchData(), graph);
 
-    if (_fe_problem.getDisplacedProblem())
-      findImplicitGeometricCouplingEntries(_fe_problem.getDisplacedProblem()->geomSearchData(),
-                                           graph);
+      if (_fe_problem.getDisplacedProblem())
+        findImplicitGeometricCouplingEntries(_fe_problem.getDisplacedProblem()->geomSearchData(), graph);
+    }
+
+    if (_fe_problem.checkNonlocalCouplingRequirement())
+      findNonlocalCouplingEntries(graph);
 
     const dof_id_type first_dof_on_proc = dofMap().first_dof(processor_id());
     const dof_id_type end_dof_on_proc = dofMap().end_dof(processor_id());

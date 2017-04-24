@@ -733,6 +733,8 @@ FEProblemBase::initialSetup()
     setNonlocalCouplingMatrix();
     for (THREAD_ID tid = 0; tid < n_threads; ++tid)
       _assembly[tid]->initNonlocalCoupling();
+
+    _nl->dofMap().compute_sparsity(_mesh);
   }
 }
 
@@ -4422,7 +4424,10 @@ FEProblemBase::meshChanged()
   }
 
   if (_calculate_jacobian_in_uo)
+  {
     setVariableAllDoFMap(_uo_jacobian_moose_vars[0]);
+    _nl->dofMap().compute_sparsity(_mesh);
+  }
 
   _has_jacobian = false; // we have to recompute jacobian when mesh changed
 
