@@ -28,7 +28,7 @@ ElasticEnergyMaterial::ElasticEnergyMaterial(const InputParameters & parameters)
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
     _stress(getMaterialPropertyByName<RankTwoTensor>(_base_name + "stress")),
     _elasticity_tensor(getMaterialPropertyByName<RankFourTensor>(_base_name + "elasticity_tensor")),
-    _strain(getMaterialPropertyByName<RankTwoTensor>(_base_name + "elastic_strain"))
+    _strain(getMaterialPropertyByName<RankTwoTensor>(_base_name + "mechanical_strain"))
 {
   _dstrain.resize(_nargs);
   _d2strain.resize(_nargs);

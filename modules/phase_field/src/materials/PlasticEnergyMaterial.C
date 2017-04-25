@@ -16,10 +16,13 @@ InputParameters validParams<PlasticEnergyMaterial>()
   params.addParam<std::string>("base_name", "Material property base name");
   params.addRequiredCoupledVar("args", "Arguments of F() - use vector coupling");
   params.addCoupledVar("displacement_gradients", "Vector of displacement gradient variables (see Modules/PhaseField/DisplacementGradients action)");
-  params.addParam<MaterialPropertyName>("yield", "yield", "Yield strength");
-  params.addParam<std::string>("intvar_prop_tensor_name", "Names of internal variable property to calculate material resistance: Same as internal variable user object");
+  params.addParam<MaterialPropertyName>("yield", "yield", "yield strength.");
+  params.addParam<std::string>("intvar_prop_tensor_name", "intvar_tensor", "intvar_tensor_name");
+  params.addParam<std::string>("intvar_prop_name", "intvar", "intvar_prop_name");
+  params.addParam<std::string>("flow_rate_prop_name", "flow_rate", "flow_rate_prop_name");
   params.addCoupledVar("plasticity_variable", "Name of flow rate property: Same as the flow rate user object name specified in input file");
   params.addParam<Real>("A", "Gradient co-efficient");
+  params.addParam<Real>("C", "hardening multiplier");
   params.addParam<Real>("H", "hardening co-efficient");
   params.addParam<UserObjectName>("flow_rate_user_object", "List of User object names that computes flow rate and derivatives");
   params.addParam<UserObjectName>("strength_user_object", "List of User object names that computes strength variables and derivatives");
@@ -35,13 +38,13 @@ PlasticEnergyMaterial::PlasticEnergyMaterial(const InputParameters & parameters)
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : "" ),
     _intvar_prop_tensor_name(isParamValid("intvar_prop_tensor_name") ? getParam<std::string>(_base_name + "intvar_prop_tensor_name") : ""),
     _intvar_tensor(getMaterialPropertyByName<RankTwoTensor>(_base_name + _intvar_prop_tensor_name)),
-    _intvar_prop_name(isParamValid("intvar_prop_tensor_name") ? getParam<std::string>(_base_name + "intvar_prop_name") : ""),
+    _intvar_prop_name(isParamValid("intvar_prop_name") ? getParam<std::string>(_base_name + "intvar_prop_name") : ""),
     _intvar(getMaterialPropertyByName<Real>(_base_name + _intvar_prop_name)),
     _flow_rate_prop_name(getParam<std::string>("flow_rate_prop_name")),
     // _intvar(coupledValue("plasticity_variable")),
     // _grad_intvar(coupledGradient("plasticity_variable")),
     _yield(getMaterialProperty<Real>("yield")),
-    _C(getParam<Real>("hardening_multiplier")),
+    _C(getParam<Real>("C")),
     _A(getParam<Real>("A")),
     _H(getParam<Real>("H")),
     _flow_rate_uo_name(getParam<UserObjectName>("flow_rate_user_object")),
@@ -58,6 +61,7 @@ PlasticEnergyMaterial::PlasticEnergyMaterial(const InputParameters & parameters)
     _int_var_rate_tensor_uo(getUserObjectByName<VPHardeningRateBase>(_int_var_rate_tensor_uo_name))
 {
   _dyieldstrength.resize(_nargs);
+  _d2yieldstrength.resize(_nargs);
   // fetch stress and elasticity tensor derivatives (in simple eigenstrain models this is is only w.r.t. 'c')
   for (unsigned int i = 0; i < _nargs; ++i)
   {
