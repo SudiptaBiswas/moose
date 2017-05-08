@@ -83,16 +83,16 @@ VPIsotropicHardeningRate::computeTensorDerivative(unsigned int qp, const std::st
             dsdev_dsdiff(i, j, k, l) += ce_inv(i, j) * _ce[qp](k, l)/3.0;
           }
 
-      RankFourTensor dsdiff_dbackstress;
-      for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
-        for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
-          for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
-            for (unsigned int l = 0; l < LIBMESH_DIM; ++l)
-            {
-              dsdiff_dbackstress(i, j, k, l) = 0.0;
-              if (i==k && j==l)
-                dsdiff_dbackstress(i, j, k, l) = -1.0;
-            }
+    RankFourTensor dsdiff_dbackstress;
+    for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
+      for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
+        for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
+          for (unsigned int l = 0; l < LIBMESH_DIM; ++l)
+          {
+            dsdiff_dbackstress(i, j, k, l) = 0.0;
+            if (i==k && j==l)
+              dsdiff_dbackstress(i, j, k, l) = -1.0;
+          }
 
       RankFourTensor dintvartensor_dintvartensor;
       for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
@@ -123,19 +123,19 @@ VPIsotropicHardeningRate::computeTensorDerivative(unsigned int qp, const std::st
     if (eqv_stress > 0.0)
       deqvstress_dsdev = 1.5 / eqv_stress * sdev * _ce[qp] * _ce[qp];
 
-      RankTwoTensor ce_inv = _ce[qp].inverse();
+    RankTwoTensor ce_inv = _ce[qp].inverse();
 
-      RankFourTensor dsdev_dsdiff;
-      for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
-        for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
-          for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
-            for (unsigned int l = 0; l < LIBMESH_DIM; ++l)
-            {
-              dsdev_dsdiff(i, j, k, l) = 0.0;
-              if (i==k && j==l)
-                dsdev_dsdiff(i, j, k, l) = -1.0;
-              dsdev_dsdiff(i, j, k, l) += ce_inv(i, j) * _ce[qp](k, l)/3.0;
-            }
+    RankFourTensor dsdev_dsdiff;
+    for (unsigned int i = 0; i < LIBMESH_DIM; ++i)
+      for (unsigned int j = 0; j < LIBMESH_DIM; ++j)
+        for (unsigned int k = 0; k < LIBMESH_DIM; ++k)
+          for (unsigned int l = 0; l < LIBMESH_DIM; ++l)
+          {
+            dsdev_dsdiff(i, j, k, l) = 0.0;
+            if (i==k && j==l)
+              dsdev_dsdiff(i, j, k, l) = -1.0;
+            dsdev_dsdiff(i, j, k, l) += ce_inv(i, j) * _ce[qp](k, l)/3.0;
+          }
 
       RankFourTensor dsdiff_dpk2;
       for (unsigned int i = 0; i < LIBMESH_DIM; ++i)

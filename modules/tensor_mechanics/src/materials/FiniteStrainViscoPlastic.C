@@ -435,8 +435,8 @@ FiniteStrainViscoPlastic::computeFlowRateJacobian()
   for (unsigned int i = 0; i < _num_flow_rate_uos; ++i)
     _int_var_rate_uo[i]->computeTensorDerivative(_qp, _pk2_prop_name, _dflowrate_dpk2[i]);
 
-    for (unsigned int i = 0; i < _num_flow_rate_uos; ++i)
-      for (unsigned int j = 0; j < _num_int_var_tensor_uos; ++j)
+  for (unsigned int i = 0; i < _num_flow_rate_uos; ++i)
+    for (unsigned int j = 0; j < _num_int_var_tensor_uos; ++j)
       _int_var_rate_uo[i]->computeTensorDerivative(_qp, _int_var_tensor_uo_names[j], _dflowrate_dintvartensor[i][j]);
 
   computeDpk2Dfpinv();
@@ -770,13 +770,13 @@ FiniteStrainViscoPlastic::computeIntVarDerivatives()
         _dintvartensor_dintvartensor[i][j] -= _dintvartensor_dintvarratetensor[i][k] * _dintvarratetensor_dintvartensor[k][j];
     }
 
-    for (unsigned int i = 0; i < _num_int_var_tensor_uos; ++i)
-      for (unsigned int j = 0; j < _num_flow_rate_uos; ++j)
-      {
-        _dintvartensor_dflowrate_tmp[i][j].zero();
-        for (unsigned int k = 0; k < _num_int_var_rate_tensor_uos; ++k)
-          _dintvartensor_dflowrate_tmp[i][j] += _dintvartensor_dintvarratetensor[i][k] * _dintvarratetensor_dflowrate[k][j];
-      }
+  for (unsigned int i = 0; i < _num_int_var_tensor_uos; ++i)
+    for (unsigned int j = 0; j < _num_flow_rate_uos; ++j)
+    {
+      _dintvartensor_dflowrate_tmp[i][j].zero();
+      for (unsigned int k = 0; k < _num_int_var_rate_tensor_uos; ++k)
+        _dintvartensor_dflowrate_tmp[i][j] += _dintvartensor_dintvarratetensor[i][k] * _dintvarratetensor_dflowrate[k][j];
+    }
 
     for (unsigned int i = 0; i < _num_int_var_tensor_uos; ++i)
       for (unsigned int j = 0; j < _num_flow_rate_uos; ++j)
