@@ -114,26 +114,26 @@ ComputeMultiPlasticityStress::ComputeMultiPlasticityStress(const InputParameters
 
     _perform_finite_strain_rotations(getParam<bool>("perform_finite_strain_rotations")),
 
-    _plastic_strain(declareProperty<RankTwoTensor>("plastic_strain")),
-    _plastic_strain_old(getMaterialPropertyOld<RankTwoTensor>("plastic_strain")),
-    _intnl(declareProperty<std::vector<Real>>("plastic_internal_parameter")),
-    _intnl_old(getMaterialPropertyOld<std::vector<Real>>("plastic_internal_parameter")),
-    _yf(declareProperty<std::vector<Real>>("plastic_yield_function")),
-    _iter(declareProperty<Real>("plastic_NR_iterations")), // this is really an unsigned int, but
+    _plastic_strain(declareProperty<RankTwoTensor>(_base_name + "plastic_strain")),
+    _plastic_strain_old(getMaterialPropertyOld<RankTwoTensor>(_base_name + "plastic_strain")),
+    _intnl(declareProperty<std::vector<Real>>(_base_name + "plastic_internal_parameter")),
+    _intnl_old(getMaterialPropertyOld<std::vector<Real>>(_base_name + "plastic_internal_parameter")),
+    _yf(declareProperty<std::vector<Real>>(_base_name + "plastic_yield_function")),
+    _iter(declareProperty<Real>(_base_name + "plastic_NR_iterations")), // this is really an unsigned int, but
                                                            // for visualisation i convert it to Real
-    _linesearch_needed(declareProperty<Real>("plastic_linesearch_needed")), // this is really a
+    _linesearch_needed(declareProperty<Real>(_base_name + "plastic_linesearch_needed")), // this is really a
                                                                             // boolean, but for
                                                                             // visualisation i
                                                                             // convert it to Real
     _ld_encountered(declareProperty<Real>(
-        "plastic_linear_dependence_encountered")), // this is really a boolean, but for
+        _base_name + "plastic_linear_dependence_encountered")), // this is really a boolean, but for
                                                    // visualisation i convert it to Real
-    _constraints_added(declareProperty<Real>("plastic_constraints_added")), // this is really a
+    _constraints_added(declareProperty<Real>(_base_name + "plastic_constraints_added")), // this is really a
                                                                             // boolean, but for
                                                                             // visualisation i
                                                                             // convert it to Real
-    _n(declareProperty<RealVectorValue>("plastic_transverse_direction")),
-    _n_old(getMaterialPropertyOld<RealVectorValue>("plastic_transverse_direction")),
+    _n(declareProperty<RealVectorValue>(_base_name + "plastic_transverse_direction")),
+    _n_old(getMaterialPropertyOld<RealVectorValue>(_base_name + "plastic_transverse_direction")),
 
     _strain_increment(getMaterialPropertyByName<RankTwoTensor>(_base_name + "strain_increment")),
     _total_strain_old(getMaterialPropertyOldByName<RankTwoTensor>(_base_name + "total_strain")),

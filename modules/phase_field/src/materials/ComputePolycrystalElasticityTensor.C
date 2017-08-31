@@ -90,6 +90,6 @@ ComputePolycrystalElasticityTensor::computeQpElasticityTensor()
     C_deriv = (_grain_tracker.getData(grain_id) - _elasticity_tensor[_qp]) * dhdopi / sum_h;
 
     // Convert from XPa to eV/(xm)^3, where X is pressure scale and x is length scale;
-    C_deriv *= _JtoeV * (_length_scale * _length_scale * _length_scale) * _pressure_scale;
+    // C_deriv *= _JtoeV * (_length_scale * _length_scale * _length_scale) * _pressure_scale;
   }
 }
