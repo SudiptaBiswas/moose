@@ -7,8 +7,8 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#ifndef PeriodicStrain_H
-#define PeriodicStrain_H
+#ifndef PERIODICSTRAIN_H
+#define PERIODICSTRAIN_H
 
 #include "ScalarKernel.h"
 
@@ -28,6 +28,12 @@ public:
   virtual void computeResidual();
   virtual void computeJacobian();
 
+protected:
+  virtual void computeComponentIndex(Order var_order);
+
   const PeriodicStrainUserObject & _pst;
+  const RankTwoTensor & _pst_residual;
+  const RankTwoTensor & _pst_jacobian;
+  std::vector<std::pair<unsigned int, unsigned int> > _components;
 };
-#endif // PeriodicStrain_H
+#endif // PERIODICSTRAIN_H

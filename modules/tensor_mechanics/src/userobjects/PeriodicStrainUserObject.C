@@ -96,14 +96,14 @@ PeriodicStrainUserObject::finalize()
     }
 }
 
-Real
-PeriodicStrainUserObject::returnResidual(unsigned int scalar_var_order) const
+const RankTwoTensor &
+PeriodicStrainUserObject::getResidual() const
 {
-  return _residual(scalar_var_order,scalar_var_order);
+  return _residual;
 }
 
-Real
-PeriodicStrainUserObject::returnJacobian(unsigned int scalar_var_id) const
+const RankTwoTensor &
+PeriodicStrainUserObject::getJacobian() const
 {
-  return _jacobian(scalar_var_id,scalar_var_id);
+  return _jacobian;
 }

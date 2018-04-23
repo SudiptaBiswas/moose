@@ -55,6 +55,8 @@ ComputeSmallStrain::computeProperties()
       _total_strain[_qp](2, 2) += (volumetric_strain - trace) / 3.0;
     }
 
+    _total_strain[_qp] += (*_periodic_strain)[_qp];
+
     _mechanical_strain[_qp] = _total_strain[_qp];
 
     // Remove the Eigen strain

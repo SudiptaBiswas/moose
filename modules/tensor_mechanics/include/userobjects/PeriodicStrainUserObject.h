@@ -7,8 +7,8 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#ifndef PeriodicStrainUserObject_H
-#define PeriodicStrainUserObject_H
+#ifndef PERIODICSTRAINUSEROBJECT_H
+#define PERIODICSTRAINUSEROBJECT_H
 
 #include "ElementUserObject.h"
 #include "SubblockIndexProvider.h"
@@ -32,8 +32,8 @@ public:
   void execute() override;
   void threadJoin(const UserObject & uo) override;
   void finalize() override;
-  virtual Real returnResidual(unsigned int scalar_var_id = 0) const;
-  virtual Real returnJacobian(unsigned int scalar_var_id = 0) const;
+  virtual const RankTwoTensor & getResidual() const;
+  virtual const RankTwoTensor & getJacobian() const;
 
 protected:
   std::string _base_name;
@@ -49,4 +49,4 @@ protected:
   RankTwoTensor _jacobian;
 };
 
-#endif // PeriodicStrainUserObject_H
+#endif // PERIODICSTRAINUSEROBJECT_H
