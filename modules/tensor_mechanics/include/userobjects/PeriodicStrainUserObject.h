@@ -12,10 +12,12 @@
 
 #include "ElementUserObject.h"
 #include "SubblockIndexProvider.h"
+#include "RankTwoTensor.h"
+#include "RankFourTensor.h"
 
 class PeriodicStrainUserObject;
-class RankTwoTensor;
-class RankFourTensor;
+// class RankTwoTensor;
+// class RankFourTensor;
 class Function;
 
 template <>
@@ -31,7 +33,6 @@ public:
   void threadJoin(const UserObject & uo) override;
   void finalize() override;
   virtual Real returnResidual(unsigned int scalar_var_id = 0) const;
-  virtual Real returnReferenceResidual(unsigned int scalar_var_id = 0) const;
   virtual Real returnJacobian(unsigned int scalar_var_id = 0) const;
 
 protected:
@@ -43,8 +44,9 @@ protected:
   const SubblockIndexProvider * _subblock_id_provider;
 
   const Real _factor;
-  std::vector<RankTwoTensor> _residual;
-  std::vector<RankFourTensor> _jacobian;
+  RankTwoTensor _applied_stress_tensor;
+  RankTwoTensor _residual;
+  RankTwoTensor _jacobian;
 };
 
 #endif // PeriodicStrainUserObject_H
