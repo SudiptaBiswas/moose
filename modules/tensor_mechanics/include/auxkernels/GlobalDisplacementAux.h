@@ -30,9 +30,11 @@ protected:
   const VariableValue & _scalar_global_strain;
   const unsigned int _component;
 
-  bool _output_total_disp;
+  bool _output_global_disp;
 
-  unsigned int _ndisp;
+  const unsigned int _dim;
+  const unsigned int _ndisp;
   std::vector<const VariableValue *> _disp;
+  std::vector<unsigned int> _disp_var;
 };
 #endif // GLOBALDISPLACEMENTAUX_H

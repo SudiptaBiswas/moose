@@ -28,7 +28,8 @@ validParams<GlobalDisplacementAux>()
   params.addCoupledVar("displacements", "The name of the displacement variables");
   params.addRequiredParam<unsigned int>("component",
                                         "The displacement component to consider for this kernel");
-  params.addParam<bool>("output_total_displacement", true, "Option to output total displacement");
+  params.addParam<bool>(
+      "output_global_displacement", false, "Option to output global displacement only");
 
   return params;
 }
@@ -37,19 +38,20 @@ GlobalDisplacementAux::GlobalDisplacementAux(const InputParameters & parameters)
   : AuxKernel(parameters),
     _scalar_global_strain(coupledScalarValue("scalar_global_strain")),
     _component(getParam<unsigned int>("component")),
-    _output_total_disp(getParam<bool>("output_total_displacement")),
-    _ndisp(getParam<bool>("output_total_displacement") ? coupledComponents("displacements") : 0),
-    _disp(_ndisp)
+    _output_global_disp(getParam<bool>("output_global_displacement")),
+    _dim(_mesh.dimension()),
+    _ndisp(coupledComponents("displacements")),
+    _disp(_ndisp),
+    _disp_var(_ndisp)
 {
-  if (_component > _mesh.dimension())
-    mooseError("The component ",
-               _component,
-               " does not exist for ",
-               _mesh.dimension(),
-               " dimensional problems");
+  if (_component > _dim)
+    mooseError("The component ", _component, " does not exist for ", _dim, " dimensional problems");
 
   for (unsigned int i = 0; i < _ndisp; ++i)
+  {
     _disp[i] = &coupledValue("displacements", i);
+    _disp_var[i] = coupled("displacements", i);
+  }
 }
 
 Real
@@ -58,12 +60,18 @@ GlobalDisplacementAux::computeValue()
   RankTwoTensor strain;
   strain.fillFromScalarVariable(_scalar_global_strain);
 
+  for (unsigned int dir = 0; dir < _dim; ++dir)
+    for (unsigned int var = 0; var < _ndisp; ++var)
+    {
+      bool periodic = _mesh.isTranslatedPeriodic(_disp_var[var], dir);
+      if (!periodic)
+        strain(dir, var) = 0.0;
+    }
+
   const RealVectorValue & global_disp = strain * (*_current_node);
 
-  Real value = global_disp(_component);
-
-  if (_output_total_disp)
-    value += (*_disp[_component])[_qp];
-
-  return value;
+  if (_output_global_disp)
+    return global_disp(_component);
+  else
+    return global_disp(_component) + (*_disp[_component])[_qp];
 }

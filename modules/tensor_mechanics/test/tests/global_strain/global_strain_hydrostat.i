@@ -72,6 +72,7 @@
     type = GlobalStrain
     variable = global_strain
     global_strain_uo = global_strain_uo
+    periodic_directions = 'x y z'
   [../]
 []
 

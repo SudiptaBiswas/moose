@@ -24,6 +24,8 @@ validParams<ComputeGlobalStrain>()
                                "multiple mechanics material systems on the same "
                                "block, i.e. for multiple phases");
   params.addCoupledVar("scalar_global_strain", "Scalar variable for global strain");
+  params.addCoupledVar("displacements", "The name of the displacement variables");
+
   return params;
 }
 
@@ -31,8 +33,13 @@ ComputeGlobalStrain::ComputeGlobalStrain(const InputParameters & parameters)
   : Material(parameters),
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
     _scalar_global_strain(coupledScalarValue("scalar_global_strain")),
-    _global_strain(declareProperty<RankTwoTensor>(_base_name + "global_strain"))
+    _global_strain(declareProperty<RankTwoTensor>(_base_name + "global_strain")),
+    _dim(_mesh.dimension()),
+    _ndisp(coupledComponents("displacements")),
+    _disp_var(_ndisp)
 {
+  for (unsigned int i = 0; i < _ndisp; ++i)
+    _disp_var[i] = coupled("displacements", i);
 }
 
 void
@@ -46,6 +53,14 @@ ComputeGlobalStrain::computeProperties()
 {
   RankTwoTensor & strain = _global_strain[0];
   strain.fillFromScalarVariable(_scalar_global_strain);
+
+  for (unsigned int dir = 0; dir < _dim; ++dir)
+    for (unsigned int var = 0; var < _ndisp; ++var)
+    {
+      bool periodic = _mesh.isTranslatedPeriodic(_disp_var[var], dir);
+      if (!periodic)
+        strain(dir, var) = 0.0;
+    }
 
   for (_qp = 0; _qp < _qrule->n_points(); ++_qp)
     _global_strain[_qp] = strain;

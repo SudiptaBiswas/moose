@@ -27,6 +27,11 @@ validParams<GlobalStrain>()
   params.addClassDescription("Scalar Kernel to solve for the global strain");
   params.addRequiredParam<UserObjectName>("global_strain_uo",
                                           "The name of the GlobalStrainUserObject");
+  MultiMooseEnum periodic_dirs("x=0 y=1 z=2");
+  params.addRequiredParam<MultiMooseEnum>(
+      "periodic_directions",
+      periodic_dirs,
+      "Specify the directions along which periodicity is maintained");
 
   return params;
 }
@@ -37,13 +42,17 @@ GlobalStrain::GlobalStrain(const InputParameters & parameters)
     _pst_residual(_pst.getResidual()),
     _pst_jacobian(_pst.getJacobian()),
     _components(_var.order()),
-    _dim(_mesh.dimension())
+    _dim(_mesh.dimension()),
+    _periodic_dirs(getParam<MultiMooseEnum>("periodic_directions"))
 {
   if ((_dim == 1 && _var.order() != FIRST) || (_dim == 2 && _var.order() != THIRD) ||
       (_dim == 3 && _var.order() != SIXTH))
     mooseError("PerdiodicStrain ScalarKernel is only compatible with scalar variables of order "
                "FIRST in 1D, THIRD in 2D, and SIXTH in 3D. Please change the order of the scalar"
                "variable acoording to the mesh dimension.");
+
+  if ((_dim == 1 && _periodic_dirs.size() > 1) || (_dim == 2 && _periodic_dirs.size() > 2))
+    mooseError("No. of perdiodic directions can not be greater than mesh dimension.");
 
   assignComponentIndices(_var.order());
 }
@@ -53,7 +62,11 @@ GlobalStrain::computeResidual()
 {
   DenseVector<Number> & re = _assembly.residualBlock(_var.number());
   for (_i = 0; _i < re.size(); ++_i)
-    re(_i) += _pst_residual(_components[_i].first, _components[_i].second);
+  {
+    if (_periodic_dirs.contains(_components[_i].first) ||
+        _periodic_dirs.contains(_components[_i].second))
+      re(_i) += _pst_residual(_components[_i].first, _components[_i].second);
+  }
 }
 
 void
@@ -62,6 +75,7 @@ GlobalStrain::computeJacobian()
   DenseMatrix<Number> & ke = _assembly.jacobianBlock(_var.number(), _var.number());
   for (_i = 0; _i < ke.m(); ++_i)
     for (_j = 0; _j < ke.m(); ++_j)
+      // periodic direction check is not done for jacobian calculations to avoid zero pivot error
       ke(_i, _j) += _pst_jacobian(_components[_i].first,
                                   _components[_i].second,
                                   _components[_j].first,

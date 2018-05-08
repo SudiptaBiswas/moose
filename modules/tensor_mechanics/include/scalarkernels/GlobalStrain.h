@@ -11,6 +11,7 @@
 #define GLOBALSTRAIN_H
 
 #include "ScalarKernel.h"
+#include "MultiMooseEnum.h"
 
 // Forward Declarations
 class GlobalStrain;
@@ -37,7 +38,9 @@ protected:
   const GlobalStrainUserObject & _pst;
   const RankTwoTensor & _pst_residual;
   const RankFourTensor & _pst_jacobian;
-  std::vector<std::pair<unsigned int, unsigned int>> _components;
+  std::vector<std::pair<unsigned short, unsigned short>> _components;
   unsigned int _dim;
+
+  MultiMooseEnum _periodic_dirs;
 };
 #endif // GLOBALSTRAIN_H

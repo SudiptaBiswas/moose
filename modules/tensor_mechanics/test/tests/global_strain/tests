@@ -19,4 +19,19 @@
     input = 'global_strain_shear.i'
     exodiff = 'global_strain_shear_out.e'
   [../]
+  [./direction]
+    type = 'Exodiff'
+    input = 'global_strain_direction.i'
+    exodiff = 'global_strain_direction_out.e'
+  [../]
+  [./disp]
+    type = 'Exodiff'
+    input = 'global_strain_disp.i'
+    exodiff = 'global_strain_disp_out.e'
+  [../]
+  [./pressure_3D]
+    type = 'Exodiff'
+    input = 'global_strain_pressure_3D.i'
+    exodiff = 'global_strain_pressure_3D_out.e'
+  [../]
 []
