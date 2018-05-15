@@ -86,6 +86,25 @@ validParams<TensorMechanicsActionBase>()
       "planar_formulation scalar_out_of_plane_strain out_of_plane_pressure pressure_factor",
       "Out-of-plane stress/strain");
 
+  // strain periodicity
+  params.addParam<bool>(
+      "maintain_strain_periodicity",
+      false,
+      "Flag to set global strain calculation required for maintaining strain periodicity");
+  params.addParam<NonlinearVariableName>("scalar_global_strain",
+                                         "Scalar variable for global strain");
+  params.addParam<std::vector<AuxVariableName>>(
+      "auxiliary_displacements",
+      "The auxliary displacement variables to be calculated from scalar variables");
+  params.addParam<std::vector<Real>>("applied_stress_tensor",
+                                     "Vector of values defining the constant applied stress "
+                                     "to add, in order 11, 22, 33, 23, 13, 12");
+  MultiMooseEnum periodic_dirs("x=0 y=1 z=2");
+  params.addParam<MultiMooseEnum>("periodic_directions",
+                                  periodic_dirs,
+                                  "Specify the directions along which periodicity is maintained");
+  params.addParam<bool>(
+      "output_global_displacement", false, "Option to output global displacement only");
   // Output
   params.addParam<MultiMooseEnum>("generate_output",
                                   TensorMechanicsActionBase::outputPropertiesType(),

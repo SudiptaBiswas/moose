@@ -174,6 +174,23 @@ TensorMechanicsAction::act()
           _action_factory.create(type, name() + "_gps", action_params));
       _awh.addActionBlock(action);
     }
+
+    if (getParam<bool>("maintain_strain_periodicity"))
+    {
+      // Set the action parameters
+      const std::string type = "GlobalStrainAction";
+      auto action_params = _action_factory.getValidParams(type);
+      action_params.set<bool>("_built_by_moose") = true;
+      action_params.set<std::string>("registered_identifier") = "(AutoBuilt)";
+      action_params.applyParameters(parameters(), {"displacements", "use_displaced_mesh"});
+      action_params.set<bool>("use_displaced_mesh") = false;
+      action_params.set<std::vector<VariableName>>("displacements") = _coupled_displacements;
+
+      // Create and add the action to the warehouse
+      auto action = MooseSharedNamespace::static_pointer_cast<MooseObjectAction>(
+          _action_factory.create(type, name() + "_global_strain", action_params));
+      _awh.addActionBlock(action);
+    }
   }
 
   //
@@ -259,6 +276,12 @@ TensorMechanicsAction::act()
     if (isParamValid("scalar_out_of_plane_strain"))
       params.set<std::vector<VariableName>>("scalar_out_of_plane_strain") = {
           getParam<NonlinearVariableName>("scalar_out_of_plane_strain")};
+    if (getParam<bool>("maintain_strain_periodicity"))
+    {
+      params.set<MaterialPropertyName>("global_strain") = getParam<std::string>(
+          (isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : "") +
+          "global_strain");
+    }
 
     _problem->addMaterial(type, name() + "_strain", params);
   }
