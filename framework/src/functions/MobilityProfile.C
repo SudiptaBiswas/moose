@@ -101,6 +101,7 @@ MobilityProfile::value(Real t, const Point & p)
 
   Real r2 = r + _haz;
   Real haz_value = (1.0 - (dist - _r1) / _haz) * _factor;
+  // Real haz_value = (_outvalue + (_invalue - _outvalue) * (1.0 - (dist - _r1) / _haz));
 
   if (dist < r)
     return _invalue;
