@@ -426,7 +426,7 @@
     f_name = dis_den
     args = 'unique_grains'
     constant_names = 'e'
-    constant_expressions = '1.0'
+    constant_expressions = '3.0'
     function = if(unique_grains>49,0,e)
 
    # dislocation density equals e in the deformed grain and zero in the recrystallized grain
@@ -482,19 +482,37 @@
     cutback_factor = 0.75
     optimal_iterations = 7
   [../]
-  [./Adaptivity]
-    initial_adaptivity = 1 # Number of times mesh is adapted to initial condition
-    refine_fraction = 0.5 # Fraction of high error that will be refined
-    coarsen_fraction = 0.05 # Fraction of low error that will coarsened
-    max_h_level = 2 # Max number of refinements used, starting from initial mesh (before uniform refinement)
-  [../]
+  # [./Adaptivity]
+  #   initial_adaptivity = 1 # Number of times mesh is adapted to initial condition
+  #   refine_fraction = 0.5 # Fraction of high error that will be refined
+  #   coarsen_fraction = 0.05 # Fraction of low error that will coarsened
+  #   max_h_level = 2 # Max number of refinements used, starting from initial mesh (before uniform refinement)
+  # [../]
+[]
 
+[Adaptivity]
+  marker = bound_adapt
+  max_h_level = 2
+  [./Indicators]
+    [./error]
+      type = GradientJumpIndicator
+      variable = bnds
+    [../]
+  [../]
+  [./Markers]
+    [./bound_adapt]
+      type = ValueRangeMarker
+      lower_bound = 0.1
+      upper_bound = 0.99
+      variable = bnds
+    [../]
+  [../]
 []
 
 [Outputs]
+  file_base = recrys_dd3
   [./exo]
     type = Exodus
-    # interval = 3
   [../]
  # show = 'bnds dd unique_grains'
 []

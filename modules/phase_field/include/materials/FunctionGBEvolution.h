@@ -51,7 +51,6 @@ protected:
   MaterialProperty<Real> & _molar_volume;
   MaterialProperty<Real> & _act_wGB;
 
-  const Real _t0;
   const Real _kb;
   const Real _JtoeV;
 };

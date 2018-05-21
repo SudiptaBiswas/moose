@@ -28,7 +28,6 @@ validParams<FunctionGBEvolution>()
                         "Molar volume in m^3/mol, needed for temperature gradient driving force");
   params.addRequiredParam<FunctionName>("GBMobility",
                                         "Function representing GB mobility input in m^4/(J*s)");
-  params.addParam<Real>("t0", 1.0, "Initial time before initiating welding");
   return params;
 }
 
@@ -51,7 +50,6 @@ FunctionGBEvolution::FunctionGBEvolution(const InputParameters & parameters)
     _entropy_diff(declareProperty<Real>("entropy_diff")),
     _molar_volume(declareProperty<Real>("molar_volume")),
     _act_wGB(declareProperty<Real>("act_wGB")),
-    _t0(getParam<Real>("t0")),
     _kb(8.617343e-5),     // Boltzmann constant in eV/K
     _JtoeV(6.24150974e18) // Joule to eV conversion
 {
@@ -64,10 +62,7 @@ FunctionGBEvolution::computeQpProperties()
 
   _l_GB[_qp] = _wGB;
 
-  if (_t < _t0)
-    _L[_qp] = 1.0;
-  else
-    _L[_qp] = 4.0 / 3.0 * _M_GB[_qp] / _l_GB[_qp];
+  _L[_qp] = 4.0 / 3.0 * _M_GB[_qp] / _l_GB[_qp];
 
   // eV/nm^2
   _sigma[_qp] = _GBEnergy * _JtoeV * (_length_scale * _length_scale);
