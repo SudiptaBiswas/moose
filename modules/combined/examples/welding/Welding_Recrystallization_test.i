@@ -1,13 +1,13 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 256
-  ny = 256
+  nx = 128
+  ny = 64
   nz = 0
   xmin = 0
   xmax = 512
   ymin = 0
-  ymax = 512
+  ymax = 256
  zmax = 0
  elem_type = QUAD4
 []
@@ -17,6 +17,22 @@
   op_num = 20 # total number of OPs
   var_name_base = eta
   grain_num = 50
+[]
+
+[Functions]
+  [./mob]
+    type = MobilityProfile
+    x1 = 0
+    y1 = 128
+    z1 = 0
+    r1 = 50
+    haz = 75
+    vp = 2.5
+    factor = 10.0
+    invalue = 1e-3
+    outvalue = 1e-3
+    weldpool_shape = circular
+  [../]
 []
 
 [Variables]
@@ -412,13 +428,22 @@
     function = 'sumeta:=eta0^2+eta1^2+eta2^2+eta3^2+eta4^2+eta5^2+eta6^2+eta7^2+eta8^2+eta9^2+eta10^2+eta11^2+eta12^2+eta13^2+eta14^2+eta15^2+eta16^2+eta17^2+eta18^2+eta19^2;f3:=1.0/4.0+1.0/4.0*eta1^4-1.0/2.0*eta1^2+1.0/4.0*eta2^4-1.0/2.0*eta2^2+1.0/4.0*eta3^4-1.0/2.0*eta3^2+1.0/4.0*eta0^4-1.0/2.0*eta0^2+1.0/4.0*eta4^4-1.0/2.0*eta4^2+1.0/4.0*eta5^4-1.0/2.0*eta5^2+1.0/4.0*eta6^4-1.0/2.0*eta6^2+1.0/4.0*eta7^4-1.0/2.0*eta7^2+1.0/4.0*eta8^4-1.0/2.0*eta8^2+1.0/4.0*eta9^4-1.0/2.0*eta9^2+1.0/4.0*eta10^4-1.0/2.0*eta10^2+1.0/4.0*eta11^4-1.0/2.0*eta11^2+1.0/4.0*eta12^4-1.0/2.0*eta12^2+1.0/4.0*eta13^4-1.0/2.0*eta13^2+1.0/4.0*eta14^4-1.0/2.0*eta14^2+1.0/4.0*eta15^4-1.0/2.0*eta15^2+1.0/4.0*eta16^4-1.0/2.0*eta16^2+1.0/4.0*eta17^4-1.0/2.0*eta17^2+1.0/4.0*eta18^4-1.0/2.0*eta18^2+1.0/4.0*eta19^4-1.0/2.0*eta19^2;f4:=g*(eta1^2*eta3^2+eta1^2*eta0^2+eta1^2*eta2^2+eta1^2*eta5^2+eta1^2*eta4^2+eta1^2*eta6^2+eta1^2*eta7^2+eta1^2*eta8^2+eta1^2*eta9^2+eta1^2*eta10^2+eta1^2*eta11^2+eta1^2*eta12^2+eta1^2*eta13^2+eta1^2*eta14^2+eta1^2*eta15^2+eta1^2*eta16^2+eta1^2*eta17^2+eta1^2*eta18^2+eta1^2*eta19^2+eta2^2*eta3^2+eta2^2*eta0^2+eta2^2*eta4^2+eta2^2*eta5^2+eta2^2*eta6^2+eta2^2*eta7^2+eta2^2*eta8^2+eta2^2*eta9^2+eta2^2*eta10^2+eta2^2*eta11^2+eta2^2*eta12^2+eta2^2*eta13^2+eta2^2*eta14^2+eta2^2*eta15^2+eta2^2*eta16^2+eta2^2*eta17^2+eta2^2*eta18^2+eta2^2*eta19^2+eta3^2*eta0^2+eta3^2*eta4^2+eta3^2*eta5^2+eta3^2*eta6^2+eta3^2*eta7^2+eta3^2*eta8^2+eta3^2*eta9^2+eta3^2*eta10^2+eta3^2*eta11^2+eta3^2*eta12^2+eta3^2*eta13^2+eta3^2*eta14^2+eta3^2*eta15^2+eta3^2*eta16^2+eta3^2*eta17^2+eta3^2*eta18^2+eta3^2*eta19^2+eta4^2*eta5^2+eta4^2*eta6^2+eta4^2*eta0^2+eta4^2*eta7^2+eta4^2*eta8^2+eta4^2*eta9^2+eta4^2*eta10^2+eta4^2*eta11^2+eta4^2*eta12^2+eta4^2*eta13^2+eta4^2*eta14^2+eta4^2*eta15^2+eta4^2*eta16^2+eta4^2*eta17^2+eta4^2*eta18^2+eta4^2*eta19^2+eta5^2*eta0^2+eta5^2*eta6^2+eta5^2*eta7^2+eta5^2*eta8^2+eta5^2*eta9^2+eta5^2*eta10^2+eta5^2*eta11^2+eta5^2*eta12^2+eta5^2*eta13^2+eta5^2*eta14^2+eta5^2*eta15^2+eta5^2*eta16^2+eta5^2*eta17^2+eta5^2*eta18^2+eta5^2*eta19^2+eta6^2*eta0^2+eta6^2*eta7^2+eta6^2*eta8^2+eta6^2*eta9^2+eta6^2*eta10^2+eta6^2*eta11^2+eta6^2*eta12^2+eta6^2*eta13^2+eta6^2*eta14^2+eta6^2*eta15^2+eta6^2*eta16^2+eta6^2*eta17^2+eta6^2*eta18^2+eta6^2*eta19^2+eta7^2*eta0^2+eta7^2*eta8^2+eta7^2*eta9^2+eta7^2*eta10^2+eta7^2*eta11^2+eta7^2*eta12^2+eta7^2*eta13^2+eta7^2*eta14^2+eta7^2*eta15^2+eta7^2*eta16^2+eta7^2*eta17^2+eta7^2*eta18^2+eta7^2*eta19^2+eta8^2*eta0^2+eta8^2*eta9^2+eta8^2*eta10^2+eta8^2*eta11^2+eta8^2*eta12^2+eta8^2*eta13^2+eta8^2*eta14^2+eta8^2*eta15^2+eta8^2*eta16^2+eta8^2*eta17^2+eta8^2*eta18^2+eta8^2*eta19^2+eta9^2*eta0^2+eta9^2*eta10^2+eta9^2*eta11^2+eta9^2*eta12^2+eta9^2*eta13^2+eta9^2*eta14^2+eta9^2*eta15^2+eta9^2*eta16^2+eta9^2*eta17^2+eta9^2*eta18^2+eta9^2*eta19^2+eta10^2*eta0^2+eta10^2*eta11^2+eta10^2*eta12^2+eta10^2*eta13^2+eta10^2*eta14^2+eta10^2*eta15^2+eta10^2*eta16^2+eta10^2*eta17^2+eta10^2*eta18^2+eta10^2*eta19^2+eta11^2*eta0^2+eta11^2*eta12^2+eta11^2*eta13^2+eta11^2*eta14^2+eta11^2*eta15^2+eta11^2*eta16^2+eta11^2*eta17^2+eta11^2*eta18^2+eta11^2*eta19^2+eta12^2*eta0^2+eta12^2*eta13^2+eta12^2*eta14^2+eta12^2*eta15^2+eta12^2*eta16^2+eta12^2*eta17^2+eta12^2*eta18^2+eta12^2*eta19^2+eta13^2*eta0^2+eta13^2*eta14^2+eta13^2*eta15^2+eta13^2*eta16^2+eta13^2*eta17^2+eta13^2*eta18^2+eta13^2*eta19^2+eta14^2*eta0^2+eta14^2*eta15^2+eta14^2*eta16^2+eta14^2*eta17^2+eta14^2*eta18^2+eta14^2*eta19^2+eta15^2*eta0^2+eta15^2*eta16^2+eta15^2*eta17^2+eta15^2*eta18^2+eta15^2*eta19^2+eta16^2*eta0^2+eta16^2*eta17^2+eta16^2*eta18^2+eta16^2*eta19^2+eta17^2*eta0^2+eta17^2*eta18^2+eta17^2*eta19^2+eta18^2*eta0^2+eta18^2*eta19^2+eta19^2*eta0^2);f1:=dis_den*((eta0^2+eta1^2+eta2^2+eta3^2+eta4^2+eta5^2+eta6^2+eta7^2)/sumeta);f:=f1+b*(f3+f4);f'
     derivative_order = 2
     enable_jit = true
-
   [../]
-  [./const]
-    type = GenericConstantMaterial
-    prop_names = 'kappa_op L'
-    prop_values = '0.50 1.0'
-
+  # [./const]
+  #   type = GenericConstantMaterial
+  #   prop_names = 'kappa_op L'
+  #   prop_values = '0.50 1.0'
+  #
+  # [../]
+  [./CuGrGr]
+    # Material properties
+    type = FunctionGBEvolution
+    # Constant temperature of the simulation (for mobility calculation)
+    wGB = 14 # Width of the diffuse GB
+    GBMobility = mob #m^4(Js) for copper from Schoenfelder1997
+    GBenergy = 0.0072 #J/m^2 from Schoenfelder1997
+    t0 = 0.5
+    outputs = exodus
   [../]
 
   [./dis_den]
@@ -426,7 +451,7 @@
     f_name = dis_den
     args = 'unique_grains'
     constant_names = 'e'
-    constant_expressions = '1.0'
+    constant_expressions = '2.0'
     function = if(unique_grains>49,0,e)
 
    # dislocation density equals e in the deformed grain and zero in the recrystallized grain
@@ -482,19 +507,39 @@
     cutback_factor = 0.75
     optimal_iterations = 7
   [../]
-  [./Adaptivity]
-    initial_adaptivity = 1 # Number of times mesh is adapted to initial condition
-    refine_fraction = 0.5 # Fraction of high error that will be refined
-    coarsen_fraction = 0.05 # Fraction of low error that will coarsened
-    max_h_level = 2 # Max number of refinements used, starting from initial mesh (before uniform refinement)
-  [../]
+  # [./Adaptivity]
+  #   initial_adaptivity = 1 # Number of times mesh is adapted to initial condition
+  #   refine_fraction = 0.5 # Fraction of high error that will be refined
+  #   coarsen_fraction = 0.05 # Fraction of low error that will coarsened
+  #   max_h_level = 2 # Max number of refinements used, starting from initial mesh (before uniform refinement)
+  # [../]
+[]
 
+[Adaptivity]
+  marker = bound_adapt
+  max_h_level = 2
+  [./Indicators]
+    [./error]
+      type = GradientJumpIndicator
+      variable = bnds
+    [../]
+  [../]
+  [./Markers]
+    [./bound_adapt]
+      type = ValueRangeMarker
+      lower_bound = 0.1
+      upper_bound = 0.99
+      variable = bnds
+    [../]
+  [../]
 []
 
 [Outputs]
-  [./exo]
-    type = Exodus
-    # interval = 3
-  [../]
+  exodus = true
+  file_base = welding_recrys_vp25_dd2
+  # [./exo]
+  #   type = Exodus
+  #   # interval = 3
+  # [../]
  # show = 'bnds dd unique_grains'
 []
