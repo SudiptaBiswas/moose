@@ -51,6 +51,22 @@ protected:
   const unsigned int _ndisp;
   std::vector<unsigned int> _disp_var;
   VectorValue<bool> _periodic_dir;
+
+  const VariableValue & _antiferrodis_A_x;
+  const VariableValue & _antiferrodis_A_y;
+  const VariableValue & _antiferrodis_A_z;
+  const VariableValue & _polar_x;
+  const VariableValue & _polar_y;
+  const VariableValue & _polar_z;
+  const Real _C11;
+  const Real _C12;
+  const Real _C44;
+  const Real _Q11;
+  const Real _Q12;
+  const Real _Q44;
+  const Real _R11;
+  const Real _R12;
+  const Real _R44;
 };
 
 #endif // GLOBALSTRAINUSEROBJECT_H
