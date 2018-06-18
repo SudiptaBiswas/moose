@@ -6,13 +6,13 @@
 [Mesh]
   # Mesh block.  Meshes can be read in or automatically generated
   type = FileMesh
-  file = weld_IC_op20_gr150.e-s023
+  file = weld_IC_op15_gr120.e-s022
   parallel_type = replicated # Periodic BCs
 []
 
 [GlobalParams]
   # Parameters used by several kernels that are defined globally to simplify input file
-  op_num = 20 # Number of order parameters used
+  op_num = 15 # Number of order parameters used
   var_name_base = gr # Base name of grains
 []
 
@@ -105,31 +105,6 @@
     solution = initial_grain
     from_variable = gr14
   [../]
-  [./gr15_fn]
-    type = SolutionFunction
-    solution = initial_grain
-    from_variable = gr15
-  [../]
-  [./gr16_fn]
-    type = SolutionFunction
-    solution = initial_grain
-    from_variable = gr16
-  [../]
-  [./gr17_fn]
-    type = SolutionFunction
-    solution = initial_grain
-    from_variable = gr17
-  [../]
-  [./gr18_fn]
-    type = SolutionFunction
-    solution = initial_grain
-    from_variable = gr18
-  [../]
-  [./gr19_fn]
-    type = SolutionFunction
-    solution = initial_grain
-    from_variable = gr19
-  [../]
 []
 
 [Variables]
@@ -141,7 +116,7 @@
 [UserObjects]
   [./initial_grain]
     type = SolutionUserObject
-    mesh = weld_IC_op20_gr150.e-s023
+    mesh = weld_IC_op15_gr120.e-s022
     timestep = LATEST
   [../]
   [./grain_tracker]
@@ -228,31 +203,6 @@
     function = gr14_fn
     variable = gr14
   [../]
-  [./gr15]
-    type = FunctionIC
-    function = gr15_fn
-    variable = gr15
-  [../]
-  [./gr16]
-    type = FunctionIC
-    function = gr16_fn
-    variable = gr16
-  [../]
-  [./gr17]
-    type = FunctionIC
-    function = gr17_fn
-    variable = gr17
-  [../]
-  [./gr18]
-    type = FunctionIC
-    function = gr18_fn
-    variable = gr18
-  [../]
-  [./gr19]
-    type = FunctionIC
-    function = gr19_fn
-    variable = gr19
-  [../]
 []
 
 [AuxVariables]
@@ -329,7 +279,7 @@
   solve_type = 'PJFNK'
 
   petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
-  petsc_options_value = 'asm         31   preonly   lu      1'
+  petsc_options_value = 'asm         31   preonly   ilu      1'
 
   l_max_its = 20 # Max number of linear iterations
   l_tol = 1e-4 # Relative tolerance for linear solves
@@ -348,7 +298,7 @@
 
 [Adaptivity]
   marker = bound_adapt
-  max_h_level = 4
+  max_h_level = 2
   [./Indicators]
     [./error]
       type = GradientJumpIndicator
