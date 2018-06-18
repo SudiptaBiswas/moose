@@ -17,7 +17,7 @@
 []
 
 [GlobalParams]
-  op_num = 20
+  op_num = 15
   var_name_base = gr
 []
 
@@ -30,7 +30,7 @@
 [UserObjects]
   [./voronoi]
     type = PolycrystalVoronoi
-    grain_num = 150
+    grain_num = 120
     rand_seed = 10
   [../]
   [./grain_tracker]
@@ -158,5 +158,5 @@
   exodus = true
   csv = true
   print_perf_log = true
-  file_base = weld_IC_op20_gr150
+  file_base = weld_IC_op15_gr120
 []

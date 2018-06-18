@@ -1,8 +1,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 256
-  ny = 256
+  nx = 128
+  ny = 128
   nz = 0
   xmin = 0
   xmax = 512
@@ -53,13 +53,13 @@
 
  # Extrea OPs for nucleation of new grains
   [./IC_eta19]
-    variable = eta19
+    variable = eta9
     type = RandomIC
     max = 2e-2
     min = 1e-2
   [../]
   [./IC_eta18]
-    variable = eta18
+    variable = eta10
     seed = 1000
     type = RandomIC
     max = 2e-2
@@ -67,14 +67,14 @@
   [../]
 
   [./IC_eta17]
-    variable = eta17
+    variable = eta12
     seed = 798011
     type = RandomIC
     max = 2e-2
     min = 1e-2
   [../]
   [./IC_eta16]
-    variable = eta16
+    variable = eta11
     seed = 123321
     type = RandomIC
     max = 2e-2
