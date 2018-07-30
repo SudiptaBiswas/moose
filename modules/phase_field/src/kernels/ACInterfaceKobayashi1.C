@@ -83,7 +83,7 @@ ACInterfaceKobayashi1::precomputeQpJacobian()
   RealGradient jac2 = _deps[_qp] * depsdop_i * v;
   RealGradient jac3 = _eps[_qp] * ddepsdop_i * v;
 
-  return _L[_qp] * (jac1 + jac2 + jac3);
+  return _L[_qp] * (jac1 + jac2 + jac3) + _eps[_qp] * _deps[_qp] * _dLdop[_qp] * v * _phi[_j][_qp];
 }
 
 Real
@@ -101,6 +101,7 @@ ACInterfaceKobayashi1::computeQpOffDiagJacobian(unsigned int jvar)
   dsum +=
       _L[_qp] * (_eps[_qp] * (*_ddepsdarg[cvar])[_qp] * _phi[_j][_qp] * v * _grad_test[_i][_qp]);
   dsum += (*_dLdarg[cvar])[_qp] * _phi[_j][_qp] * _eps[_qp] * _deps[_qp] * v * _grad_test[_i][_qp];
+  // dsum += -_eps[_qp] * _deps[_qp] * _L[_qp] * v * _phi[_j][_qp] * v * _grad_test[_i][_qp];
 
   return dsum;
 }
