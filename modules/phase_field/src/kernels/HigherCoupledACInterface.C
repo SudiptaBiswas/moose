@@ -84,18 +84,18 @@ HigherCoupledACInterface::computeQpJacobian()
 Real
 HigherCoupledACInterface::computeQpOffDiagJacobian(unsigned int jvar)
 {
-  if (jvar == _v_var)
-    return _L[_qp] * _kappa[_qp] * _dChidu[_qp] * _grad_phi[_j][_qp] * _grad_v[_qp] *
-           _test[_i][_qp];
-  else
-  {
-    const unsigned int cvar = mapJvarToCvar(jvar);
+  const unsigned int cvar = mapJvarToCvar(jvar);
 
-    return 0.5 * _L[_qp] * _kappa[_qp] * (*_d2Chidargdu[cvar])[_qp] * _grad_v[_qp].norm_sq() *
-               _phi[_j][_qp] * _test[_i][_qp] +
-           0.5 * (*_dLdarg[cvar])[_qp] * _kappa[_qp] * _dChidu[_qp] * _grad_v[_qp].norm_sq() *
-               _phi[_j][_qp] * _test[_i][_qp] +
-           0.5 * _L[_qp] * (*_dkappadarg[cvar])[_qp] * _dChidu[_qp] * _grad_v[_qp].norm_sq() *
-               _phi[_j][_qp] * _test[_i][_qp];
-  }
+  Real jac = 0.5 * _L[_qp] * _kappa[_qp] * (*_d2Chidargdu[cvar])[_qp] * _grad_v[_qp].norm_sq() *
+                 _phi[_j][_qp] * _test[_i][_qp] +
+             0.5 * (*_dLdarg[cvar])[_qp] * _kappa[_qp] * _dChidu[_qp] * _grad_v[_qp].norm_sq() *
+                 _phi[_j][_qp] * _test[_i][_qp] +
+             0.5 * _L[_qp] * (*_dkappadarg[cvar])[_qp] * _dChidu[_qp] * _grad_v[_qp].norm_sq() *
+                 _phi[_j][_qp] * _test[_i][_qp];
+
+  if (jvar == _v_var)
+    jac +=
+        _L[_qp] * _kappa[_qp] * _dChidu[_qp] * _grad_phi[_j][_qp] * _grad_v[_qp] * _test[_i][_qp];
+
+  return jac;
 }
