@@ -5,7 +5,7 @@
   ny = 14
   xmax = 9
   ymax = 9
-  # uniform_refine = 3
+  uniform_refine = 3
 []
 
 [Variables]
@@ -16,20 +16,20 @@
 []
 
 [ICs]
-  # [./wIC]
-  #   type = SmoothCircleIC
-  #   variable = w
-  #   int_width = 0.1
-  #   x1 = 4.5
-  #   y1 = 4.5
-  #   radius = 0.07
-  #   outvalue = 0
-  #   invalue = 1
-  # [../]
   [./wIC]
-    type = RandomIC
+    type = SmoothCircleIC
     variable = w
+    int_width = 0.1
+    x1 = 4.5
+    y1 = 4.5
+    radius = 0.07
+    outvalue = 0
+    invalue = 1
   [../]
+  # [./wIC]
+  #   type = RandomIC
+  #   variable = w
+  # [../]
 []
 
 [Kernels]
@@ -85,21 +85,21 @@
     type = InterfaceOrientationMaterial
     op = w
   [../]
-  # [./consts]
-  #   type = GenericConstantMaterial
-  #   prop_names  = 'M'
-  #   prop_values = '3333.333'
-  # [../]
-  [./mob]
-    type = DerivativeParsedMaterial
-    f_name = M
-    args = 'w'
-    constant_names = 'M_s M_l'
-    constant_expressions = '10.0 333.33'
-    function = 'p:= w^3 * (10 - 15*w + 6*w^2); M_s * p +  M_l * (1-p)'
-    derivative_order = 2
-    # outputs = exodus
+  [./consts]
+    type = GenericConstantMaterial
+    prop_names  = 'M'
+    prop_values = '3333.333'
   [../]
+  # [./mob]
+  #   type = DerivativeParsedMaterial
+  #   f_name = M
+  #   args = 'w'
+  #   constant_names = 'M_s M_l'
+  #   constant_expressions = '10.0 333.33'
+  #   function = 'p:= w^3 * (10 - 15*w + 6*w^2); M_s * p +  M_l * (1-p)'
+  #   derivative_order = 2
+  #   # outputs = exodus
+  # [../]
 
 []
 
@@ -121,7 +121,7 @@
   nl_rel_tol = 1e-08
   l_max_its = 30
 
-  end_time = 1
+  end_time = 100
 
   [./TimeStepper]
     type = IterationAdaptiveDT
@@ -131,17 +131,22 @@
     growth_factor = 1.1
     cutback_factor = 0.75
   [../]
-  # [./Adaptivity]
-  #   initial_adaptivity = 3 # Number of times mesh is adapted to initial condition
-  #   refine_fraction = 0.7 # Fraction of high error that will be refined
-  #   coarsen_fraction = 0.1 # Fraction of low error that will coarsened
-  #   max_h_level = 5 # Max number of refinements used, starting from initial mesh (before uniform refinement)
-  #   weight_names = 'w T'
-  #   weight_values = '1 0.5'
-  # [../]
+  [./Adaptivity]
+    initial_adaptivity = 3 # Number of times mesh is adapted to initial condition
+    refine_fraction = 0.7 # Fraction of high error that will be refined
+    coarsen_fraction = 0.1 # Fraction of low error that will coarsened
+    max_h_level = 5 # Max number of refinements used, starting from initial mesh (before uniform refinement)
+    weight_names = 'w T'
+    weight_values = '1 0.5'
+  [../]
 []
 
 [Outputs]
-  interval = 5
+  # interval = 5
   exodus = true
+  file_base = 2018_07_31_dendrite_test_original
+[]
+
+[Debug]
+  show_var_residual_norms = true
 []

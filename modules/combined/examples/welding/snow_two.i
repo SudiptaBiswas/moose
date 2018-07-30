@@ -1,11 +1,11 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 14
-  ny = 14
-  xmax = 9
+  nx = 30
+  ny = 40
+  xmax = 15
   ymax = 9
-  # uniform_refine = 3
+  uniform_refine = 3
 []
 
 [Variables]
@@ -16,19 +16,16 @@
 []
 
 [ICs]
-  # [./wIC]
-  #   type = SmoothCircleIC
-  #   variable = w
-  #   int_width = 0.1
-  #   x1 = 4.5
-  #   y1 = 4.5
-  #   radius = 0.07
-  #   outvalue = 0
-  #   invalue = 1
-  # [../]
   [./wIC]
-    type = RandomIC
+    type = SpecifiedSmoothCircleIC
     variable = w
+    int_width = 0.1
+    x_positions = '4.5 13.5'
+    y_positions = '4.5 4.5'
+    z_positions = '0 0'
+    radii = '0.07 0.07'
+    outvalue = 0
+    invalue = 1
   [../]
 []
 
@@ -37,6 +34,11 @@
     type = TimeDerivative
     variable = w
   [../]
+  # [./w_int]
+  #   type = ACInterface
+  #   variable = w
+  #   mob_name = M
+  # [../]
   [./anisoACinterface1]
     type = ACInterfaceKobayashi1
     variable = w
@@ -79,28 +81,17 @@
     constant_expressions = 4*atan(1)
     function = 'm:=0.9 * atan(10 * (1 - T)) / pi; 1/4*w^4 - (1/2 - m/3) * w^3 + (1/4 - m/2) * w^2'
     derivative_order = 2
-    # outputs = exodus
+    outputs = exodus
   [../]
   [./material]
     type = InterfaceOrientationMaterial
     op = w
   [../]
-  # [./consts]
-  #   type = GenericConstantMaterial
-  #   prop_names  = 'M'
-  #   prop_values = '3333.333'
-  # [../]
-  [./mob]
-    type = DerivativeParsedMaterial
-    f_name = M
-    args = 'w'
-    constant_names = 'M_s M_l'
-    constant_expressions = '10.0 333.33'
-    function = 'p:= w^3 * (10 - 15*w + 6*w^2); M_s * p +  M_l * (1-p)'
-    derivative_order = 2
-    # outputs = exodus
+  [./consts]
+    type = GenericConstantMaterial
+    prop_names  = 'M kappa_op'
+    prop_values = '3333.333 1.0'
   [../]
-
 []
 
 [Preconditioning]
@@ -131,17 +122,17 @@
     growth_factor = 1.1
     cutback_factor = 0.75
   [../]
-  # [./Adaptivity]
-  #   initial_adaptivity = 3 # Number of times mesh is adapted to initial condition
-  #   refine_fraction = 0.7 # Fraction of high error that will be refined
-  #   coarsen_fraction = 0.1 # Fraction of low error that will coarsened
-  #   max_h_level = 5 # Max number of refinements used, starting from initial mesh (before uniform refinement)
-  #   weight_names = 'w T'
-  #   weight_values = '1 0.5'
-  # [../]
+  [./Adaptivity]
+    initial_adaptivity = 3 # Number of times mesh is adapted to initial condition
+    refine_fraction = 0.7 # Fraction of high error that will be refined
+    coarsen_fraction = 0.1 # Fraction of low error that will coarsened
+    max_h_level = 5 # Max number of refinements used, starting from initial mesh (before uniform refinement)
+    weight_names = 'w T'
+    weight_values = '1 0.5'
+  [../]
 []
 
 [Outputs]
-  interval = 5
+  # interval = 5
   exodus = true
 []
