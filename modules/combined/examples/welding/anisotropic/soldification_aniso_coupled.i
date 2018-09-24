@@ -185,9 +185,6 @@
     constant_names = 'T '
     constant_expressions = ' -0.5'
     function = 'w^2 * (1-w)^2 - T * (1 - 20*w^3 + 45*w^4 - 36*w^5 + 10*w^6)'
-    # constant_names = 'pi T '
-    # constant_expressions = '4*atan(1) -1.0'
-    # function = 'm:=0.9 * atan(10 * (1 - T)) / pi; 1/4*w^4 - (1/2 - m/3) * w^3 + (1/4 - m/2) * w^2'
     outputs = exodus
   [../]
   [./consts]
@@ -211,7 +208,7 @@
     eps_bar = 0.1
     # eps_bar = 0.01
     orientation = 'eta0 eta1'
-    max_orientation = 'max_eta0 max_eta1'
+    # max_orientation = 'max_eta0 max_eta1'
     outputs = exodus
   [../]
   [./L_theta]
@@ -221,19 +218,9 @@
     constant_names = 'M_s M_l'
     constant_expressions = '0.1 10.0'
     function = 'p:= w^3 * (10 - 15*w + 6*w^2); M_s * p +  M_l * (1-p)'
-    # function = 'm:=alpha/pi * atan(gamma * (T_e - T)); 1/4*w^4 - (1/2 - m/3) * w^3 + (1/4 - m/2) * w^2'
     outputs = exodus
   [../]
 []
-#
-# [BCs]
-#   [./Periodic]
-#     [./all]
-#     auto_direction = 'x y'
-#     variable = 'w eta0 eta1'
-#   [../]
-# [../]
-# []
 
 [Postprocessors]
   [./energy_w]
@@ -320,7 +307,7 @@
 
 [Outputs]
   exodus = true
-  file_base = 2018_07_23_coupled_angle_update
+  # file_base = 2018_07_23_coupled_angle_update
 []
 
 [Debug]

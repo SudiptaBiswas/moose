@@ -30,6 +30,9 @@
   [../]
   [./bnds]
   [../]
+  [./T]
+    initial_condition = -0.5
+  [../]
 []
 
 [AuxKernels]
@@ -181,11 +184,8 @@
 [Materials]
   [./bulk_en]
     type = DerivativeParsedMaterial
-    args = 'w '
-    function = 'w^2 * (1-w)^2 + 0.5 * (1 - 20*w^3 + 45*w^4 - 36*w^5 + 10*w^6)'
-    # constant_names = 'pi T'
-    # constant_expressions = '4*atan(1) -0.5'
-    # function = 'm:=0.9 * atan(10 * (1 - T)) / pi; 1/4*w^4 - (1/2 - m/3) * w^3 + (1/4 - m/2) * w^2'
+    args = 'w T'
+    function = 'w^2 * (1-w)^2 - T * (1 - 20*w^3 + 45*w^4 - 36*w^5 + 10*w^6)'
     outputs = exodus
   [../]
   [./consts]
@@ -208,19 +208,9 @@
     constant_names = 'M_s M_l'
     constant_expressions = '0.1 10.0'
     function = 'p:= w^3 * (10 - 15*w + 6*w^2); M_s * p +  M_l * (1-p)'
-    # function = 'm:=alpha/pi * atan(gamma * (T_e - T)); 1/4*w^4 - (1/2 - m/3) * w^3 + (1/4 - m/2) * w^2'
     outputs = exodus
   [../]
 []
-#
-# [BCs]
-#   [./Periodic]
-#     [./all]
-#     auto_direction = 'x y'
-#     variable = 'w eta0 eta1'
-#   [../]
-# [../]
-# []
 
 [Postprocessors]
   [./energy_w]
@@ -293,7 +283,7 @@
 
 [Outputs]
   exodus = true
-  file_base = 2018_07_12_orientation_fnmob2
+  # file_base = 2018_07_12_orientation_fnmob2
 []
 
 [Debug]
