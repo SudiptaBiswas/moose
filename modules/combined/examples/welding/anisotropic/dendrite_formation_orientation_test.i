@@ -69,51 +69,37 @@
 # []
 
 [ICs]
-  # [./wIC]
-  #   type = SpecifiedSmoothCircleIC
-  #   variable = w
-  #   int_width = 0.1
-  #   x_positions = '3.0 6.0'
-  #   y_positions = '4.5 4.5'
-  #   z_positions = '0 0'
-  #   radii = '0.07 0.07'
-  #   outvalue = 0
-  #   invalue = 1
-  # [../]
-  #
-  # [./eta0]
-  #   type = SmoothCircleIC
-  #   variable = eta0
-  #   int_width = 0.1
-  #   x1 = 3.0
-  #   y1 = 4.5
-  #   radius = 0.07
-  #   outvalue = 0
-  #   invalue = 1.0
-  # [../]
-  # [./eta1]
-  #   type = SmoothCircleIC
-  #   variable = eta1
-  #   int_width = 0.1
-  #   x1 = 6.0
-  #   y1 = 4.5
-  #   radius = 0.07
-  #   outvalue = 0
-  #   invalue = -1.0
-  # [../]
-
   [./wIC]
-    type = RandomIC
+    type = SpecifiedSmoothCircleIC
     variable = w
+    int_width = 0.1
+    x_positions = '3.0 6.0'
+    y_positions = '4.5 4.5'
+    z_positions = '0 0'
+    radii = '0.07 0.07'
+    outvalue = 0
+    invalue = 1
   [../]
 
   [./eta0]
-    type = RandomIC
+    type = SmoothCircleIC
     variable = eta0
+    int_width = 0.1
+    x1 = 3.0
+    y1 = 4.5
+    radius = 0.07
+    outvalue = 0
+    invalue = 1.0
   [../]
   [./eta1]
-    type = RandomIC
+    type = SmoothCircleIC
     variable = eta1
+    int_width = 0.1
+    x1 = 6.0
+    y1 = 4.5
+    radius = 0.07
+    outvalue = 0
+    invalue = -1.0
   [../]
 []
 
