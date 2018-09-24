@@ -1,14 +1,14 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 20
-  ny = 20
+  nx = 200
+  ny = 200
   xmin = -50
   xmax = 50
   ymin = -50
   ymax = 50
   elem_type = QUAD4
-  uniform_refine = 2
+  # uniform_refine = 2
 []
 
 [GlobalParams]
@@ -352,26 +352,26 @@
 [./Markers]
    [./EFM_1]
      type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
+     coarsen = 0.2
+     refine = 0.8
      indicator = GJI_1
    [../]
    [./EFM_2]
      type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
+     coarsen = 0.2
+     refine = 0.8
      indicator = GJI_2
    [../]
    [./EFM_3]
      type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
+     coarsen = 0.2
+     refine = 0.8
      indicator = GJI_3
    [../]
    [./EFM_4]
      type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
+     coarsen = 0.2
+     refine = 0.8
      indicator = GJI_4
    [../]
    [./combo]
