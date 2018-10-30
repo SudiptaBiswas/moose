@@ -153,7 +153,7 @@
 [UserObjects]
   [./global_strain_uo]
     type = GlobalStrainUserObject
-    applied_stress_tensor = '0 0 0 5e9 5e9 5e9'
+    applied_stress_tensor = '0 0 0 5e8 5e8 5e8'
     execute_on = 'Initial Linear Nonlinear'
   [../]
 []
@@ -162,7 +162,7 @@
   [./l2err_e01]
     type = ElementL2Error
     variable = e01
-    function = 0.095 #Shear strain check
+    function = 0.0095 #Shear strain check
   [../]
 []
 

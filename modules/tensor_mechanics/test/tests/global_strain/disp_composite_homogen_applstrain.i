@@ -1,6 +1,6 @@
 [Mesh]
   type = FileMesh
-  file = unitcell_Vf47_refine.e
+  file = unitcell_Vf47_hex.e
 []
 
 [MeshModifiers]

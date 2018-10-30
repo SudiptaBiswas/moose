@@ -1,7 +1,7 @@
 [Mesh]
   type = FileMesh
-  file = unitcell_Vf47_refine.e
-  # file = unitcell_Vf47x.e
+  # file = unitcell_Vf47_refine.e
+  file = unitcell_Vf47x.e
 []
 
 [MeshModifiers]
@@ -41,7 +41,7 @@
     [./GlobalStrain]
       [./global_strain]
         scalar_global_strain = global_strain
-        applied_stress_tensor = '0.0 0.0 2.0 0.0 0.0 0.0'
+        applied_stress_tensor = '0.0 0.0 0.0 0.0 0.0 1.0'
         displacements = 'u_x u_y u_z'
         auxiliary_displacements = 'disp_x disp_y disp_z'
       [../]
@@ -318,7 +318,7 @@
 []
 
 [Outputs]
-  file_base = axialzz_fiberz
+  file_base = axialxy_fiberx
   [./exo]
     type = Exodus
     elemental_as_nodal = true
