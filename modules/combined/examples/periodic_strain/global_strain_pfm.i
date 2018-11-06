@@ -394,6 +394,26 @@
   [../]
 []
 
+[Adaptivity]
+ # initial_steps = 2
+ max_h_level = 2
+ marker = EFM
+[./Markers]
+   [./EFM]
+     type = ErrorFractionMarker
+     coarsen = 0.2
+     refine = 0.8
+     indicator = GJI
+   [../]
+ [../]
+ [./Indicators]
+   [./GJI]
+     type = GradientJumpIndicator
+     variable = c
+    [../]
+ [../]
+[]
+
 [Outputs]
   execute_on = 'timestep_end'
   print_linear_residuals = false
