@@ -365,10 +365,10 @@
  []
 
 [Adaptivity]
- initial_steps = 5
- max_h_level = 6
+ initial_steps = 3
+ max_h_level = 3
  initial_marker = EFM_3
- marker = combo
+ marker = EFM_4
 [./Markers]
    [./EFM_1]
      type = ErrorFractionMarker

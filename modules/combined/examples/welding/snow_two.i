@@ -1,3 +1,4 @@
+# Creates tro dendrite within 0.0612144 time, small secondary arm formation starts
 [Mesh]
   type = GeneratedMesh
   dim = 2

@@ -3,10 +3,10 @@
   dim = 2
   nx = 20
   ny = 20
-  xmin = -50
-  xmax = 50
-  ymin = -50
-  ymax = 50
+  xmin = -20
+  xmax = 20
+  ymin = -20
+  ymax = 20
   elem_type = QUAD4
   uniform_refine = 2
 []
@@ -312,23 +312,22 @@
     section_name = "App"
     data_type = total
   [../]
-
 []
 
 [VectorPostprocessors]
   [./velocity_x]
     type = LineValueSampler
     variable = 'bnds etaa0'
-    start_point = '-50.0 0.0 0.0'
-    end_point = '50.0 0.0 0.0'
+    start_point = '-20.0 0.0 0.0'
+    end_point = '20.0 0.0 0.0'
     sort_by = id
     num_points = 50
   [../]
   [./velocity_y]
     type = LineValueSampler
     variable = 'bnds etaa0'
-    start_point = '0.0 -50.0 0.0'
-    end_point = '0.0 50.0 0.0'
+    start_point = '0.0 -20.0 0.0'
+    end_point = '0.0 20.0 0.0'
     sort_by = id
     num_points = 50
   [../]
@@ -366,32 +365,32 @@
 
 [Adaptivity]
  initial_steps = 5
- max_h_level = 6
+ max_h_level = 3
  initial_marker = EFM_3
  marker = combo
 [./Markers]
    [./EFM_1]
      type = ErrorFractionMarker
      coarsen = 0.3
-     refine = 0.9
+     refine = 0.95
      indicator = GJI_1
    [../]
    [./EFM_2]
      type = ErrorFractionMarker
      coarsen = 0.3
-     refine = 0.9
+     refine = 0.95
      indicator = GJI_2
    [../]
    [./EFM_3]
      type = ErrorFractionMarker
      coarsen = 0.3
-     refine = 0.9
+     refine = 0.95
      indicator = GJI_3
    [../]
    [./EFM_4]
      type = ErrorFractionMarker
      coarsen = 0.3
-     refine = 0.9
+     refine = 0.95
      indicator = GJI_4
    [../]
    [./combo]
@@ -422,4 +421,5 @@
 [Outputs]
   interval = 50
   exodus = true
+  csv = true
 []

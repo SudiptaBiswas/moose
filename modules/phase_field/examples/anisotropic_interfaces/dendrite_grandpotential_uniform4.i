@@ -1,14 +1,14 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 20
-  ny = 20
+  nx = 200
+  ny = 200
   xmin = -50
   xmax = 50
   ymin = -50
   ymax = 50
   elem_type = QUAD4
-  uniform_refine = 2
+  # uniform_refine = 2
 []
 
 [GlobalParams]
@@ -284,7 +284,6 @@
 [Postprocessors]
   [./ndof]
     type = NumDOFs
-    system = NL
   [../]
   [./etaa0]
     type = ElementIntegralVariablePostprocessor
@@ -294,25 +293,6 @@
     type = ElementIntegralVariablePostprocessor
     variable = w
   [../]
-  [./memory]
-    type = MemoryUsage
-    mem_type = physical_memory
-    execute_on = 'LINEAR NONLINEAR TIMESTEP_END'
-  [../]
-  [./active_time]
-    type = PerformanceData
-    event = ACTIVE
-  [../]
-  [./alive_time]
-    type = PerformanceData
-    event = ALIVE
-  [../]
-  [./elapsed]
-    type = PerfGraphData
-    section_name = "App"
-    data_type = total
-  [../]
-
 []
 
 [VectorPostprocessors]
@@ -352,74 +332,76 @@
   nl_max_its = 15
   nl_rel_tol = 1.0e-8
   nl_abs_tol = 1e-10
-  end_time = 100.0
+  end_time = 10.0
   [./TimeStepper]
     type = IterationAdaptiveDT
     dt = 0.0005
-    cutback_factor = 0.95
-    growth_factor = 1.05
-    optimal_iterations = 4
-    iteration_window = 0
-    linear_iteration_ratio = 100
+    cutback_factor = 0.7
+    growth_factor = 1.2
+    optimal_iterations = 6
+    iteration_window = 2
+    # linear_iteration_ratio = 100
   [../]
  []
-
-[Adaptivity]
- initial_steps = 5
- max_h_level = 6
- initial_marker = EFM_3
- marker = combo
-[./Markers]
-   [./EFM_1]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_1
-   [../]
-   [./EFM_2]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_2
-   [../]
-   [./EFM_3]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_3
-   [../]
-   [./EFM_4]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_4
-   [../]
-   [./combo]
-     type = ComboMarker
-     markers = 'EFM_1 EFM_3 EFM_4'
-   [../]
- [../]
- [./Indicators]
-   [./GJI_1]
-    type = GradientJumpIndicator
-    variable = w
-   [../]
-  [./GJI_2]
-    type = GradientJumpIndicator
-    variable = T
-   [../]
-   [./GJI_3]
-     type = GradientJumpIndicator
-     variable = etaa0
-    [../]
-    [./GJI_4]
-      type = GradientJumpIndicator
-      variable = bnds
-   [../]
- [../]
-[]
+#
+# [Adaptivity]
+#  initial_steps = 5
+#  max_h_level = 6
+#  initial_marker = EFM_3
+#  marker = combo
+# [./Markers]
+#    [./EFM_1]
+#      type = ErrorFractionMarker
+#      coarsen = 0.2
+#      refine = 0.8
+#      indicator = GJI_1
+#    [../]
+#    [./EFM_2]
+#      type = ErrorFractionMarker
+#      coarsen = 0.2
+#      refine = 0.8
+#      indicator = GJI_2
+#    [../]
+#    [./EFM_3]
+#      type = ErrorFractionMarker
+#      coarsen = 0.2
+#      refine = 0.8
+#      indicator = GJI_3
+#    [../]
+#    [./EFM_4]
+#      type = ErrorFractionMarker
+#      coarsen = 0.2
+#      refine = 0.8
+#      indicator = GJI_4
+#    [../]
+#    [./combo]
+#      type = ComboMarker
+#      markers = 'EFM_1 EFM_2 EFM_3 EFM_4'
+#    [../]
+#  [../]
+#  [./Indicators]
+#    [./GJI_1]
+#     type = GradientJumpIndicator
+#     variable = w
+#    [../]
+#   [./GJI_2]
+#     type = GradientJumpIndicator
+#     variable = T
+#    [../]
+#    [./GJI_3]
+#      type = GradientJumpIndicator
+#      variable = etaa0
+#     [../]
+#     [./GJI_4]
+#       type = GradientJumpIndicator
+#       variable = bnds
+#    [../]
+#  [../]
+# []
 
 [Outputs]
-  interval = 50
+  # interval = 50
   exodus = true
+  csv = true
+  # file_base = grandpotential_solidification_L333
 []

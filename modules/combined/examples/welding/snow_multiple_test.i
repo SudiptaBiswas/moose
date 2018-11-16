@@ -1,3 +1,4 @@
+# Anisotropic growth observed, no dendride formation, precipitates collide with each other
 [Mesh]
   type = GeneratedMesh
   dim = 2
