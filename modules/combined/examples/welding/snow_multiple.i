@@ -1,3 +1,4 @@
+#creates fancy dendride growth with secondary arms, images used in ldrd proposal
 [Mesh]
   type = GeneratedMesh
   dim = 2

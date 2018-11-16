@@ -1,8 +1,8 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 20
-  ny = 20
+  nx = 50
+  ny = 50
   xmin = -50
   xmax = 50
   ymin = -50
@@ -246,6 +246,7 @@
     d2kappadgrad_etaa_name = d2kappadgrad_etaa
     etaa = etaa0
     etab = etab0
+    kappa_bar = 1.0
     anisotropy_strength = 0.05
     reference_angle = 0
     outputs = exodus
@@ -258,6 +259,7 @@
     d2kappadgrad_etaa_name = d2kappadgrad_etab
     etaa = etab0
     etab = etaa0
+    kappa_bar = 1.0
     anisotropy_strength = 0.05
     reference_angle = 0
     outputs = exodus
@@ -352,46 +354,47 @@
   nl_max_its = 15
   nl_rel_tol = 1.0e-8
   nl_abs_tol = 1e-10
-  end_time = 100.0
+  end_time = 20.0
   [./TimeStepper]
     type = IterationAdaptiveDT
     dt = 0.0005
-    cutback_factor = 0.95
-    growth_factor = 1.05
-    optimal_iterations = 4
-    iteration_window = 0
-    linear_iteration_ratio = 100
+    cutback_factor = 0.7
+    growth_factor = 1.2
+    optimal_iterations = 6
+    iteration_window = 2
+    # linear_iteration_ratio = 100
   [../]
  []
-
+#
 [Adaptivity]
  initial_steps = 5
- max_h_level = 6
+ max_h_level = 5
  initial_marker = EFM_3
- marker = combo
+ # marker = combo
+ marker = EFM_4
 [./Markers]
    [./EFM_1]
      type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
+     coarsen = 0.2
+     refine = 0.8
      indicator = GJI_1
    [../]
-   [./EFM_2]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_2
-   [../]
+   # [./EFM_2]
+   #   type = ErrorFractionMarker
+   #   coarsen = 0.2
+   #   refine = 0.8
+   #   indicator = GJI_2
+   # [../]
    [./EFM_3]
      type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
+     coarsen = 0.2
+     refine = 0.8
      indicator = GJI_3
    [../]
    [./EFM_4]
      type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
+     coarsen = 0.2
+     refine = 0.8
      indicator = GJI_4
    [../]
    [./combo]
@@ -404,10 +407,10 @@
     type = GradientJumpIndicator
     variable = w
    [../]
-  [./GJI_2]
-    type = GradientJumpIndicator
-    variable = T
-   [../]
+  # [./GJI_2]
+  #   type = GradientJumpIndicator
+  #   variable = T
+  #  [../]
    [./GJI_3]
      type = GradientJumpIndicator
      variable = etaa0
@@ -420,6 +423,10 @@
 []
 
 [Outputs]
-  interval = 50
+  # interval = 50
   exodus = true
+  csv = true
+  perf_graph = true
+  print_linear_residuals = false
+  file_base = grandpotential_mesheffect_adaptivewetaL33K1
 []
