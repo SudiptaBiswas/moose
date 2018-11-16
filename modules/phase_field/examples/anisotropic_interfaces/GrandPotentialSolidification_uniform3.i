@@ -1,14 +1,14 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 20
-  ny = 20
+  nx = 100
+  ny = 100
   xmin = -50
   xmax = 50
   ymin = -50
   ymax = 50
   elem_type = QUAD4
-  uniform_refine = 2
+  uniform_refine = 3
 []
 
 [GlobalParams]
@@ -364,60 +364,60 @@
   [../]
  []
 
-[Adaptivity]
- initial_steps = 5
- max_h_level = 6
- initial_marker = EFM_3
- marker = combo
-[./Markers]
-   [./EFM_1]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_1
-   [../]
-   [./EFM_2]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_2
-   [../]
-   [./EFM_3]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_3
-   [../]
-   [./EFM_4]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_4
-   [../]
-   [./combo]
-     type = ComboMarker
-     markers = 'EFM_1 EFM_3 EFM_4'
-   [../]
- [../]
- [./Indicators]
-   [./GJI_1]
-    type = GradientJumpIndicator
-    variable = w
-   [../]
-  [./GJI_2]
-    type = GradientJumpIndicator
-    variable = T
-   [../]
-   [./GJI_3]
-     type = GradientJumpIndicator
-     variable = etaa0
-    [../]
-    [./GJI_4]
-      type = GradientJumpIndicator
-      variable = bnds
-   [../]
- [../]
-[]
+# [Adaptivity]
+#  initial_steps = 5
+#  max_h_level = 6
+#  initial_marker = EFM_3
+#  marker = combo
+# [./Markers]
+#    [./EFM_1]
+#      type = ErrorFractionMarker
+#      coarsen = 0.3
+#      refine = 0.9
+#      indicator = GJI_1
+#    [../]
+#    [./EFM_2]
+#      type = ErrorFractionMarker
+#      coarsen = 0.3
+#      refine = 0.9
+#      indicator = GJI_2
+#    [../]
+#    [./EFM_3]
+#      type = ErrorFractionMarker
+#      coarsen = 0.3
+#      refine = 0.9
+#      indicator = GJI_3
+#    [../]
+#    [./EFM_4]
+#      type = ErrorFractionMarker
+#      coarsen = 0.3
+#      refine = 0.9
+#      indicator = GJI_4
+#    [../]
+#    [./combo]
+#      type = ComboMarker
+#      markers = 'EFM_1 EFM_3 EFM_4'
+#    [../]
+#  [../]
+#  [./Indicators]
+#    [./GJI_1]
+#     type = GradientJumpIndicator
+#     variable = w
+#    [../]
+#   [./GJI_2]
+#     type = GradientJumpIndicator
+#     variable = T
+#    [../]
+#    [./GJI_3]
+#      type = GradientJumpIndicator
+#      variable = etaa0
+#     [../]
+#     [./GJI_4]
+#       type = GradientJumpIndicator
+#       variable = bnds
+#    [../]
+#  [../]
+# []
 
 [Outputs]
   interval = 50
