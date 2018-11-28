@@ -271,4 +271,5 @@
 
 [Outputs]
   exodus = true
+  # file_base = test_case
 []
