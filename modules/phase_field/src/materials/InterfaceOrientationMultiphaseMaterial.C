@@ -101,28 +101,6 @@ InterfaceOrientationMultiphaseMaterial::computeQpProperties()
     dndgrad_etaa /= nsq * std::sqrt(nsq);
   }
 
-  // Compute the square of dndgrad_etaa
-  RealTensorValue dndgrad_etaa_sq;
-  if (nsq > tol)
-  {
-    dndgrad_etaa_sq(0, 0) = n2y * n2y;
-    dndgrad_etaa_sq(0, 1) = -nx * ny * n2y;
-    dndgrad_etaa_sq(1, 0) = -nx * ny * n2y;
-    dndgrad_etaa_sq(1, 1) = n2x * n2y;
-    dndgrad_etaa_sq /= n2sq * nsq;
-  }
-
-  // Compute the second derivative of n wrt grad_eta
-  RealTensorValue d2ndgrad_etaa2;
-  if (nsq > tol)
-  {
-    d2ndgrad_etaa2(0, 0) = -3.0 * nx * n2y;
-    d2ndgrad_etaa2(0, 1) = -ny * n2y + 2.0 * ny * n2x;
-    d2ndgrad_etaa2(1, 0) = -ny * n2y + 2.0 * ny * n2x;
-    d2ndgrad_etaa2(1, 1) = -nx * n2x + 2.0 * nx * n2y;
-    d2ndgrad_etaa2 /= n2sq * std::sqrt(nsq);
-  }
-
   // Calculate interfacial coefficient kappa and its derivatives wrt the angle
   Real anglediff = _j * (angle - _theta0 * libMesh::pi / 180.0);
   _kappa[_qp] =
@@ -133,6 +111,28 @@ InterfaceOrientationMultiphaseMaterial::computeQpProperties()
       2.0 * _kappa_bar * _delta * _delta * _j * _j * std::sin(anglediff) * std::sin(anglediff) -
       2.0 * _kappa_bar * _delta * _j * _j * (1.0 + _delta * std::cos(anglediff)) *
           std::cos(anglediff);
+
+  // Compute the square of dndgrad_etaa
+  RealTensorValue dndgrad_etaa_sq;
+  if (nsq > tol)
+  {
+    dndgrad_etaa_sq(0, 0) = n2y * n2y;
+    dndgrad_etaa_sq(0, 1) = -(nx * ny * n2y);
+    dndgrad_etaa_sq(1, 0) = -(nx * ny * n2y);
+    dndgrad_etaa_sq(1, 1) = n2x * n2y;
+    dndgrad_etaa_sq /= n2sq * nsq;
+  }
+
+  // Compute the second derivative of n wrt grad_eta
+  RealTensorValue d2ndgrad_etaa2;
+  if (nsq > tol)
+  {
+    d2ndgrad_etaa2(0, 0) = -3.0 * nx * ny * ny;
+    d2ndgrad_etaa2(0, 1) = -ny * ny * ny + 2.0 * nx * nx * ny;
+    d2ndgrad_etaa2(1, 0) = -ny * ny * ny + 2.0 * nx * nx * ny;
+    d2ndgrad_etaa2(1, 1) = -nx * nx * nx + 2.0 * nx * ny * ny;
+    d2ndgrad_etaa2 /= n2sq * std::sqrt(nsq);
+  }
 
   // Compute derivatives of kappa wrt grad_eta
   _dkappadgrad_etaa[_qp] = dkappadangle * dangledn * dndgrad_etaa;
