@@ -57,6 +57,7 @@ associateSyntaxInner(Syntax & syntax, ActionFactory & /*action_factory*/)
 
   registerSyntax("GeneralizedPlaneStrainAction",
                  "Modules/TensorMechanics/GeneralizedPlaneStrain/*");
+  registerSyntax("GlobalStrainAction2", "Modules/TensorMechanics/GlobalStrain2/*");
   registerSyntax("GlobalStrainAction", "Modules/TensorMechanics/GlobalStrain/*");
   registerSyntax("CommonTensorMechanicsAction", "Modules/TensorMechanics/Master");
   registerSyntax("TensorMechanicsAction", "Modules/TensorMechanics/Master/*");
