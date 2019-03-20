@@ -68,7 +68,7 @@
     prevent_overlap = true
     semiaxis_c_variation = '0 0'
     semiaxis_c = '1 1'
-    rand_seed = 10
+    rand_seed = 12356
   [../]
   # [./eta]
   #   type = SmoothCircleIC
@@ -440,7 +440,7 @@
 [Outputs]
   execute_on = 'timestep_end'
   exodus = true
-  file_base = hydride31_biaxial
+  # file_base = hydride31_biaxial
 []
 
 [Debug]

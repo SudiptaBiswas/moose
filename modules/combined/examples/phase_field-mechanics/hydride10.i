@@ -377,6 +377,12 @@
     type = ElementIntegralMaterialProperty
     mat_prop = E
   [../]
+  [./hydride]
+    type = Porosity
+    variable = eta
+    execute_on = 'initial timestep_end'
+    cutoff = 0.5
+  [../]
 []
 
 [Preconditioning]

@@ -57,8 +57,8 @@
     variable = eta
     invalue = 1.0
     outvalue = 0.1
-    bubspac = '3 2'
-    numbub = ' 10 15'
+    bubspac = '5 5'
+    numbub = ' 5 6'
     semiaxis_b_variation = '0.1 0.2'
     semiaxis_variation_type = uniform
     semiaxis_a_variation = '0.2 0.05'
@@ -440,7 +440,7 @@
 [Outputs]
   execute_on = 'timestep_end'
   exodus = true
-  file_base = hydride31_biaxial
+  # file_base = hydride11_biaxial
 []
 
 [Debug]

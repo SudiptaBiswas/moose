@@ -11,10 +11,10 @@
 #define HOMOGENIZATIONTENSOR_H
 
 #include "ALEKernel.h"
-
+#include "RankFourTensor.h"
+#include "RankTwoTensor.h"
 // Forward Declarations
 class HomogenizationTensor;
-class RankFourTensor;
 
 template <>
 InputParameters validParams<HomogenizationTensor>();

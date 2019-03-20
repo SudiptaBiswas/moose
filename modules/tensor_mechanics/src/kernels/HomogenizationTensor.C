@@ -8,9 +8,6 @@
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
 #include "HomogenizationTensor.h"
-// #include "Material.h"
-#include "RankFourTensor.h"
-#include "RankTwoTensor.h"
 
 registerMooseObject("TensorMechanicsApp", HomogenizationTensor);
 

@@ -377,6 +377,12 @@
     type = ElementIntegralMaterialProperty
     mat_prop = E
   [../]
+  [./hydride]
+    type = Porosity
+    variable = eta
+    execute_on = 'initial timestep_end'
+    cutoff = 0.5
+  [../]
 []
 
 [Preconditioning]
@@ -434,7 +440,7 @@
 [Outputs]
   execute_on = 'timestep_end'
   exodus = true
-  file_base = eigen_effect_hydride5
+  # file_base = eigen_effect_hydride5
 []
 
 [Debug]

@@ -57,13 +57,13 @@
     variable = eta
     invalue = 1.0
     outvalue = 0.1
-    bubspac = '3 2'
-    numbub = ' 10 15'
-    semiaxis_b_variation = '0.1 0.2'
+    bubspac = '5 5'
+    numbub = ' 8 10'
+    semiaxis_a_variation = '0.1 0.05'
     semiaxis_variation_type = uniform
-    semiaxis_a_variation = '0.2 0.05'
-    semiaxis_a = '4 1'
-    semiaxis_b = '1 3'
+    semiaxis_b_variation = '0.2 0.2'
+    semiaxis_a = '4 3'
+    semiaxis_b = '1 1'
     exponent = '2 2'
     prevent_overlap = true
     semiaxis_c_variation = '0 0'
@@ -440,7 +440,7 @@
 [Outputs]
   execute_on = 'timestep_end'
   exodus = true
-  file_base = hydride31_biaxial
+  # file_base = eigen_effect_hydride5
 []
 
 [Debug]

@@ -57,18 +57,18 @@
     variable = eta
     invalue = 1.0
     outvalue = 0.1
-    bubspac = '3 2'
-    numbub = ' 10 15'
-    semiaxis_b_variation = '0.1 0.2'
+    bubspac = '5 5'
+    numbub = '3 3'
+    semiaxis_b_variation = '0.2 0.2'
     semiaxis_variation_type = uniform
-    semiaxis_a_variation = '0.2 0.05'
-    semiaxis_a = '4 1'
-    semiaxis_b = '1 3'
+    semiaxis_a_variation = '0.1 0.05'
+    semiaxis_a = '1 1'
+    semiaxis_b = '3 4'
     exponent = '2 2'
     prevent_overlap = true
     semiaxis_c_variation = '0 0'
     semiaxis_c = '1 1'
-    rand_seed = 10
+    rand_seed = 0
   [../]
   # [./eta]
   #   type = SmoothCircleIC
@@ -377,12 +377,6 @@
     type = ElementIntegralMaterialProperty
     mat_prop = E
   [../]
-  [./hydride]
-    type = Porosity
-    variable = eta
-    execute_on = 'initial timestep_end'
-    cutoff = 0.5
-  [../]
 []
 
 [Preconditioning]
@@ -440,7 +434,7 @@
 [Outputs]
   execute_on = 'timestep_end'
   exodus = true
-  file_base = hydride31_biaxial
+  # file_base = eigen_effect_hydride5
 []
 
 [Debug]

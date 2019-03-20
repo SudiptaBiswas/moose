@@ -11,13 +11,10 @@
 #define HOMOGENIZEDELASTICITYTENSOR_H
 
 #include "ElementAverageValue.h"
-
+#include "RankFourTensor.h"
+#include "RankTwoTensor.h"
 // Forward Declarations
 class HomogenizedElasticityTensor;
-class RankFourTensor;
-class RankTwoTensor;
-// class SymmElasticityTensor;
-// class SymmTensor;
 
 template <>
 InputParameters validParams<HomogenizedElasticityTensor>();
