@@ -58,7 +58,7 @@
     invalue = 1.0
     outvalue = 0.1
     bubspac = '5 5'
-    numbub = ' 8 10'
+    numbub = ' 5 6'
     semiaxis_a_variation = '0.1 0.05'
     semiaxis_variation_type = uniform
     semiaxis_b_variation = '0.2 0.2'

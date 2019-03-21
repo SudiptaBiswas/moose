@@ -7,8 +7,8 @@
 
 [Mesh]
   type = FileMesh
-  # file = hydride3_biaxial_out.e-s006 # hydride0_biaxial_out.e-s004 hydride0/1/2_transverse_out.e-s004/5/5 hydride4_out.e-s005 hydride3_out.e-s003 hydride10_out.e-s005 eigen_effect_hydride5.e-s012
-  file = /Volumes/BACKUP/Strain_periodicity/moose_backup/hydride10_out.e-s004
+  file = hydride4_transverse_case3_out.e-s004 # hydride0_biaxial_out.e-s004 hydride0/1/2_transverse_out.e-s004/5/5 hydride4_out.e-s005 hydride3_out.e-s003 hydride10_out.e-s005 eigen_effect_hydride5.e-s012
+  # file = /Users/bisws/Projects/Strain_periodicity/spinodal/hydride4_transverse_case3_out.e-s004
   parallel_type = replicated
 []
 
@@ -53,7 +53,7 @@
       [./global_strain]
         scalar_global_strain = global_strain
         displacements = 'u_x u_y'
-        applied_stress_tensor = '0.01 0.0 0.0 0.0 0.0 0.0'
+        applied_stress_tensor = '0.0 0.0 0.0 0.0 0.0 0.01'
         auxiliary_displacements = 'disp_x disp_y'
       [../]
     [../]
@@ -86,8 +86,8 @@
 [UserObjects]
   [./initial_hydride]
     type = SolutionUserObject
-    # mesh = hydride3_biaxial_out.e-s006 # hydride0_biaxial_out.e-s004 hydride0/1/2_transverse_out.e-s004/5/5 hydride4_out.e-s005 hydride3_out.e-s003 hydride10_out.e-s005 eigen_effect_hydride5.e-s012
-    mesh = /Volumes/BACKUP/Strain_periodicity/moose_backup/hydride10_out.e-s004
+    mesh = hydride4_transverse_case3_out.e-s004
+    # /Users/bisws/Projects/Strain_periodicity/spinodal/hydride4_transverse_case3_out.e-s004
     timestep = LATEST
   [../]
 []
@@ -234,7 +234,7 @@
   l_tol = 1.0e-3
   nl_rel_tol = 1.0e-8
   nl_abs_tol = 1e-10
-  num_steps = 5
+  num_steps = 3
   # dt = 0.005
   [./TimeStepper]
    type = IterationAdaptiveDT
