@@ -1,21 +1,21 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 20
-  ny = 20
-  xmin = -50
-  xmax = 50
-  ymin = -50
-  ymax = 50
-  elem_type = QUAD4
+  nx = 28
+  ny = 28
+  xmin = -7
+  xmax = 7
+  ymin = -7
+  ymax = 7
   uniform_refine = 2
 []
 
 [GlobalParams]
-  radius = 0.5
-  int_width = 0.3
+  radius = 0.2
+  int_width = 0.1
   x1 = 0.0
   y1 = 0.0
+  derivative_order = 2
 []
 
 [Variables]
@@ -26,7 +26,6 @@
   [./etab0]
   [../]
   [./T]
-    initial_condition = 1.0
   [../]
 []
 
@@ -137,13 +136,11 @@
     type = SusceptibilityTimeDerivative
     variable = w
     f_name = chi
-    args = '' # in this case chi (the susceptibility) is simply a constant
   [../]
   [./Diffusion]
     type = MatDiffusion
     variable = w
     D_name = Dchi
-    args = ''
   [../]
   [./coupled_etaa0dot]
     type = CoupledSwitchingTimeDerivative
@@ -151,7 +148,7 @@
     v = etaa0
     Fj_names = 'rhoa rhob'
     hj_names = 'ha   hb'
-    args = 'etaa0 etab0 T'
+    args = 'etaa0 etab0'
   [../]
   [./coupled_etab0dot]
     type = CoupledSwitchingTimeDerivative
@@ -159,7 +156,7 @@
     v = etab0
     Fj_names = 'rhoa rhob'
     hj_names = 'ha   hb'
-    args = 'etaa0 etab0 T'
+    args = 'etaa0 etab0'
   [../]
   [./T_dot]
     type = TimeDerivative
@@ -177,67 +174,46 @@
   [../]
 []
 
-
 [Materials]
   [./ha]
     type = SwitchingFunctionMultiPhaseMaterial
     h_name = ha
     all_etas = 'etaa0 etab0'
     phase_etas = 'etaa0'
-    outputs = exodus
-    output_properties = 'ha'
   [../]
   [./hb]
     type = SwitchingFunctionMultiPhaseMaterial
     h_name = hb
     all_etas = 'etaa0 etab0'
     phase_etas = 'etab0'
-    outputs = exodus
-    output_properties = 'hb'
   [../]
   [./omegaa]
     type = DerivativeParsedMaterial
-    args = 'w T'
+    args = 'w'
     f_name = omegaa
-    material_property_names = 'Vm ka Ea'
-    function = '-ka*T/Vm*plog(1+exp((w-Ea)/ka/T),1e-2)'
-    derivative_order = 2
-    enable_jit = false
-    outputs = exodus
-    output_properties = 'omegaa'
+    material_property_names = 'Vm ka caeq'
+    function = '-0.5*w^2/Vm^2/ka-w/Vm*caeq'
   [../]
   [./omegab]
     type = DerivativeParsedMaterial
     args = 'w T'
     f_name = omegab
-    material_property_names = 'Vm ka Ea Tmb S'
-    function = '-ka*T/Vm*plog(1+exp((w-Ea)/ka/T),1e-2)-S*(T-Tmb)/Tmb'
-    derivative_order = 2
-    enable_jit = false
-    outputs = exodus
-    output_properties = 'omegab'
+    material_property_names = 'Vm kb cbeq S Tm'
+    function = '-0.5*w^2/Vm^2/kb-w/Vm*cbeq-S*(T-Tm)'
   [../]
   [./rhoa]
     type = DerivativeParsedMaterial
-    args = 'w T'
+    args = 'w'
     f_name = rhoa
-    material_property_names = 'Vm ka Ea'
-    function = '1.0/Vm*exp((w-Ea)/ka/T)/(1+exp((w-Ea)/ka/T))'
-    derivative_order = 2
-    enable_jit = false
-    outputs = exodus
-    output_properties = 'rhoa'
+    material_property_names = 'Vm ka caeq'
+    function = 'w/Vm^2/ka + caeq/Vm'
   [../]
   [./rhob]
     type = DerivativeParsedMaterial
-    args = 'w T'
+    args = 'w'
     f_name = rhob
-    material_property_names = 'Vm ka Ea'
-    function = '1.0/Vm*exp((w-Ea)/ka/T)/(1+exp((w-Ea)/ka/T))'
-    derivative_order = 2
-    enable_jit = false
-    outputs = exodus
-    output_properties = 'rhob'
+    material_property_names = 'Vm kb cbeq'
+    function = 'w/Vm^2/kb + cbeq/Vm'
   [../]
   [./kappaa]
     type = InterfaceOrientationMultiphaseMaterial
@@ -247,7 +223,7 @@
     etaa = etaa0
     etab = etab0
     anisotropy_strength = 0.05
-    reference_angle = 0
+    kappa_bar = 0.05
     outputs = exodus
     output_properties = 'kappaa'
   [../]
@@ -259,58 +235,20 @@
     etaa = etab0
     etab = etaa0
     anisotropy_strength = 0.05
-    reference_angle = 0
+    kappa_bar = 0.05
     outputs = exodus
     output_properties = 'kappab'
   [../]
   [./const]
     type = GenericConstantMaterial
-    prop_names =  'kappa_c   L      D    chi  Vm   ka    caeq kb    cbeq  gab mu   S   Tma Tmb'
-    prop_values = '0         33.333 1.0  0.1  1.0  10.0  0.1  10.0  0.9   4.5 10.0 1.0 5.0 3.0'
-    outputs = exodus
+    prop_names =  'L     D    chi  Vm   ka    caeq kb    cbeq  gab mu   S   Tm'
+    prop_values = '33.33 1.0  0.1  1.0  10.0  0.1  10.0  0.9   4.5 10.0 1.0 5.0'
   [../]
   [./Mobility]
-    type = DerivativeParsedMaterial
+    type = ParsedMaterial
     f_name = Dchi
     material_property_names = 'D chi'
     function = 'D*chi'
-    derivative_order = 2
-    enable_jit = false
-    outputs = exodus
-    output_properties = 'Dchi'
-  [../]
-[]
-
-[Postprocessors]
-  [./ndof]
-    type = NumDOFs
-  [../]
-  [./etaa0]
-    type = ElementIntegralVariablePostprocessor
-    variable = etaa0
-  [../]
-  [./w]
-    type = ElementIntegralVariablePostprocessor
-    variable = w
-  [../]
-[]
-
-[VectorPostprocessors]
-  [./velocity_x]
-    type = LineValueSampler
-    variable = 'bnds etaa0'
-    start_point = '-50.0 0.0 0.0'
-    end_point = '50.0 0.0 0.0'
-    sort_by = id
-    num_points = 50
-  [../]
-  [./velocity_y]
-    type = LineValueSampler
-    variable = 'bnds etaa0'
-    start_point = '0.0 -50.0 0.0'
-    end_point = '0.0 50.0 0.0'
-    sort_by = id
-    num_points = 50
   [../]
 []
 
@@ -325,78 +263,48 @@
   type = Transient
   scheme = bdf2
   solve_type = PJFNK
-  line_search = basic
-  # petsc_options_iname = '-pc_type -sub_pc_type -sub_ksp_type -pc_asm_overlap -pc_factor_shift_type '
-  # petsc_options_value = ' asm      lu           preonly       1    NONZERO'
   petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
   petsc_options_value = 'hypre    boomeramg      31'
-  # petsc_options = '-ksp_converged_reason -snes_converged_reason'
-  l_tol = 1.0e-3
+   l_tol = 1.0e-3
   l_max_its = 30
   nl_max_its = 15
   nl_rel_tol = 1.0e-8
   nl_abs_tol = 1e-10
-  end_time = 10.0
+  end_time = 2.0
+  dtmax = 0.05
   [./TimeStepper]
     type = IterationAdaptiveDT
     dt = 0.0005
-    cutback_factor = 0.95
-    growth_factor = 1.05
-    optimal_iterations = 6
-    # iteration_window = 0
-    # linear_iteration_ratio = 100
+    cutback_factor = 0.7
+    growth_factor = 1.2
   [../]
- []
+[]
 
 [Adaptivity]
  initial_steps = 5
- max_h_level = 6
- initial_marker = EFM_3
- marker = combo
+ max_h_level = 3
+ initial_marker = err_eta
+ marker = err_bnds
 [./Markers]
-   [./EFM_1]
+   [./err_eta]
      type = ErrorFractionMarker
      coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_1
+     refine = 0.95
+     indicator = ind_eta
    [../]
-   [./EFM_2]
+   [./err_bnds]
      type = ErrorFractionMarker
      coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_2
-   [../]
-   [./EFM_3]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_3
-   [../]
-   [./EFM_4]
-     type = ErrorFractionMarker
-     coarsen = 0.3
-     refine = 0.9
-     indicator = GJI_4
-   [../]
-   [./combo]
-     type = ComboMarker
-     markers = 'EFM_1 EFM_2 EFM_4'
+     refine = 0.95
+     indicator = ind_bnds
    [../]
  [../]
  [./Indicators]
-   [./GJI_1]
-    type = GradientJumpIndicator
-    variable = w
-   [../]
-  [./GJI_2]
-    type = GradientJumpIndicator
-    variable = T
-   [../]
-   [./GJI_3]
+   [./ind_eta]
      type = GradientJumpIndicator
      variable = etaa0
     [../]
-    [./GJI_4]
+    [./ind_bnds]
       type = GradientJumpIndicator
       variable = bnds
    [../]
@@ -404,12 +312,6 @@
 []
 
 [Outputs]
-  interval = 50
+  interval = 5
   exodus = true
-  csv = true
-  file_base = grandpotential_ideal_Tab
 []
-
-# [Debug]
-#   show_var_residual_norms = true
-# []
