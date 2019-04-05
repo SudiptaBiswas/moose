@@ -13,7 +13,7 @@
 #include "Function.h"
 
 class HeatSourceProfile;
-class ColumnMajorMatrix;
+// class ColumnMajorMatrix;
 class BilinearInterpolation;
 
 template <>
