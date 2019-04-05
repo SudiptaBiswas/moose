@@ -13,7 +13,7 @@
 #include "Function.h"
 
 class MobilityProfile;
-class ColumnMajorMatrix;
+// class ColumnMajorMatrix;
 class BilinearInterpolation;
 
 template <>
