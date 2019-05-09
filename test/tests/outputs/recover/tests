@@ -54,4 +54,35 @@
     design = 'application_usage/restart_recover.md'
     issues = '#10494 #12403'
   [../]
+  [./nemsis_adaptivity_part1]
+    # Run simple transient problem to 5 time steps, with checkpoint files enabled
+    type = 'CheckFiles'
+    input = 'recover_nemesis_adaptive.i'
+    check_files = 'nemesis_adaptivity_cp/0005.xdr'
+    cli_args = 'Executioner/num_steps=5'
+    delete_output_folders = false
+    min_parallel = 4
+    max_parallel = 4
+    requirement = 'Correctly set up initial recover files for the mesh adaptivity with nemesis output test.'
+    design = 'application_usage/restart_recover.md'
+    issues = '#13396'
+  [../]
+  [./nemsis_adaptivity_part2]
+    # Recover the solve from part1 with a specified file
+    type = 'Exodiff'
+    input = 'recover_nemesis_adaptive.i'
+    exodiff = 'nemesis_adaptivity.e.4.0 nemesis_adaptivity.e.4.1 nemesis_adaptivity.e.4.2 nemesis_adaptivity.e-s0005.4.0 nemesis_adaptivity.e-s0005.4.1 nemesis_adaptivity.e-s0005.4.2 nemesis_adaptivity.e-s0005.4.3 nemesis_adaptivity.e.4.3 nemesis_adaptivity.e-s0010.4.0 nemesis_adaptivity.e-s0010.4.1 nemesis_adaptivity.e-s0010.4.2 nemesis_adaptivity.e-s0010.4.3'
+    cli_args = '--recover nemesis_adaptivity_cp/LATEST'
+    prereq = 'nemsis_adaptivity_part1'
+    delete_output_before_running = false
+    delete_output_folders = false
+    recover = false
+    min_parallel = 4
+    max_parallel = 4
+    petsc_version = '>=3.8.0'
+
+    requirement = 'A simulation with mesh adaptivity and nemesis output executed using the "--recover" flag.'
+    design = 'application_usage/restart_recover.md'
+    issues = '#13396'
+  [../]
 []
