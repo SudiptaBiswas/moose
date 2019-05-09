@@ -84,7 +84,7 @@ protected:
   std::vector<std::string> _global_names;
 
   /// Current output filename; utilized by filename() to create the proper suffix
-  unsigned int _file_num;
+  unsigned int & _file_num;
 
 private:
   /// Count of outputs per exodus file
@@ -93,4 +93,3 @@ private:
   /// Flag if the output has been initialized
   bool _nemesis_initialized;
 };
-

@@ -39,7 +39,7 @@ validParams<Nemesis>()
 Nemesis::Nemesis(const InputParameters & parameters)
   : AdvancedOutput(parameters),
     _nemesis_io_ptr(nullptr),
-    _file_num(0),
+    _file_num(declareRestartableData<unsigned int>("nemesis_num", 0)),
     _nemesis_num(0),
     _nemesis_initialized(false)
 {
