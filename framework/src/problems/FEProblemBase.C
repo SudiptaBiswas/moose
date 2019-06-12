@@ -3010,7 +3010,6 @@ FEProblemBase::execute(const ExecFlagType & exec_type)
 
   // Pre-aux UserObjects
   computeUserObjects(exec_type, Moose::PRE_AUX);
-
   // AuxKernels
   computeAuxiliaryKernels(exec_type);
 
@@ -3064,17 +3063,23 @@ FEProblemBase::joinAndFinalize(TheWarehouse::Query query, bool isgen)
 
     obj->finalize();
 
-    // These have to be stored piecemeal (with every call to this function) because general
-    // postprocessors (which run last after other userobjects have been completed) might depend on
-    // them being stored.  This wouldn't be a problem if all userobjects satisfied the dependency
-    // resolver interface and could be sorted appropriately with the general userobjects, but they
-    // don't.
+    std::cout << "Immediately after UserObject finalize within joinAndFinalize of FEProblemBase "
+              << '\n';
+    // These have to be stored piecemeal (with every call to this function) because
+    // general postprocessors (which run last after other userobjects have been
+    // completed) might depend on them being stored.  This wouldn't be a problem if all
+    // userobjects satisfied the dependency resolver interface and could be sorted
+    // appropriately with the general userobjects, but they don't.
+    _communicator.barrier();
     auto pp = dynamic_cast<Postprocessor *>(obj);
     if (pp)
       _pps_data.storeValue(pp->PPName(), pp->getValue());
     auto vpp = dynamic_cast<VectorPostprocessor *>(obj);
     if (vpp)
       _vpps_data.broadcastScatterVectors(vpp->PPName());
+    _communicator.barrier();
+
+    std::cout << "End of joinAndFinalize of " << pp->PPName() << " within FEProblemBase. " << '\n';
   }
 }
 
@@ -3212,6 +3217,8 @@ FEProblemBase::computeUserObjectsInternal(const ExecFlagType & type,
   }
 
   joinAndFinalize(query.clone().condition<AttribInterfaces>(Interfaces::GeneralUserObject), true);
+
+  std::cout << "After UserObject finalize from FEProblemBase " << '\n';
 }
 
 void
