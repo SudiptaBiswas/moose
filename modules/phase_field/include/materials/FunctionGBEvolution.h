@@ -34,7 +34,7 @@ protected:
   Real _wGB;
   Real _length_scale;
   Real _time_scale;
-  Function & _GBMobility;
+  const Function & _GBMobility;
 
   Real _GBEnergy;
   Real _molar_vol;
