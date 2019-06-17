@@ -53,7 +53,7 @@ HeatSourceProfile::HeatSourceProfile(const InputParameters & parameters)
 }
 
 Real
-HeatSourceProfile::value(Real t, const Point & p)
+HeatSourceProfile::value(Real t, const Point & p) const
 {
   Point center;
   center(0) = _x1 + _vp * t;
@@ -63,7 +63,7 @@ HeatSourceProfile::value(Real t, const Point & p)
   Point dist_vec = p - center;
   Real dist = dist_vec.norm();
 
-  Real r;
+  Real r = 0.0;
   Real value = 1e-3;
 
   switch (_shape)
@@ -82,7 +82,7 @@ HeatSourceProfile::value(Real t, const Point & p)
     {
       if (_a == 0.0 || _b == 0.0)
         mooseError("Please provide semiaxes for elliptical weldpool in "
-                   "FunctionGBEvolution.");
+                   "HeatSourceProfile.");
 
       Real rmn = (std::pow(std::abs(dist_vec(0) / dist / _a), 2) +
                   std::pow(std::abs(dist_vec(1) / dist / _b), 2) +
@@ -93,7 +93,7 @@ HeatSourceProfile::value(Real t, const Point & p)
     }
 
     default:
-      paramError("weldpool_shape", "Bad type passed in FunctionGBEvolution");
+      mooseError("Bad weldpool_shape type passed in HeatSourceProfile");
   }
 
   if (dist <= r)
