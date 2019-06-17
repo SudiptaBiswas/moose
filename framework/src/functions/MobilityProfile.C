@@ -57,7 +57,7 @@ MobilityProfile::MobilityProfile(const InputParameters & parameters)
 }
 
 Real
-MobilityProfile::value(Real t, const Point & p)
+MobilityProfile::value(Real t, const Point & p) const
 {
   Point center;
   center(0) = _x1 + _vp * t;
@@ -67,7 +67,7 @@ MobilityProfile::value(Real t, const Point & p)
   Point dist_vec = p - center;
   Real dist = dist_vec.norm();
 
-  Real r;
+  Real r = 0.0;
 
   switch (_shape)
   {
@@ -75,7 +75,7 @@ MobilityProfile::value(Real t, const Point & p)
     {
       if (_r1 == 0.0)
         mooseError("Please provide radius for circular weldpool in "
-                   "FunctionGBEvolution.");
+                   "MobilityProfile.");
       r = _r1;
 
       break;
@@ -85,7 +85,7 @@ MobilityProfile::value(Real t, const Point & p)
     {
       if (_a == 0.0 || _b == 0.0)
         mooseError("Please provide semiaxes for elliptical weldpool in "
-                   "FunctionGBEvolution.");
+                   "MobilityProfile.");
 
       Real rmn = (std::pow(std::abs(dist_vec(0) / dist / _a), 2) +
                   std::pow(std::abs(dist_vec(1) / dist / _b), 2) +
@@ -96,7 +96,7 @@ MobilityProfile::value(Real t, const Point & p)
     }
 
     default:
-      paramError("weldpool_shape", "Bad type passed in FunctionGBEvolution");
+      mooseError("Bad weldpool_shape type passed in MobilityProfile");
   }
 
   Real r2 = r + _haz;
