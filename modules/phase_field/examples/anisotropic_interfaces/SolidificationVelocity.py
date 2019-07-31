@@ -22,8 +22,8 @@ import itertools
 # camera.SetPosition(0.0000, 0.0000, 200.0)
 # camera.SetFocalPoint(0.0000, 0.0000, 0.0000)
 
-reader0 = chigger.exodus.ExodusReader('GrandPotentialSolidification_updatedmodel_out.e', timestep=0)
-exodus0 = chigger.exodus.ExodusResult(reader0, edges=False, edge_color=[0.2, 0.2, 0.2], variable='etab0', cmap='viridis',
+reader0 = chigger.exodus.ExodusReader('/Volumes/BACKUP/solidification/2019_08_08_grandPotential_directional3_out.e', timestep=0)
+exodus0 = chigger.exodus.ExodusResult(reader0, edges=False, edge_color=[0.2, 0.2, 0.2], variable='etaa0', cmap='viridis',
                                       local_range=True, viewport=[0,0,1,1])
 # result = chigger.exodus.ExodusResult(reader, variable='etaa0', viewport=[0,0,1,1], opacity=1,
 #                                      edges=True, edge_color=[1,1,1], range=[0, 1], camera=camera)
@@ -40,9 +40,9 @@ time = chigger.annotations.TimeAnnotation(layer=2, font_size=18, color=[1,0,1], 
                                           vertical_justification='middle', notation='fixed', precision=4)
 
 moose = ImageAnnotation(filename='moose.png', scale=0.9, opacity=0.15)
-inl = ImageAnnotation(filename='inl.png', position=[0.95, 0.98], scale=0.08,
+inl = ImageAnnotation(filename='inl.png', position=[0.95, 0.98], scale=0.05,
                       horizontal_alignment='right', vertical_alignment='top')
-text = chigger.annotations.TextAnnotation(text='Created by Sudipta Biswas', font_size=14, text_color=[1,1,1], position=[0.25, 0.1])
+text = chigger.annotations.TextAnnotation(text='Created by Sudipta Biswas', font_size=14, text_color=[1,1,1], position=[0.33, 0.1])
 
 # p0 = (0., 0., 0.)
 # p1= (-20.0, -20.0, 0)
@@ -91,17 +91,17 @@ text = chigger.annotations.TextAnnotation(text='Created by Sudipta Biswas', font
 # graph2.setOptions('yaxis', lim = [0.25, 1.0], title='Order Parameter', font_size=18)
 # graph2.setOptions('legend', point=[0.75, 0.2], label_font_size=18)
 
-window = chigger.RenderWindow(exodus0, time, moose, inl, size=[600, 600], test=False)
+window = chigger.RenderWindow(exodus0, time, moose, inl, text, size=[600, 600], test=False)
 
-# reader0.update()
-# times = reader0.getTimes()
-# for i in range(0,3000,50):
-#     # if i <= 200:
-#     time.update(time=times[i])
-#     reader0.setOptions(timestep=i)
-#     window.write('solidification2_%4d.png' % i)
+reader0.update()
+times = reader0.getTimes()
+for i in range(0,462):
+    # if i <= 200:
+    time.update(time=times[i])
+    reader0.setOptions(timestep=i)
+    window.write('solidification_directional4_%4d.png' % i)
 
-    # exodus0.update()
+    exodus0.update()
     # etaa1 = sample1[0].getSample('bnds')
     # etaa2 = sample2[0].getSample('bnds')
     # etaa3 = sample3[0].getSample('bnds')
@@ -114,4 +114,4 @@ window = chigger.RenderWindow(exodus0, time, moose, inl, size=[600, 600], test=F
 
 window.start()
 
-# img2mov('solidification2_*.png', 'solidification2.mp4', duration=20)
+img2mov('solidification_directional4_*.png', 'directional_solidification4.mp4', duration=20)
