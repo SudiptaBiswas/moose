@@ -25,10 +25,8 @@ protected:
   virtual void computeQpStrain();
   virtual void computeQpStress();
 
-private:
   const VariableValue & _T;
 
   Real _T0;
   Real _thermal_expansion_coeff;
 };
-
