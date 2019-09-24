@@ -15,11 +15,16 @@
 # from total strain in cases with eigen strains, e.g. thermal strain.
 
 [Mesh]
-  file = 1x1x1cube.e
+  type = GeneratedMesh
+  # file = 1x1x1cube.e
+  dim = 1
+  nx = 1
+  ny = 0
+  nz = 0
 []
 
 [GlobalParams]
-  displacements = 'disp_x disp_y disp_z'
+  displacements = 'disp_x'
 []
 
 [Functions]
@@ -29,44 +34,48 @@
   [../]
   [./hf]
     type = PiecewiseLinear
-    x = '0  0.001 0.003 0.023'
-    y = '50 52    54    56'
+    x = '0  30'
+    y = '50 80'
   [../]
+  # [./hf]
+  #   type = ConstantFunction
+  #   value = 1.0
+  # [../]
 []
 
 [Modules/TensorMechanics/Master]
   [./all]
     strain = FINITE
     add_variables = true
-    generate_output = 'stress_yy plastic_strain_xx plastic_strain_yy plastic_strain_zz'
+    generate_output = 'stress_xx plastic_strain_xx strain_xx elastic_strain_xx'
   [../]
 []
 
 [BCs]
   [./y_pull_function]
     type = FunctionPresetBC
-    variable = disp_y
-    boundary = 5
+    variable = disp_x
+    boundary = right
     function = top_pull
   [../]
   [./x_bot]
     type = DirichletBC
     variable = disp_x
-    boundary = 4
+    boundary = left
     value = 0.0
   [../]
-  [./y_bot]
-    type = DirichletBC
-    variable = disp_y
-    boundary = 3
-    value = 0.0
-  [../]
-  [./z_bot]
-    type = DirichletBC
-    variable = disp_z
-    boundary = 2
-    value = 0.0
-  [../]
+  # [./y_bot]
+  #   type = DirichletBC
+  #   variable = disp_y
+  #   boundary = 3
+  #   value = 0.0
+  # [../]
+  # [./z_bot]
+  #   type = DirichletBC
+  #   variable = disp_z
+  #   boundary = 2
+  #   value = 0.0
+  # [../]
 []
 
 [Materials]
@@ -105,12 +114,36 @@
   l_tol = 1e-9
 
   start_time = 0.0
-  end_time = 0.075
-  dt = 0.00125
+  end_time = 30
+  dt = 1
   dtmin = 0.0001
 []
 
+[Postprocessors]
+  [./s_xx]
+    type = ElementIntegralVariablePostprocessor
+    # point = '0 0 0'
+    variable = stress_xx
+  [../]
+  [./e_xx]
+    type = ElementIntegralVariablePostprocessor
+    # point = '0 0 0'
+    variable = strain_xx
+  [../]
+  [./ee_xx]
+    type = ElementIntegralVariablePostprocessor
+    # point = '0 0 0'
+    variable = elastic_strain_xx
+  [../]
+  [./ep_xx]
+    type = ElementIntegralVariablePostprocessor
+    # point = '0 0 0'
+    variable = plastic_strain_xx
+  [../]
+[]
+
 [Outputs]
+  csv = true
   [./out]
     type = Exodus
     elemental_as_nodal = true

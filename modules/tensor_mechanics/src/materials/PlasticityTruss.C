@@ -49,7 +49,7 @@ PlasticityTruss::PlasticityTruss(const InputParameters & parameters)
     _eqv_plastic_strain_old(getMaterialPropertyOld<Real>(_base_name + "eqv_plastic_strain")),
     _elastic_strain_old(getMaterialPropertyOld<Real>(_base_name + "elastic_stretch")),
     _stress_old(getMaterialPropertyOld<Real>(_base_name + "axial_stress")),
-    _strain_increment(declareProperty<Real>(_base_name + "strain_increment")),
+    _strain_increment(declareProperty<Real>(_base_name + "strain_increment_truss")),
     _hardening_variable(declareProperty<Real>(_base_name + "hardening_variable")),
     _hardening_variable_old(getMaterialPropertyOld<Real>(_base_name + "hardening_variable")),
     _max_its(1000),
@@ -183,15 +183,14 @@ PlasticityTruss::computeQpStress()
       // _residual = (effective_trial_stress - _hardening_variable[_qp] - _yield_stress) /
       //                 (3.0 * shear_modulus) -
       //             _eqv_plastic_strain[_qp];
-      _residual =
-          effective_trial_stress - _hardening_variable[_qp] - _yield_stress -
-          3.0 * shear_modulus * eqv_plastic_strain_increment -
-          (3.0 * shear_modulus + _hardening_constant[_qp]) * eqv_plastic_strain_increment_increase;
+      _residual = effective_trial_stress - _hardening_variable[_qp] - _yield_stress -
+                  3.0 * shear_modulus * eqv_plastic_strain_increment; // -
+      // (3.0 * shear_modulus + _hardening_constant[_qp]) * eqv_plastic_strain_increment_increase;
 
-      std::cout << "iteration = " << _iteration << " residual = " << _residual
-                << " with eqv_plastic_strain_increment_increase = "
-                << eqv_plastic_strain_increment_increase
-                << " for axial_stress = " << _axial_stress[_qp] << ". \n";
+      // std::cout << "iteration = " << _iteration << " residual = " << _residual
+      //           << " with eqv_plastic_strain_increment_increase = "
+      //           << eqv_plastic_strain_increment_increase
+      //           << " for axial_stress = " << _axial_stress[_qp] << ". \n";
       // residual_old = _residual;
       reference_residual =
           effective_trial_stress - 3.0 * shear_modulus * eqv_plastic_strain_increment;
@@ -201,6 +200,7 @@ PlasticityTruss::computeQpStress()
       // residual_old = _residual;
       // _eqv_plastic_strain_old[_qp] = _eqv_plastic_strain[_qp];
       if (_iteration > _max_its) // not converging
+                                 // mooseWarning("Plasticity model did not converge.");
         mooseError("Plasticity model did not converge.");
     }
     _eqv_plastic_strain[_qp] = _eqv_plastic_strain_old[_qp] + eqv_plastic_strain_increment;
@@ -216,8 +216,8 @@ PlasticityTruss::computeQpStress()
     _axial_stress[_qp] = _stress_old[_qp] + _youngs_modulus[_qp] * _strain_increment[_qp];
   }
 
-  std::cout << " END: iteration = " << _iteration << " residual = " << _residual
-            << " with plastic_strain = " << _plastic_strain[_qp]
-            << " and elastic strain = " << _elastic_stretch[_qp]
-            << " for axial_stress = " << _axial_stress[_qp] << ". \n";
+  // std::cout << " END: iteration = " << _iteration << " residual = " << _residual
+  //           << " with plastic_strain = " << _plastic_strain[_qp]
+  //           << " and elastic strain = " << _elastic_stretch[_qp]
+  //           << " for axial_stress = " << _axial_stress[_qp] << ". \n";
 }

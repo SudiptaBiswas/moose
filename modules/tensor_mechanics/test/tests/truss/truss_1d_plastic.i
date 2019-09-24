@@ -77,7 +77,9 @@
     type = FunctionPresetBC
     variable = disp_x
     boundary = right
-    function = y2
+    function = '-1e-4*t'
+
+    # function = y2
   [../]
   # [./fixx3]
   #   type = DirichletBC
@@ -187,7 +189,7 @@
 
   l_max_its = 20
 
-  dt = 0.01
+  dt = 0.001
   # num_steps = 20
   end_time = 3
 []
@@ -226,10 +228,10 @@
   [./linelast]
     type = PlasticityTruss
     # block = '1 2'
-    youngs_modulus = 2.1e5
+    youngs_modulus = 2.0e9
     poissons_ratio = 0.3
-    hardening_constant = 100.0
-    yield_strength = 50
+    hardening_constant = 10.0
+    yield_strength = 5e4
     # tolerance = 1e-8
     displacements = 'disp_x'
     outputs = exodus
