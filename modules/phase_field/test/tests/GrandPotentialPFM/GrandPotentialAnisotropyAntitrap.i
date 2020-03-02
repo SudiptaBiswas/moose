@@ -85,12 +85,15 @@
     kappa_name = kappaa
     dkappadgrad_etaa_name = dkappadgrad_etaa
     d2kappadgrad_etaa_name = d2kappadgrad_etaa
+    variable_L = false
   [../]
   [./ACa0_int2]
     type = ACInterface2DMultiPhase2
     variable = etaa0
     kappa_name = kappaa
     dkappadgrad_etaa_name = dkappadgrad_etaa
+    args = 'etab0'
+    variable_L = false
   [../]
   [./ea0_dot]
     type = TimeDerivative
@@ -117,12 +120,15 @@
     kappa_name = kappab
     dkappadgrad_etaa_name = dkappadgrad_etab
     d2kappadgrad_etaa_name = d2kappadgrad_etab
+    variable_L = false
   [../]
   [./ACb0_int2]
     type = ACInterface2DMultiPhase2
     variable = etab0
     kappa_name = kappab
     dkappadgrad_etaa_name = dkappadgrad_etab
+    args = 'etaa0'
+    variable_L = false
   [../]
   [./eb0_dot]
     type = TimeDerivative

@@ -39,7 +39,8 @@
     [../]
   [../]
   [./bnds]
-    type = BndsCalcIC # IC is created for activating the initial adaptivity
+    # This IC is created for activating the initial adaptivity
+    type = BndsCalcIC
     variable = bnds
   [../]
 []
@@ -51,16 +52,16 @@
   [../]
 []
 
-[Kernels]
-  [./PolycrystalKernel]
-  [../]
-[]
-
 [AuxKernels]
   [./BndsCalc]
     type = BndsCalcAux
     variable = bnds
     execute_on = timestep_end
+  [../]
+[]
+
+[Kernels]
+  [./PolycrystalKernel]
   [../]
 []
 

@@ -32,8 +32,8 @@ ACInterface2DMultiPhase2::ACInterface2DMultiPhase2(const InputParameters & param
 Real
 ACInterface2DMultiPhase2::computeQpJacobian()
 {
-  // dsum is the derivative \f$ \frac\partial{\partial \eta} \left( \nabla (L\psi) \right) \f$
-  RealGradient dsum = _dLdop[_qp] * _phi[_j][_qp] * _grad_test[_i][_qp];
+  RealGradient dsum =
+      (_dkappadop[_qp] * _L[_qp] + _kappa[_qp] * _dLdop[_qp]) * _phi[_j][_qp] * _grad_test[_i][_qp];
 
   // compute the derivative of the gradient of the mobility
   if (_variable_L)
@@ -44,9 +44,10 @@ ACInterface2DMultiPhase2::computeQpJacobian()
     for (unsigned int i = 0; i < _n_args; ++i)
       dgradL += (*_gradarg[i])[_qp] * _phi[_j][_qp] * (*_d2Ldargdop[i])[_qp];
 
-    dsum += dgradL * _test[_i][_qp];
+    dsum += (_kappa[_qp] * dgradL + _dkappadop[_qp] * _phi[_j][_qp] * gradL()) * _test[_i][_qp];
   }
-  Real jac1 = dsum * _kappa[_qp] * _grad_u[_qp];
+
+  Real jac1 = dsum * _grad_u[_qp];
   Real jac2 = nablaLPsi() * _dkappadgrad_etaa[_qp] * _grad_phi[_j][_qp] * _grad_u[_qp];
   Real jac3 = nablaLPsi() * _kappa[_qp] * _grad_phi[_j][_qp];
   return jac1 + jac2 + jac3;
@@ -58,8 +59,8 @@ ACInterface2DMultiPhase2::computeQpOffDiagJacobian(unsigned int jvar)
   // get the coupled variable jvar is referring to
   const unsigned int cvar = mapJvarToCvar(jvar);
 
-  // dsum is the derivative \f$ \frac\partial{\partial \eta} \left( \nabla (L\psi) \right) \f$
-  RealGradient dsum = (*_dLdarg[cvar])[_qp] * _phi[_j][_qp] * _grad_test[_i][_qp];
+  RealGradient dsum = ((*_dkappadarg[cvar])[_qp] * _L[_qp] + _kappa[_qp] * (*_dLdarg[cvar])[_qp]) *
+                      _phi[_j][_qp] * _grad_test[_i][_qp];
 
   // compute the derivative of the gradient of the mobility
   if (_variable_L)
@@ -70,10 +71,13 @@ ACInterface2DMultiPhase2::computeQpOffDiagJacobian(unsigned int jvar)
     for (unsigned int i = 0; i < _n_args; ++i)
       dgradL += (*_gradarg[i])[_qp] * _phi[_j][_qp] * (*_d2Ldarg2[cvar][i])[_qp];
 
-    dsum += dgradL * _test[_i][_qp];
+    dsum += (_kappa[_qp] * dgradL + (*_dkappadarg[cvar])[_qp] * _phi[_j][_qp] * gradL()) *
+            _test[_i][_qp];
   }
 
-  Real jac1 = dsum * _kappa[_qp] * _grad_u[_qp];
-  Real jac2 = -nablaLPsi() * _dkappadgrad_etaa[_qp] * _grad_phi[_j][_qp] * _grad_u[_qp];
+  Real jac1 = dsum * _grad_u[_qp];
+  Real jac2 = 0;
+  if ((*_gradarg[cvar])[_qp].norm_sq() > 1e-8)
+    jac2 = -nablaLPsi() * _dkappadgrad_etaa[_qp] * _grad_phi[_j][_qp] * _grad_u[_qp];
   return jac1 + jac2;
 }

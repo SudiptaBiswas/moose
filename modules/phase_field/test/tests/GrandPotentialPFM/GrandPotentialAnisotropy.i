@@ -112,10 +112,18 @@
     variable = etaa0
     kappa_name = kappaa
     dkappadgrad_etaa_name = dkappadgrad_etaa
+    args = 'etab0'
   [../]
   [./ea0_dot]
     type = TimeDerivative
     variable = etaa0
+  [../]
+  [./etaa0_kappa]
+    type = ACKappaFunction
+    variable = etaa0
+    mob_name = L
+    kappa_name = kappa
+    v = 'etab0'
   [../]
 # Order parameter eta_beta0
   [./ACb0_bulk]
@@ -144,10 +152,18 @@
     variable = etab0
     kappa_name = kappab
     dkappadgrad_etaa_name = dkappadgrad_etab
+    args = 'etaa0'
   [../]
   [./eb0_dot]
     type = TimeDerivative
     variable = etab0
+  [../]
+  [./etab0_kappa]
+    type = ACKappaFunction
+    variable = etab0
+    mob_name = L
+    kappa_name = kappa
+    v = 'etaa0'
   [../]
 #Chemical potential
   [./w_dot]
@@ -226,7 +242,7 @@
     d2kappadgrad_etaa_name = d2kappadgrad_etaa
     etaa = etaa0
     etab = etab0
-    outputs = exodus
+    # outputs = exodus
     output_properties = 'kappaa dkappadgrad_etaa'
   [../]
   [./kappab]
@@ -236,7 +252,7 @@
     d2kappadgrad_etaa_name = d2kappadgrad_etab
     etaa = etab0
     etab = etaa0
-    outputs = exodus
+    # outputs = exodus
     output_properties = 'kappab dkappadgrad_etab'
   [../]
   [./const]
@@ -270,6 +286,6 @@
 []
 
 [Outputs]
-  exodus = true
+  # exodus = true
   # file_base = test_case
 []

@@ -34,10 +34,20 @@ ACInterface2DMultiPhase1::ACInterface2DMultiPhase1(const InputParameters & param
   : ACInterface(parameters),
     _dkappadgrad_etaa(getMaterialProperty<RealGradient>("dkappadgrad_etaa_name")),
     _d2kappadgrad_etaa(getMaterialProperty<RealTensorValue>("d2kappadgrad_etaa_name")),
+    _d2kappadgradetaadetaa(
+        getMaterialPropertyDerivative<RealGradient>("dkappadgrad_etaa_name", _var.name())),
     _num_etas(coupledComponents("etas")),
-    _eta(_num_etas),
-    _grad_eta(_num_etas)
+    _grad_eta(_num_etas),
+    _eta_name(_num_etas),
+    _d2kappadgradetaadetab(_num_etas)
 {
+  for (unsigned int i = 0; i < _num_etas; ++i)
+  {
+    _grad_eta[i] = &coupledGradient("etas", i);
+    _eta_name[i] = getVar("etas", i)->name();
+    _d2kappadgradetaadetab[i] =
+        &getMaterialPropertyDerivative<RealGradient>("dkappadgrad_etaa_name", _eta_name[i]);
+  }
 }
 
 Real
@@ -46,10 +56,8 @@ ACInterface2DMultiPhase1::sumSquareGradEta()
   // get the sum of square of gradients of all order parameters
   Real SumSquareGradOp = _grad_u[_qp] * _grad_u[_qp];
   for (unsigned int i = 0; i < _num_etas; ++i)
-  {
-    _grad_eta[i] = &coupledGradient("etas", i);
     SumSquareGradOp += (*_grad_eta[i])[_qp] * (*_grad_eta[i])[_qp];
-  }
+
   return SumSquareGradOp;
 }
 
@@ -80,7 +88,9 @@ ACInterface2DMultiPhase1::computeQpJacobian()
   Real jac2 =
       0.5 * nablaLPsi() * (_d2kappadgrad_etaa[_qp] * _grad_phi[_j][_qp]) * sumSquareGradEta();
   Real jac3 = nablaLPsi() * _dkappadgrad_etaa[_qp] * _grad_u[_qp] * _grad_phi[_j][_qp];
-  return jac1 + jac2 + jac3;
+  Real jac4 =
+      0.5 * nablaLPsi() * (_d2kappadgradetaadetaa[_qp] * _phi[_j][_qp]) * sumSquareGradEta();
+  return jac1 + jac2 + jac3 + jac4;
 }
 
 Real
@@ -104,12 +114,12 @@ ACInterface2DMultiPhase1::computeQpOffDiagJacobian(unsigned int jvar)
     dsum += dgradL * _test[_i][_qp];
   }
 
-  // the gradient of coupled variable etab
-  _grad_eta[0] = &coupledGradient("etas", 0);
-
   Real jac1 = 0.5 * dsum * _dkappadgrad_etaa[_qp] * sumSquareGradEta();
-  Real jac2 =
-      -0.5 * nablaLPsi() * (_d2kappadgrad_etaa[_qp] * _grad_phi[_j][_qp]) * sumSquareGradEta();
-  Real jac3 = nablaLPsi() * _dkappadgrad_etaa[_qp] * (*_grad_eta[0])[_qp] * _grad_phi[_j][_qp];
-  return jac1 + jac2 + jac3;
+  Real jac2 = 0;
+  if ((*_grad_eta[cvar])[_qp].norm_sq() > 1e-8)
+    jac2 = -0.5 * nablaLPsi() * (_d2kappadgrad_etaa[_qp] * _grad_phi[_j][_qp]) * sumSquareGradEta();
+  Real jac3 = nablaLPsi() * _dkappadgrad_etaa[_qp] * (*_grad_eta[cvar])[_qp] * _grad_phi[_j][_qp];
+  Real jac4 =
+      0.5 * nablaLPsi() * (*_d2kappadgradetaadetab[cvar])[_qp] * _phi[_j][_qp] * sumSquareGradEta();
+  return jac1 + jac2 + jac3 + jac4;
 }
