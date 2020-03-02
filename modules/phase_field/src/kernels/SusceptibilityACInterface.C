@@ -28,11 +28,12 @@ SusceptibilityACInterface::SusceptibilityACInterface(const InputParameters & par
   : ACInterface(parameters),
     _Chi(getMaterialProperty<Real>("f_name")),
     _dChidu(getMaterialPropertyDerivative<Real>("f_name", _var.name())),
-    _dChidarg(_nvar)
+    _dChidarg(_n_args)
 {
   // fetch derivatives
-  for (unsigned int i = 0; i < _nvar; ++i)
-    _dChidarg[i] = &getMaterialPropertyDerivative<Real>("f_name", _coupled_moose_vars[i]->name());
+  for (unsigned int i = 0; i < _n_args; ++i)
+    _dChidarg[i] =
+        &getMaterialPropertyDerivative<Real>("f_name", _coupled_standard_moose_vars[i]->name());
 }
 
 void

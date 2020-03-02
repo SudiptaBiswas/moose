@@ -66,77 +66,84 @@ InterfaceOrientationMultiphaseMaterial::computeQpProperties()
 {
   const Real tol = 1e-9;
   const Real cutoff = 1.0 - tol;
-
-  // Normal direction of the interface
-  Real n = 0.0;
-  const RealGradient nd = _grad_etaa[_qp] - _grad_etab[_qp];
-  const Real nx = nd(0);
-  const Real ny = nd(1);
-  const Real n2x = nd(0) * nd(0);
-  const Real n2y = nd(1) * nd(1);
-  const Real nsq = nd.norm_sq();
-  const Real n2sq = nsq * nsq;
-  if (nsq > tol)
-    n = nx / std::sqrt(nsq);
-
-  if (n > cutoff)
-    n = cutoff;
-
-  if (n < -cutoff)
-    n = -cutoff;
-
-  // Calculate the orientation angle
-  const Real angle = std::acos(n) * MathUtils::sign(ny);
-
-  // Compute derivatives of the angle wrt n
-  const Real dangledn = -MathUtils::sign(ny) / std::sqrt(1.0 - n * n);
-  const Real d2angledn2 = -MathUtils::sign(ny) * n / (1.0 - n * n) / std::sqrt(1.0 - n * n);
-
-  // Compute derivative of n wrt grad_eta
-  RealGradient dndgrad_etaa;
-  if (nsq > tol)
+  // if (_grad_etaa[_qp].norm() > tol)
   {
-    dndgrad_etaa(0) = ny * ny;
-    dndgrad_etaa(1) = -nx * ny;
-    dndgrad_etaa /= nsq * std::sqrt(nsq);
+    // Normal direction of the interface
+    Real n = 0.0;
+    RealGradient nd;
+    if (_grad_etaa[_qp].norm() > tol && _grad_etab[_qp].norm() > tol)
+      nd = _grad_etaa[_qp] - _grad_etab[_qp];
+    // RealGradient nd = _grad_etaa[_qp];
+    // if (_grad_etab[_qp].norm() > tol)
+    //   nd -= _grad_etab[_qp];
+    const Real nx = nd(0);
+    const Real ny = nd(1);
+    const Real n2x = nd(0) * nd(0);
+    const Real n2y = nd(1) * nd(1);
+    const Real nsq = nd.norm_sq();
+    const Real n2sq = nsq * nsq;
+    if (nsq > tol)
+      n = nx / std::sqrt(nsq);
+
+    if (n > cutoff)
+      n = cutoff;
+
+    if (n < -cutoff)
+      n = -cutoff;
+
+    // Calculate the orientation angle
+    const Real angle = std::acos(n) * MathUtils::sign(ny);
+
+    // Compute derivatives of the angle wrt n
+    const Real dangledn = -MathUtils::sign(ny) / std::sqrt(1.0 - n * n);
+    const Real d2angledn2 = -MathUtils::sign(ny) * n / (1.0 - n * n) / std::sqrt(1.0 - n * n);
+
+    // Compute derivative of n wrt grad_eta
+    RealGradient dndgrad_etaa;
+    if (nsq > tol)
+    {
+      dndgrad_etaa(0) = ny * ny;
+      dndgrad_etaa(1) = -nx * ny;
+      dndgrad_etaa /= nsq * std::sqrt(nsq);
+    }
+
+    // Calculate interfacial coefficient kappa and its derivatives wrt the angle
+    Real anglediff = _j * (angle - _theta0 * libMesh::pi / 180.0);
+    _kappa[_qp] =
+        _kappa_bar * (1.0 + _delta * std::cos(anglediff)) * (1.0 + _delta * std::cos(anglediff));
+    Real dkappadangle = -2.0 * _kappa_bar * _delta * _j * (1.0 + _delta * std::cos(anglediff)) *
+                        std::sin(anglediff);
+    Real d2kappadangle =
+        2.0 * _kappa_bar * _delta * _delta * _j * _j * std::sin(anglediff) * std::sin(anglediff) -
+        2.0 * _kappa_bar * _delta * _j * _j * (1.0 + _delta * std::cos(anglediff)) *
+            std::cos(anglediff);
+
+    // Compute the square of dndgrad_etaa
+    RealTensorValue dndgrad_etaa_sq;
+    if (nsq > tol)
+    {
+      dndgrad_etaa_sq(0, 0) = n2y * n2y;
+      dndgrad_etaa_sq(0, 1) = -(nx * ny * n2y);
+      dndgrad_etaa_sq(1, 0) = -(nx * ny * n2y);
+      dndgrad_etaa_sq(1, 1) = n2x * n2y;
+      dndgrad_etaa_sq /= n2sq * nsq;
+    }
+
+    // Compute the second derivative of n wrt grad_eta
+    RealTensorValue d2ndgrad_etaa2;
+    if (nsq > tol)
+    {
+      d2ndgrad_etaa2(0, 0) = -3.0 * nx * ny * ny;
+      d2ndgrad_etaa2(0, 1) = -ny * ny * ny + 2.0 * nx * nx * ny;
+      d2ndgrad_etaa2(1, 0) = -ny * ny * ny + 2.0 * nx * nx * ny;
+      d2ndgrad_etaa2(1, 1) = -nx * nx * nx + 2.0 * nx * ny * ny;
+      d2ndgrad_etaa2 /= n2sq * std::sqrt(nsq);
+    }
+
+    // Compute derivatives of kappa wrt grad_eta
+    _dkappadgrad_etaa[_qp] = dkappadangle * dangledn * dndgrad_etaa;
+    _d2kappadgrad_etaa[_qp] = d2kappadangle * dangledn * dangledn * dndgrad_etaa_sq +
+                              dkappadangle * d2angledn2 * dndgrad_etaa_sq +
+                              dkappadangle * dangledn * d2ndgrad_etaa2;
   }
-
-  // Calculate interfacial coefficient kappa and its derivatives wrt the angle
-  Real anglediff = _j * (angle - _theta0 * libMesh::pi / 180.0);
-  _kappa[_qp] =
-      _kappa_bar * (1.0 + _delta * std::cos(anglediff)) * (1.0 + _delta * std::cos(anglediff));
-  Real dkappadangle =
-      -2.0 * _kappa_bar * _delta * _j * (1.0 + _delta * std::cos(anglediff)) * std::sin(anglediff);
-  Real d2kappadangle =
-      2.0 * _kappa_bar * _delta * _delta * _j * _j * std::sin(anglediff) * std::sin(anglediff) -
-      2.0 * _kappa_bar * _delta * _j * _j * (1.0 + _delta * std::cos(anglediff)) *
-          std::cos(anglediff);
-
-  // Compute the square of dndgrad_etaa
-  RealTensorValue dndgrad_etaa_sq;
-  if (nsq > tol)
-  {
-    dndgrad_etaa_sq(0, 0) = n2y * n2y;
-    dndgrad_etaa_sq(0, 1) = -(nx * ny * n2y);
-    dndgrad_etaa_sq(1, 0) = -(nx * ny * n2y);
-    dndgrad_etaa_sq(1, 1) = n2x * n2y;
-    dndgrad_etaa_sq /= n2sq * nsq;
-  }
-
-  // Compute the second derivative of n wrt grad_eta
-  RealTensorValue d2ndgrad_etaa2;
-  if (nsq > tol)
-  {
-    d2ndgrad_etaa2(0, 0) = -3.0 * nx * ny * ny;
-    d2ndgrad_etaa2(0, 1) = -ny * ny * ny + 2.0 * nx * nx * ny;
-    d2ndgrad_etaa2(1, 0) = -ny * ny * ny + 2.0 * nx * nx * ny;
-    d2ndgrad_etaa2(1, 1) = -nx * nx * nx + 2.0 * nx * ny * ny;
-    d2ndgrad_etaa2 /= n2sq * std::sqrt(nsq);
-  }
-
-  // Compute derivatives of kappa wrt grad_eta
-  _dkappadgrad_etaa[_qp] = dkappadangle * dangledn * dndgrad_etaa;
-  _d2kappadgrad_etaa[_qp] = d2kappadangle * dangledn * dangledn * dndgrad_etaa_sq +
-                            dkappadangle * d2angledn2 * dndgrad_etaa_sq +
-                            dkappadangle * dangledn * d2ndgrad_etaa2;
 }

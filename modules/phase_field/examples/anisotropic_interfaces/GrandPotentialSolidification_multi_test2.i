@@ -1,18 +1,18 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 28
-  ny = 28
-  xmin = -7
-  xmax = 7
-  ymin = -7
-  ymax = 7
-  uniform_refine = 2
+  nx = 60
+  ny = 40
+  xmin = -15
+  xmax = 15
+  ymin = -10
+  ymax = 10
+  uniform_refine = 3
 []
 
 [GlobalParams]
-  radius = 0.2
-  int_width = 0.1
+  radius = 0.5
+  int_width = 0.2
   # x1 = 0.0
   # y1 = 0.0
   derivative_order = 2
@@ -27,12 +27,15 @@
   [../]
   [./etab0]
   [../]
-  [./T]
-  [../]
+  # [./T]
+  # [../]
 []
 
 [AuxVariables]
   [./bnds]
+  [../]
+  [./T]
+    initial_condition = -0.5
   [../]
 []
 
@@ -48,10 +51,10 @@
   [./w]
     type = SpecifiedSmoothCircleIC
     variable = w
-    x_positions = '-2 2'
+    x_positions = '-5 5'
     y_positions = '0 0'
     z_positions = '0 0'
-    radii = '0.2 0.2'
+    radii = '0.5 0.5'
     outvalue = -4 #-6.27e-7
     invalue = 0
   [../]
@@ -59,7 +62,7 @@
     type = SmoothCircleIC
     variable = etaa0
     #Solid phase
-    x1 = -2
+    x1 = -5
     y1 = 0
     outvalue = 0.0
     invalue = 1.0
@@ -68,7 +71,7 @@
     type = SmoothCircleIC
     variable = etaa1
     #Solid phase
-    x1 = 2
+    x1 = 5
     y1 = 0
     outvalue = 0.0
     invalue = 1.0
@@ -77,10 +80,10 @@
     type = SpecifiedSmoothCircleIC
     variable = etab0
     #Liquid phase
-    x_positions = '-2 2'
+    x_positions = '-5 5'
     y_positions = '0 0'
     z_positions = '0 0'
-    radii = '0.2 0.2'
+    radii = '0.5 0.5'
     outvalue = 1.0
     invalue = 0.0
   [../]
@@ -125,7 +128,7 @@
   [./ACa0_int1]
     type = ACInterface2DMultiPhase1
     variable = etaa0
-    etas = 'etab0'
+    etas = 'etab0 etaa1'
     kappa_name = kappaa
     dkappadgrad_etaa_name = dkappadgrad_etaa
     d2kappadgrad_etaa_name = d2kappadgrad_etaa
@@ -135,6 +138,7 @@
     variable = etaa0
     kappa_name = kappaa
     dkappadgrad_etaa_name = dkappadgrad_etaa
+    args = 'etaa1 etab0'
   [../]
   [./ea0_dot]
     type = TimeDerivative
@@ -157,7 +161,7 @@
   [./ACa1_int1]
     type = ACInterface2DMultiPhase1
     variable = etaa1
-    etas = 'etab0'
+    etas = 'etab0 etaa0'
     kappa_name = kappaa1
     dkappadgrad_etaa_name = dkappadgrad_etaa1
     d2kappadgrad_etaa_name = d2kappadgrad_etaa1
@@ -167,6 +171,7 @@
     variable = etaa1
     kappa_name = kappaa1
     dkappadgrad_etaa_name = dkappadgrad_etaa1
+    args = 'etaa0 etab0'
   [../]
   [./ea1_dot]
     type = TimeDerivative
@@ -189,7 +194,7 @@
   [./ACb0_int1]
     type = ACInterface2DMultiPhase1
     variable = etab0
-    etas = 'etaa0'
+    etas = 'etaa0 etaa1'
     kappa_name = kappab
     dkappadgrad_etaa_name = dkappadgrad_etab
     d2kappadgrad_etaa_name = d2kappadgrad_etab
@@ -199,6 +204,7 @@
     variable = etab0
     kappa_name = kappab
     dkappadgrad_etaa_name = dkappadgrad_etab
+    args = 'etaa0 etaa1'
   [../]
   [./eb0_dot]
     type = TimeDerivative
@@ -213,12 +219,20 @@
   [./Diffusion]
     type = MatDiffusion
     variable = w
-    D_name = Dchi
+    diffusivity = Dchi
   [../]
   [./coupled_etaa0dot]
     type = CoupledSwitchingTimeDerivative
     variable = w
     v = etaa0
+    Fj_names = 'rhoa rhob'
+    hj_names = 'ha   hb'
+    args = 'etaa0 etab0 etaa1'
+  [../]
+  [./coupled_etaa1dot]
+    type = CoupledSwitchingTimeDerivative
+    variable = w
+    v = etaa1
     Fj_names = 'rhoa rhob'
     hj_names = 'ha   hb'
     args = 'etaa0 etab0 etaa1'
@@ -231,20 +245,26 @@
     hj_names = 'ha   hb'
     args = 'etaa0 etab0 etaa1'
   [../]
-  [./T_dot]
-    type = TimeDerivative
-    variable = T
-  [../]
-  [./CoefDiffusion]
-    type = Diffusion
-    variable = T
-  [../]
-  [./etaa0_dot_T]
-    type = CoefCoupledTimeDerivative
-    variable = T
-    v = etaa0
-    coef = -5.0
-  [../]
+  # [./T_dot]
+  #   type = TimeDerivative
+  #   variable = T
+  # [../]
+  # [./CoefDiffusion]
+  #   type = Diffusion
+  #   variable = T
+  # [../]
+  # [./etaa0_dot_T]
+  #   type = CoefCoupledTimeDerivative
+  #   variable = T
+  #   v = etaa0
+  #   coef = -5.0
+  # [../]
+  # [./etaa0_dot_T]
+  #   type = CoefCoupledTimeDerivative
+  #   variable = T
+  #   v = etaa1
+  #   coef = -5.0
+  # [../]
 []
 
 [Materials]
@@ -294,10 +314,10 @@
     dkappadgrad_etaa_name = dkappadgrad_etaa
     d2kappadgrad_etaa_name = d2kappadgrad_etaa
     etaa = etaa0
-    etab = etab0
+    etab = 'etab0 etaa1'
     anisotropy_strength = 0.05
     kappa_bar = 0.05
-    outputs = exodus
+    # outputs = exodus
     output_properties = 'kappaa'
   [../]
   [./kappaa1]
@@ -306,10 +326,10 @@
     dkappadgrad_etaa_name = dkappadgrad_etaa1
     d2kappadgrad_etaa_name = d2kappadgrad_etaa1
     etaa = etaa1
-    etab = etab0
+    etab = 'etab0 etaa0'
     anisotropy_strength = 0.05
     kappa_bar = 0.05
-    outputs = exodus
+    # outputs = exodus
     output_properties = 'kappaa1'
   [../]
   [./kappab]
@@ -318,23 +338,89 @@
     dkappadgrad_etaa_name = dkappadgrad_etab
     d2kappadgrad_etaa_name = d2kappadgrad_etab
     etaa = etab0
-    etab = etaa0
+    etab = 'etaa0 etaa1'
     anisotropy_strength = 0.05
     kappa_bar = 0.05
-    outputs = exodus
+    # outputs = exodus
     output_properties = 'kappab'
   [../]
-
+  [./int]
+    type = DerivativeParsedMaterial
+    args = 'w'
+    f_name = rhodiff
+    material_property_names = 'rhoa rhob'
+    constant_names = 'int_width a'
+    constant_expressions = '0.2 1/2/sqrt(2)'
+    function = 'a*int_width*(rhob-rhoa)'
+  [../]
+  [./cs]
+    type = DerivativeParsedMaterial
+    args = 'w '
+    f_name = ca
+    material_property_names = 'Vm ka caeq'
+    function = 'w/Vm/ka+caeq'
+    output_properties = 'ca'
+    # outputs = exodus
+  [../]
+  [./cl]
+    type = DerivativeParsedMaterial
+    args = 'w '
+    f_name = cb
+    material_property_names = 'Vm ka cbeq'
+    function = 'w/Vm/ka+cbeq'
+    output_properties = 'cb'
+    # outputs = exodus
+  [../]
+  [./c]
+    type = DerivativeParsedMaterial
+    args = 'w etaa0 etab0 etaa1 T'
+    f_name = c
+    material_property_names = 'ca cb ha hb'
+    function = 'ha*ca+hb*cb'
+    # outputs = exodus
+    # output_properties = 'c'
+  [../]
+  # [./noise_prefactor]
+  #   type = DerivativeParsedMaterial
+  #   args = 'etaa0 etab0 etaa1'
+  #   f_name = noise
+  #   # material_property_names = 'ca cb ha hb'
+  #   function = 'etaa0*etab0+etaa'
+  #   outputs = exodus
+  #   output_properties = 'noise'
+  # [../]
   [./const]
     type = GenericConstantMaterial
     prop_names =  'L     D    chi  Vm   ka    caeq kb    cbeq  gab mu   S   Tm'
-    prop_values = '33.33 1.0  0.1  1.0  10.0  0.1  10.0  0.9   4.5 10.0 1.0 5.0'
+    prop_values = '33.33 1.0  0.1  1.0  10.0  0.1  10.0  0.9   1.5 10.0 1.0 1.0'
   [../]
   [./Mobility]
     type = ParsedMaterial
     f_name = Dchi
     material_property_names = 'D chi'
     function = 'D*chi'
+  [../]
+[]
+
+[Postprocessors]
+  [./dt]
+    type = TimestepSize
+  [../]
+  [./etaa0]
+    type = ElementIntegralVariablePostprocessor
+    variable = etaa0
+  [../]
+  [./etaa1]
+    type = ElementIntegralVariablePostprocessor
+    variable = etaa1
+  [../]
+  [./etab0]
+    type = ElementIntegralVariablePostprocessor
+    variable = etab0
+  [../]
+  [./c]
+    type = ElementIntegralMaterialProperty
+    mat_prop = c
   [../]
 []
 
@@ -349,14 +435,16 @@
   type = Transient
   scheme = bdf2
   solve_type = PJFNK
-  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
-  petsc_options_value = 'hypre    boomeramg      31'
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_factor_shift_type'
+  petsc_options_value = 'hypre    boomeramg      31 nonzero'
+  # petsc_options_iname = '-pc_type -ksp_grmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap -pc_factor_shift_type'
+  # petsc_options_value = 'asm         31   preonly   lu      1 nonzero'
    l_tol = 1.0e-3
   l_max_its = 30
   nl_max_its = 15
   nl_rel_tol = 1.0e-8
-  nl_abs_tol = 1e-10
-  end_time = 2.0
+  nl_abs_tol = 1e-8
+  end_time = 20.0
   dtmax = 0.05
   [./TimeStepper]
     type = IterationAdaptiveDT
@@ -367,7 +455,7 @@
 []
 
 [Adaptivity]
- initial_steps = 5
+ initial_steps = 3
  max_h_level = 3
  initial_marker = err_eta
  marker = err_bnds
@@ -398,7 +486,10 @@
 []
 
 [Outputs]
-  interval = 5
+  # interval = 5
   exodus = true
-  file_base = grandpotential_multi_old
+[]
+
+[Debug]
+  show_var_residual_norms = true
 []

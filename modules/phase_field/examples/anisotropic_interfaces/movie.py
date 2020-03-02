@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 #pylint: disable=missing-docstring
 #* This file is part of the MOOSE framework
 #* https://www.mooseframework.org
@@ -113,5 +113,7 @@ import itertools
     # window.write('solidification_%04d.png' % i)
 
 # window.start()
+# img2mov('solidification_multi2*.png', 'solidification_multi2.mp4', duration=10)
+img2mov('solidification_quarter_*.png', 'solidification_quarter2.mp4', duration=10)
 
-img2mov('solidification_directional4_*.png', 'solidification_directional4.mp4', duration=10)
+# img2mov('solidification_directional4_*.png', 'solidification_directional4.mp4', duration=10)
