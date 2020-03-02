@@ -36,9 +36,12 @@ protected:
   /// Interfacial parameter
   const MaterialProperty<RealGradient> & _dkappadgrad_etaa;
   const MaterialProperty<RealTensorValue> & _d2kappadgrad_etaa;
+  const MaterialProperty<RealGradient> & _d2kappadgradetaadetaa;
 
   /// Order parameters
   unsigned int _num_etas;
-  std::vector<const VariableValue *> _eta;
   std::vector<const VariableGradient *> _grad_eta;
+  std::vector<NonlinearVariableName> _eta_name;
+
+  std::vector<const MaterialProperty<RealGradient> *> _d2kappadgradetaadetab;
 };
