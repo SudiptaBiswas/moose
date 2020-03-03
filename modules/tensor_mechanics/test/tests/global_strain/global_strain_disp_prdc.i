@@ -1,23 +1,23 @@
 [Mesh]
-  type = GeneratedMesh
-  dim = 3
-  nx = 2
-  ny = 2
-  nz = 2
-  xmin = -0.5
-  xmax = 0.5
-  ymin = -0.5
-  ymax = 0.5
-  zmin = -0.5
-  zmax = 0.5
-[]
-
-[MeshModifiers]
-  [./cnode]
-    type = AddExtraNodeset
+  [generated_mesh]
+    type = GeneratedMeshGenerator
+    dim = 3
+    nx = 2
+    ny = 2
+    nz = 2
+    xmin = -0.5
+    xmax = 0.5
+    ymin = -0.5
+    ymax = 0.5
+    zmin = -0.5
+    zmax = 0.5
+  []
+  [cnode]
+    type = ExtraNodesetGenerator
     coord = '0 -0.5 0'
     new_boundary = 100
-  [../]
+    input = generated_mesh
+  []
 []
 
 [Variables]
@@ -38,11 +38,19 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./s22]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./e00]
     order = CONSTANT
     family = MONOMIAL
   [../]
   [./e11]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./e22]
     order = CONSTANT
     family = MONOMIAL
   [../]
@@ -63,6 +71,13 @@
     index_i = 1
     index_j = 1
   [../]
+  [./s22]
+    type = RankTwoAux
+    variable = s22
+    rank_two_tensor = stress
+    index_i = 2
+    index_j = 2
+  [../]
   [./e00]
     type = RankTwoAux
     variable = e00
@@ -76,6 +91,13 @@
     rank_two_tensor = total_strain
     index_i = 1
     index_j = 1
+  [../]
+  [./e22]
+    type = RankTwoAux
+    variable = e22
+    rank_two_tensor = total_strain
+    index_i = 2
+    index_j = 2
   [../]
 []
 
@@ -99,25 +121,25 @@
 
   # fix center point location
   [./centerfix_x]
-    type = PresetBC
+    type = DirichletBC
     boundary = 100
     variable = disp_x
     value = 0
   [../]
   [./fix_y]
-    type = PresetBC
+    type = DirichletBC
     boundary = bottom
     variable = disp_y
     value = 0
   [../]
   [./centerfix_z]
-    type = PresetBC
+    type = DirichletBC
     boundary = 100
     variable = disp_z
     value = 0
   [../]
   [./appl_y]
-    type = PresetBC
+    type = DirichletBC
     boundary = top
     variable = disp_y
     value = 0.033

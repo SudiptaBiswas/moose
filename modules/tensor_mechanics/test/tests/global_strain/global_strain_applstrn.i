@@ -1,20 +1,17 @@
 [Mesh]
   [generated_mesh]
     type = GeneratedMeshGenerator
-    dim = 3
-    nx = 2
-    ny = 2
-    nz = 2
+    dim = 2
+    nx = 10
+    ny = 10
     xmin = -0.5
     xmax = 0.5
     ymin = -0.5
     ymax = 0.5
-    zmin = -0.5
-    zmax = 0.5
   []
   [cnode]
     type = ExtraNodesetGenerator
-    coord = '0 -0.5 0'
+    coord = '0 0'
     new_boundary = 100
     input = generated_mesh
   []
@@ -25,10 +22,8 @@
   [../]
   [./u_y]
   [../]
-  [./u_z]
-  [../]
   [./global_strain]
-    order = SIXTH
+    order = THIRD
     family = SCALAR
   [../]
 []
@@ -37,8 +32,6 @@
   [./disp_x]
   [../]
   [./disp_y]
-  [../]
-  [./disp_z]
   [../]
   [./s00]
     order = CONSTANT
@@ -73,13 +66,6 @@
     global_strain_uo = global_strain_uo
     component = 1
   [../]
-  [./disp_z]
-    type = GlobalDisplacementAux
-    variable = disp_z
-    scalar_global_strain = global_strain
-    global_strain_uo = global_strain_uo
-    component = 2
-  [../]
   [./s00]
     type = RankTwoAux
     variable = s00
@@ -111,7 +97,7 @@
 []
 
 [GlobalParams]
-  displacements = 'u_x u_y u_z'
+  displacements = 'u_x u_y'
   block = 0
 []
 
@@ -130,9 +116,9 @@
 
 [BCs]
   [./Periodic]
-    [./all]
-      auto_direction = 'z'
-      variable = 'u_x u_y u_z'
+    [./left-right]
+      auto_direction = 'x y'
+      variable = 'u_x u_y'
     [../]
   [../]
 
@@ -143,23 +129,11 @@
     variable = u_x
     value = 0
   [../]
-  [./fix_y]
-    type = DirichletBC
-    boundary = bottom
-    variable = u_y
-    value = 0
-  [../]
-  [./centerfix_z]
+  [./centerfix_y]
     type = DirichletBC
     boundary = 100
-    variable = u_z
-    value = 0
-  [../]
-  [./appl_y]
-    type = DirichletBC
-    boundary = top
     variable = u_y
-    value = 0.033
+    value = 0
   [../]
 []
 
@@ -167,7 +141,7 @@
   [./elasticity_tensor]
     type = ComputeElasticityTensor
     block = 0
-    C_ijkl = '7 0.33'
+    C_ijkl = '70 0.33'
     fill_method = symmetric_isotropic_E_nu
   [../]
   [./strain]
@@ -186,8 +160,22 @@
 
 [UserObjects]
   [./global_strain_uo]
-    type = GlobalStrainUserObject
+    type = GlobalStrainUserObject2
+    applied_strain_tensor = '0.01 0.0 0 0 0 0.0'
     execute_on = 'Initial Linear Nonlinear'
+  [../]
+[]
+
+[Postprocessors]
+  [./l2err_e00]
+    type = ElementL2Error
+    variable = e00
+    function = 0.01 #strain_xx = C1111/sigma_xx
+  [../]
+  [./l2err_e11]
+    type = ElementL2Error
+    variable = e11
+    function = -0.01*0.33 #strain_yy = -nu*strain_xx
   [../]
 []
 
@@ -213,7 +201,7 @@
 
   l_tol = 1.0e-4
 
-  nl_rel_tol = 1.0e-6
+  nl_rel_tol = 1.0e-8
   nl_abs_tol = 1.0e-10
 
   start_time = 0.0
@@ -221,5 +209,5 @@
 []
 
 [Outputs]
-  exodus = true
+exodus = true
 []

@@ -48,11 +48,19 @@
     order = CONSTANT
     family = MONOMIAL
   [../]
+  [./s22]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
   [./e00]
     order = CONSTANT
     family = MONOMIAL
   [../]
   [./e11]
+    order = CONSTANT
+    family = MONOMIAL
+  [../]
+  [./e22]
     order = CONSTANT
     family = MONOMIAL
   [../]
@@ -94,6 +102,13 @@
     index_i = 1
     index_j = 1
   [../]
+  [./s22]
+    type = RankTwoAux
+    variable = s22
+    rank_two_tensor = stress
+    index_i = 2
+    index_j = 2
+  [../]
   [./e00]
     type = RankTwoAux
     variable = e00
@@ -107,6 +122,13 @@
     rank_two_tensor = total_strain
     index_i = 1
     index_j = 1
+  [../]
+  [./e22]
+    type = RankTwoAux
+    variable = e22
+    rank_two_tensor = total_strain
+    index_i = 2
+    index_j = 2
   [../]
 []
 
@@ -139,6 +161,7 @@
   # fix center point location
   [./centerfix_x]
     type = DirichletBC
+    preset = true
     boundary = 100
     variable = u_x
     value = 0

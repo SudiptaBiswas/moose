@@ -1,16 +1,26 @@
-[Mesh]
-  type = FileMesh
-  file = unitcell_Vf47_hex.e
-[]
 
-[MeshModifiers]
+
+[Mesh]
+  [mesh]
+    type = FileMeshGenerator
+    file = unitcell_Vf47_hex.e
+  []
   [./cnode]
-    type = AddExtraNodeset
+    type = ExtraNodesetGenerator
+    input = mesh
     coord = '0 0 0'
     new_boundary = 100
   [../]
 []
 
+# [MeshModifiers]
+#   [./cnode]
+#     type = AddExtraNodeset
+#     coord = '0 0 0'
+#     new_boundary = 100
+#   [../]
+# []
+#
 [GlobalParams]
   displacements = 'u_x u_y u_z'
   block = '1 2'
@@ -92,7 +102,8 @@
 
   # fix center point location
   [./fix_x]
-    type = PresetBC
+    type = DirichletBC
+    preset = true
     boundary = 100 #3
     variable = u_x
     value = 0
@@ -104,13 +115,15 @@
   #   value = 0.05
   # [../]
   [./fix_y]
-    type = PresetBC
+    type = DirichletBC
+    preset = true
     boundary = 100
     variable = u_y
     value = 0
   [../]
   [./fix_z]
-    type = PresetBC
+    type = DirichletBC
+    preset = true
     boundary = 100
     variable = u_z
     value = 0

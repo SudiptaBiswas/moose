@@ -38,7 +38,7 @@ public:
   /**
    * Calculate additional applied stresses
    */
-  virtual void computeAdditionalStress(){};
+  virtual void computeAdditionalStress(unsigned int qp){};
 
 protected:
   /// Base name of the material system

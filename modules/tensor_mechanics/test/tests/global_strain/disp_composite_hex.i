@@ -1,6 +1,6 @@
 [Mesh]
   type = FileMesh
-  file = unitcell_Vf47_hex.e
+  file = /Volumes/BACKUP/Strain_periodicity/moose_backup/unitcell_Vf47_hex.e
 []
 
 [MeshModifiers]

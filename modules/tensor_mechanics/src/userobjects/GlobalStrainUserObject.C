@@ -72,10 +72,11 @@ GlobalStrainUserObject::initialize()
 void
 GlobalStrainUserObject::execute()
 {
-  computeAdditionalStress();
 
   for (unsigned int _qp = 0; _qp < _qrule->n_points(); _qp++)
   {
+    computeAdditionalStress(_qp);
+
     // residual, integral of stress components
     _residual += _JxW[_qp] * _coord[_qp] * (_stress[_qp] - _applied_stress_tensor);
 
