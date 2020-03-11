@@ -618,6 +618,7 @@ def getExeJSON(exe):
     """
     Extracts the JSON from the dump
     """
+    print("%s --json" % exe)
     output = runCommand("%s --json" % exe)
     output = output.split('**START JSON DATA**\n')[1]
     output = output.split('**END JSON DATA**\n')[0]

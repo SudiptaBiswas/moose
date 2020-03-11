@@ -105,11 +105,16 @@ void
 ComputeFiniteStrain::computeQpStrain()
 {
   RankTwoTensor total_strain_increment;
+  RankTwoTensor global_strain_increment;
+  if (_global_strain)
+    global_strain_increment = (*_global_strain)[_qp] - (*_global_strain_old)[_qp];
 
   // two ways to calculate these increments: TaylorExpansion(default) or EigenSolution
   computeQpIncrements(total_strain_increment, _rotation_increment[_qp]);
 
   _strain_increment[_qp] = total_strain_increment;
+  if (_global_strain)
+    _strain_increment[_qp] += global_strain_increment;
 
   // Remove the eigenstrain increment
   subtractEigenstrainIncrementFromStrain(_strain_increment[_qp]);
@@ -129,8 +134,8 @@ ComputeFiniteStrain::computeQpStrain()
   _total_strain[_qp] =
       _rotation_increment[_qp] * _total_strain[_qp] * _rotation_increment[_qp].transpose();
 
-  if (_global_strain)
-    _total_strain[_qp] += (*_global_strain)[_qp];
+  // if (_global_strain)
+  //   _total_strain[_qp] += (*_global_strain)[_qp];
 }
 
 void
