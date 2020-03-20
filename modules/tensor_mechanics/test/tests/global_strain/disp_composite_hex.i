@@ -1,6 +1,6 @@
 [Mesh]
   type = FileMesh
-  file = /Volumes/BACKUP/Strain_periodicity/moose_backup/unitcell_Vf47_hex.e
+  file = unitcell_Vf47_hex.e
 []
 
 [MeshModifiers]
@@ -284,6 +284,13 @@
   [../]
 []
 
+[VectorPostprocessors]
+ [./strain_yz]
+   type = LineValueSampler
+   variable = strain_yz
+ [../]
+[]
+
 [Preconditioning]
   [./SMP]
     type = SMP
@@ -292,8 +299,8 @@
 []
 
 [Executioner]
-  type = Steady
-  # scheme = bdf2
+  type = Transient
+  scheme = bdf2
   solve_type = 'PJFNK'
 
   # line_search = basic
@@ -311,9 +318,9 @@
   nl_rel_tol = 1.0e-6
   nl_abs_tol = 1.0e-8
 
-  # start_time = 0.0
-  # num_steps = 2
-  # dt = 0.1
+  start_time = 0.0
+  num_steps = 1
+  dt = 0.1
 []
 
 [Outputs]
