@@ -41,9 +41,10 @@ ComputeIncrementalSmallStrain::computeProperties()
     RankTwoTensor total_strain_increment;
     computeTotalStrainIncrement(total_strain_increment);
 
-    _strain_increment[_qp] = total_strain_increment;
     if (_global_strain)
-      _strain_increment[_qp] += global_strain_increment;
+      total_strain_increment += global_strain_increment;
+
+    _strain_increment[_qp] = total_strain_increment;
 
     if (_volumetric_locking_correction)
       volumetric_strain += total_strain_increment.trace() * _JxW[_qp] * _coord[_qp];

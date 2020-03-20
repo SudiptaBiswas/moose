@@ -112,9 +112,10 @@ ComputeFiniteStrain::computeQpStrain()
   // two ways to calculate these increments: TaylorExpansion(default) or EigenSolution
   computeQpIncrements(total_strain_increment, _rotation_increment[_qp]);
 
-  _strain_increment[_qp] = total_strain_increment;
   if (_global_strain)
-    _strain_increment[_qp] += global_strain_increment;
+    total_strain_increment += global_strain_increment;
+
+  _strain_increment[_qp] = total_strain_increment;
 
   // Remove the eigenstrain increment
   subtractEigenstrainIncrementFromStrain(_strain_increment[_qp]);
