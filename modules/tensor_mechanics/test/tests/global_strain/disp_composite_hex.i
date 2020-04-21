@@ -288,6 +288,9 @@
  [./strain_yz]
    type = LineValueSampler
    variable = strain_yz
+   sort_by = x
+   start_point = ''
+   end_point =
  [../]
 []
 

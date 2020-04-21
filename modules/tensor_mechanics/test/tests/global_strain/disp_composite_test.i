@@ -41,7 +41,7 @@
     [./GlobalStrain]
       [./global_strain]
         scalar_global_strain = global_strain
-        applied_stress_tensor = '1.0 0.0 0.0 0.0 0.0 0.0'
+        applied_stress_tensor = '0.0 0.0 0.0 0.0 1.0 0.0'
         displacements = 'u_x u_y u_z'
         auxiliary_displacements = 'disp_x disp_y disp_z'
       [../]
@@ -334,7 +334,8 @@
    end_point = '0.5 0.0 0.0'
    num_points = 11
  [../]
- [./strain_xx_line2]
+
+ [./strainxx_negx_diag1]
    type = LineValueSampler
    variable = strain_xx
    sort_by = y
@@ -342,7 +343,7 @@
    end_point = '-0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_yy_line2]
+ [./strainyy_negx_diag1]
    type = LineValueSampler
    variable = strain_yy
    sort_by = y
@@ -350,7 +351,7 @@
    end_point = '-0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_zz_line2]
+ [./strainzz_negx_diag1]
    type = LineValueSampler
    variable = strain_zz
    sort_by = y
@@ -358,7 +359,7 @@
    end_point = '-0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_xy_line2]
+ [./strainxy_negx_diag1]
    type = LineValueSampler
    variable = strain_xy
    sort_by = y
@@ -366,7 +367,7 @@
    end_point = '-0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_yz_line2]
+ [./strainyz_negx_diag1]
    type = LineValueSampler
    variable = strain_yz
    sort_by = y
@@ -374,7 +375,7 @@
    end_point = '-0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_xz_line2]
+ [./strainxz_negx_diag1]
    type = LineValueSampler
    variable = strain_xz
    sort_by = y
@@ -382,7 +383,7 @@
    end_point = '-0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_xx_line8]
+ [./strainxx_posx_diag1]
    type = LineValueSampler
    variable = strain_xx
    sort_by = y
@@ -390,7 +391,7 @@
    end_point = '0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_yy_line8]
+ [./strainyy_posx_diag1]
    type = LineValueSampler
    variable = strain_yy
    sort_by = y
@@ -398,7 +399,7 @@
    end_point = '0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_zz_line8]
+ [./strainzz_posx_diag1]
    type = LineValueSampler
    variable = strain_zz
    sort_by = y
@@ -406,7 +407,7 @@
    end_point = '0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_xy_line8]
+ [./strainxy_posx_diag1]
    type = LineValueSampler
    variable = strain_xy
    sort_by = y
@@ -414,7 +415,7 @@
    end_point = '0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_yz_line8]
+ [./strainyz_posx_diag1]
    type = LineValueSampler
    variable = strain_yz
    sort_by = y
@@ -422,7 +423,7 @@
    end_point = '0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_xz_line8]
+ [./strainxz_posx_diag1]
    type = LineValueSampler
    variable = strain_xz
    sort_by = y
@@ -430,7 +431,7 @@
    end_point = '0.5 0.5 0.5'
    num_points = 11
  [../]
- [./strain_xx_line7]
+ [./strainxx_negx_diag2]
    type = LineValueSampler
    variable = strain_xx
    sort_by = y
@@ -438,7 +439,7 @@
    end_point = '-0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_yy_line7]
+ [./strainyy_negx_diag2]
    type = LineValueSampler
    variable = strain_yy
    sort_by = y
@@ -446,7 +447,7 @@
    end_point = '-0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_zz_line7]
+ [./strainzz_negx_diag2]
    type = LineValueSampler
    variable = strain_zz
    sort_by = y
@@ -454,7 +455,7 @@
    end_point = '-0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_xy_line7]
+ [./strainxy_negx_diag2]
    type = LineValueSampler
    variable = strain_xy
    sort_by = y
@@ -462,7 +463,7 @@
    end_point = '-0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_yz_line7]
+ [./strainyz_negx_diag2]
    type = LineValueSampler
    variable = strain_yz
    sort_by = y
@@ -470,7 +471,7 @@
    end_point = '-0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_xz_line7]
+ [./strainxz_negx_diag2]
    type = LineValueSampler
    variable = strain_xz
    sort_by = y
@@ -478,7 +479,7 @@
    end_point = '-0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_xx_line9]
+ [./strainxx_posx_diag2]
    type = LineValueSampler
    variable = strain_xx
    sort_by = y
@@ -486,7 +487,7 @@
    end_point = '0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_yy_line9]
+ [./strainyy_posx_diag2]
    type = LineValueSampler
    variable = strain_yy
    sort_by = y
@@ -494,7 +495,7 @@
    end_point = '0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_zz_line9]
+ [./strainzz_posx_diag2]
    type = LineValueSampler
    variable = strain_zz
    sort_by = y
@@ -502,7 +503,7 @@
    end_point = '0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_xy_line9]
+ [./strainxy_posx_diag2]
    type = LineValueSampler
    variable = strain_xy
    sort_by = y
@@ -510,7 +511,7 @@
    end_point = '0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_yz_line9]
+ [./strainyz_posx_diag2]
    type = LineValueSampler
    variable = strain_yz
    sort_by = y
@@ -518,12 +519,988 @@
    end_point = '0.5 -0.5 0.5'
    num_points = 11
  [../]
- [./strain_xz_line9]
+ [./strainxz_posx_diag2]
    type = LineValueSampler
    variable = strain_xz
    sort_by = y
    start_point = '0.5 0.5 -0.5'
    end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+
+ [./strainxx_negy_diag1]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = x
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_negy_diag1]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = x
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_negy_diag1]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = x
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_negy_diag1]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = x
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_negy_diag1]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = x
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_negy_diag1]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = x
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxx_posy_diag1]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = x
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_posy_diag1]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = x
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_posy_diag1]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = x
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_posy_diag1]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = x
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_posy_diag1]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = x
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_posy_diag1]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = x
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxx_negy_diag2]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = x
+   start_point = '0.5 -0.5 -0.5'
+   end_point = '-0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_negy_diag2]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = x
+   start_point = '0.5 -0.5 -0.5'
+   end_point = '-0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_negy_diag2]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = x
+   start_point = '0.5 -0.5 -0.5'
+   end_point = '-0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_negy_diag2]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = x
+   start_point = '0.5 -0.5 -0.5'
+   end_point = '-0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_negy_diag2]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = x
+   start_point = '0.5 -0.5 -0.5'
+   end_point = '-0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_negy_diag2]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = x
+   start_point = '0.5 -0.5 -0.5'
+   end_point = '-0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxx_posy_diag2]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = x
+   start_point = '0.5 0.5 -0.5'
+   end_point = '-0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_posy_diag2]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = x
+   start_point = '0.5 0.5 -0.5'
+   end_point = '-0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_posy_diag2]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = x
+   start_point = '0.5 0.5 -0.5'
+   end_point = '-0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_posy_diag2]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = x
+   start_point = '0.5 0.5 -0.5'
+   end_point = '-0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_posy_diag2]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = x
+   start_point = '0.5 0.5 -0.5'
+   end_point = '-0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_posy_diag2]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = x
+   start_point = '0.5 0.5 -0.5'
+   end_point = '-0.5 0.5 0.5'
+   num_points = 11
+ [../]
+
+
+ [./strainxx_negz_diag1]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = y
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainyy_negz_diag1]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = y
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainzz_negz_diag1]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = y
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainxy_negz_diag1]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = y
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainyz_negz_diag1]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = y
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainxz_negz_diag1]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = y
+   start_point = '-0.5 -0.5 -0.5'
+   end_point = '0.5 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainxx_posz_diag1]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = y
+   start_point = '-0.5 -0.5 0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_posz_diag1]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = y
+   start_point = '-0.5 -0.5 0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_posz_diag1]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = y
+   start_point = '-0.5 -0.5 0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_posz_diag1]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = y
+   start_point = '-0.5 -0.5 0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_posz_diag1]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = y
+   start_point = '-0.5 -0.5 0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_posz_diag1]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = y
+   start_point = '-0.5 -0.5 0.5'
+   end_point = '0.5 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxx_negz_diag2]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = y
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 -0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainyy_negz_diag2]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = y
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 -0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainzz_negz_diag2]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = y
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 -0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainxy_negz_diag2]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = y
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 -0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainyz_negz_diag2]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = y
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 -0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainxz_negz_diag2]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = y
+   start_point = '-0.5 0.5 -0.5'
+   end_point = '0.5 -0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainxx_posz_diag2]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = y
+   start_point = '-0.5 0.5 0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_posz_diag2]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = y
+   start_point = '-0.5 0.5 0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_posz_diag2]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = y
+   start_point = '-0.5 0.5 0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_posz_diag2]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = y
+   start_point = '-0.5 0.5 0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_posz_diag2]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = y
+   start_point = '-0.5 0.5 0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_posz_diag2]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = y
+   start_point = '-0.5 0.5 0.5'
+   end_point = '0.5 -0.5 0.5'
+   num_points = 11
+ [../]
+
+ [./strainxx_negx_horz]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = z
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '-0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_negx_horz]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = z
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '-0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_negx_horz]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = z
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '-0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_negx_horz]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = z
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '-0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_negx_horz]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = z
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '-0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_negx_horz]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = z
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '-0.5 0.0 0.5'
+   num_points = 11
+ [../]
+
+ [./strainxx_negx_vert]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = y
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '-0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainyy_negx_vert]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = y
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '-0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainzz_negx_vert]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = y
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '-0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainxy_negx_vert]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = y
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '-0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainyz_negx_vert]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = y
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '-0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainxz_negx_vert]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = y
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '-0.5 0.5 0.0'
+   num_points = 11
+ [../]
+
+ [./strainxx_posx_horz]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = z
+   start_point = '0.5 0.0 -0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_posx_horz]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = z
+   start_point = '0.5 0.0 -0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_posx_horz]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = z
+   start_point = '0.5 0.0 -0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_posx_horz]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = z
+   start_point = '0.5 0.0 -0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_posx_horz]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = z
+   start_point = '0.5 0.0 -0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_posx_horz]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = z
+   start_point = '0.5 0.0 -0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+
+ [./strainxx_posx_vert]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = y
+   start_point = '0.5 -0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainyy_posx_vert]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = y
+   start_point = '0.5 -0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainzz_posx_vert]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = y
+   start_point = '0.5 -0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainxy_posx_vert]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = y
+   start_point = '0.5 -0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainyz_posx_vert]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = y
+   start_point = '0.5 -0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainxz_posx_vert]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = y
+   start_point = '0.5 -0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+
+
+ [./strainxx_negy_horz]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = z
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_negy_horz]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = z
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_negy_horz]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = z
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_negy_horz]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = z
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_negy_horz]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = z
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 -0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_negy_horz]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = z
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 -0.5 0.5'
+   num_points = 11
+ [../]
+
+ [./strainxx_negy_vert]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = x
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '0.5 -0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainyy_negy_vert]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = x
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '0.5 -0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainzz_negy_vert]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = x
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '0.5 -0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainxy_negy_vert]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = x
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '0.5 -0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainyz_negy_vert]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = x
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '0.5 -0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainxz_negy_vert]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = x
+   start_point = '-0.5 -0.5 0.0'
+   end_point = '0.5 -0.5 0.0'
+   num_points = 11
+ [../]
+
+ [./strainxx_posy_horz]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = z
+   start_point = '0.0 0.5 -0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_posy_horz]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = z
+   start_point = '0.0 0.5 -0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_posy_horz]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = z
+   start_point = '0.0 0.5 -0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_posy_horz]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = z
+   start_point = '0.0 0.5 -0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_posy_horz]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = z
+   start_point = '0.0 0.5 -0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_posy_horz]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = z
+   start_point = '0.0 0.5 -0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+
+ [./strainxx_posy_vert]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = x
+   start_point = '-0.5 0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainyy_posy_vert]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = x
+   start_point = '-0.5 0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainzz_posy_vert]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = x
+   start_point = '-0.5 0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainxy_posy_vert]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = x
+   start_point = '-0.5 0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainyz_posy_vert]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = x
+   start_point = '-0.5 0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+ [./strainxz_posy_vert]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = x
+   start_point = '-0.5 0.5 0.0'
+   end_point = '0.5 0.5 0.0'
+   num_points = 11
+ [../]
+
+ [./strainxx_posz_vert]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = x
+   start_point = '-0.5 0.0 0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_posz_vert]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = x
+   start_point = '-0.5 0.0 0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_posz_vert]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = x
+   start_point = '-0.5 0.0 0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_posz_vert]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = x
+   start_point = '-0.5 0.0 0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_posz_vert]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = x
+   start_point = '-0.5 0.0 0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_posz_vert]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = x
+   start_point = '-0.5 0.0 0.5'
+   end_point = '0.5 0.0 0.5'
+   num_points = 11
+ [../]
+
+ [./strainxx_negz_vert]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = x
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '0.5 0.0 -0.5'
+   num_points = 11
+ [../]
+ [./strainyy_negz_vert]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = x
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '0.5 0.0 -0.5'
+   num_points = 11
+ [../]
+ [./strainzz_negz_vert]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = x
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '0.5 0.0 -0.5'
+   num_points = 11
+ [../]
+ [./strainxy_negz_vert]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = x
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '0.5 0.0 -0.5'
+   num_points = 11
+ [../]
+ [./strainyz_negz_vert]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = x
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '0.5 0.0 -0.5'
+   num_points = 11
+ [../]
+ [./strainxz_negz_vert]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = x
+   start_point = '-0.5 0.0 -0.5'
+   end_point = '0.5 0.0 -0.5'
+   num_points = 11
+ [../]
+
+ [./strainxx_posz_horz]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = y
+   start_point = '0.0 -0.5 0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyy_posz_horz]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = y
+   start_point = '0.0 -0.5 0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainzz_posz_horz]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = y
+   start_point = '0.0 -0.5 0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxy_posz_horz]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = y
+   start_point = '0.0 -0.5 0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainyz_posz_horz]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = y
+   start_point = '0.0 -0.5 0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+ [./strainxz_posz_horz]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = y
+   start_point = '0.0 -0.5 0.5'
+   end_point = '0.0 0.5 0.5'
+   num_points = 11
+ [../]
+
+ [./strainxx_negz_horz]
+   type = LineValueSampler
+   variable = strain_xx
+   sort_by = y
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainyy_negz_horz]
+   type = LineValueSampler
+   variable = strain_yy
+   sort_by = y
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainzz_negz_horz]
+   type = LineValueSampler
+   variable = strain_zz
+   sort_by = y
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainxy_negz_horz]
+   type = LineValueSampler
+   variable = strain_xy
+   sort_by = y
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainyz_negz_horz]
+   type = LineValueSampler
+   variable = strain_yz
+   sort_by = y
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 0.5 -0.5'
+   num_points = 11
+ [../]
+ [./strainxz_negz_horz]
+   type = LineValueSampler
+   variable = strain_xz
+   sort_by = y
+   start_point = '0.0 -0.5 -0.5'
+   end_point = '0.0 0.5 -0.5'
    num_points = 11
  [../]
 
@@ -755,7 +1732,7 @@
 []
 
 [Outputs]
-  file_base = axialxy_fiberx
+  file_base = axialxx_fiberx
   csv = true
   [./exo]
     type = Exodus

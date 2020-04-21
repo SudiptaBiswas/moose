@@ -1,20 +1,20 @@
 [Mesh]
   [generated_mesh]
     type = GeneratedMeshGenerator
-    dim = 3
-    nx = 10
-    ny = 10
-    nz = 10
+    dim = 1
+    nx = 2
+    # ny = 10
+    # nz = 10
     xmin = -0.5
     xmax = 0.5
-    ymin = -0.5
-    ymax = 0.5
-    zmin = -0.5
-    zmax = 0.5
+    # ymin = -0.5
+    # ymax = 0.5
+    # zmin = -0.5
+    # zmax = 0.5
   []
   [cnode]
     type = ExtraNodesetGenerator
-    coord = '0 0.0 0'
+    coord = '0'
     new_boundary = 100
     input = generated_mesh
   []
@@ -23,12 +23,12 @@
 [Variables]
   [./u_x]
   [../]
-  [./u_y]
-  [../]
-  [./u_z]
-  [../]
+  # [./u_y]
+  # [../]
+  # [./u_z]
+  # [../]
   [./global_strain]
-    order = SIXTH
+    order = FIRST
     family = SCALAR
   [../]
 []
@@ -36,39 +36,11 @@
 [AuxVariables]
   [./disp_x]
   [../]
-  [./disp_y]
-  [../]
-  [./disp_z]
-  [../]
   [./s00]
     order = CONSTANT
     family = MONOMIAL
   [../]
-  [./s11]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
   [./e00]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./e11]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./pe11]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./pe22]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./pe33]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./peeq]
     order = CONSTANT
     family = MONOMIAL
   [../]
@@ -82,33 +54,12 @@
     global_strain_uo = global_strain_uo
     component = 0
   [../]
-  [./disp_y]
-    type = GlobalDisplacementAux
-    variable = disp_y
-    scalar_global_strain = global_strain
-    global_strain_uo = global_strain_uo
-    component = 1
-  [../]
-  [./disp_z]
-    type = GlobalDisplacementAux
-    variable = disp_z
-    scalar_global_strain = global_strain
-    global_strain_uo = global_strain_uo
-    component = 2
-  [../]
   [./s00]
     type = RankTwoAux
     variable = s00
     rank_two_tensor = stress
     index_i = 0
     index_j = 0
-  [../]
-  [./s11]
-    type = RankTwoAux
-    variable = s11
-    rank_two_tensor = stress
-    index_i = 1
-    index_j = 1
   [../]
   [./e00]
     type = RankTwoAux
@@ -117,43 +68,10 @@
     index_i = 0
     index_j = 0
   [../]
-  [./e11]
-    type = RankTwoAux
-    variable = e11
-    rank_two_tensor = total_strain
-    index_i = 1
-    index_j = 1
-  [../]
-  [./pe11]
-    type = RankTwoAux
-    rank_two_tensor = plastic_strain
-    variable = pe11
-    index_i = 0
-    index_j = 0
-  [../]
-    [./pe22]
-    type = RankTwoAux
-    rank_two_tensor = plastic_strain
-    variable = pe22
-    index_i = 1
-    index_j = 1
-  [../]
-  [./pe33]
-    type = RankTwoAux
-    rank_two_tensor = plastic_strain
-    variable = pe33
-    index_i = 2
-    index_j = 2
-  [../]
-  [./eqv_plastic_strain]
-    type = MaterialRealAux
-    property = eqv_plastic_strain
-    variable = peeq
-  [../]
 []
 
 [GlobalParams]
-  displacements = 'u_x u_y u_z'
+  displacements = 'u_x'
   block = 0
 []
 
@@ -174,15 +92,15 @@
 [Functions]
   [./topfunc]
     type = ParsedFunction
-    value = 't*1e3'
+    value = 't*1e6'
   [../]
 []
 
 [BCs]
   [./Periodic]
     [./all]
-      auto_direction = 'x y z'
-      variable = 'u_x u_y u_z'
+      auto_direction = 'x'
+      variable = 'u_x'
     [../]
   [../]
 
@@ -193,18 +111,18 @@
     variable = u_x
     value = 0
   [../]
-  [./fix_y]
-    type = DirichletBC
-    boundary = 100
-    variable = u_y
-    value = 0
-  [../]
-  [./centerfix_z]
-    type = DirichletBC
-    boundary = 100
-    variable = u_z
-    value = 0
-  [../]
+  # [./fix_y]
+  #   type = DirichletBC
+  #   boundary = 100
+  #   variable = u_y
+  #   value = 0
+  # [../]
+  # [./centerfix_z]
+  #   type = DirichletBC
+  #   boundary = 100
+  #   variable = u_z
+  #   value = 0
+  # [../]
   # [./appl_x]
   #   type = FunctionDirichletBC
   #   boundary = top
@@ -223,13 +141,11 @@
   [./elasticity_tensor]
     type = ComputeElasticityTensor
     block = 0
-    C_ijkl = '7e5 0.33'
-    fill_method = symmetric_isotropic_E_nu
-    # C_ijkl = '2.827e5 1.21e5 1.21e5 2.827e5 1.21e5 2.827e5 0.808e5 0.808e5 0.808e5'
-    # fill_method = symmetric9
+    C_ijkl = '2.827e5 1.21e5 1.21e5 2.827e5 1.21e5 2.827e5 0.808e5 0.808e5 0.808e5'
+    fill_method = symmetric9
   [../]
   [./strain]
-    type = ComputeFiniteStrain
+    type = ComputeSmallStrain
     global_strain = global_strain
   [../]
   [./global_strain]
@@ -237,20 +153,21 @@
     scalar_global_strain = global_strain
     global_strain_uo = global_strain_uo
   [../]
-  # [./stress]
-  #   type = ComputeLinearElasticStress
-  # [../]
-  [./fplastic]
-    type = FiniteStrainPlasticMaterial
-    block=0
-    yield_stress='0. 445. 0.05 610. 0.1 680. 0.38 810. 0.95 920. 2. 950.'
+  [./stress]
+    type = ComputeLinearElasticStress
   [../]
+  # [./fplastic]
+  #   type = FiniteStrainPlasticMaterial
+  #   block=0
+  #   yield_stress='0. 445. 0.05 610. 0.1 680. 0.38 810. 0.95 920. 2. 950.'
+  # [../]
 []
 
 [UserObjects]
   [./global_strain_uo]
     type = GlobalStrainLoadingUserObject
-    loading_function = '0.0 topfunc 0.0 0.0 0.0 0.0'
+    # applied_strain_tensor = '0.01'
+    loading_function = ' topfunc'
     execute_on = 'Initial Linear Nonlinear'
   [../]
 []

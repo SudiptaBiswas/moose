@@ -14,32 +14,32 @@
   []
   [cnode]
     type = ExtraNodesetGenerator
-    coord = '0 0.0 0'
+    coord = '0 -0.5 0'
     new_boundary = 100
     input = generated_mesh
   []
 []
 
 [Variables]
-  [./u_x]
-  [../]
-  [./u_y]
-  [../]
-  [./u_z]
-  [../]
-  [./global_strain]
-    order = SIXTH
-    family = SCALAR
-  [../]
-[]
-
-[AuxVariables]
   [./disp_x]
   [../]
   [./disp_y]
   [../]
   [./disp_z]
   [../]
+  # [./global_strain]
+  #   order = SIXTH
+  #   family = SCALAR
+  # [../]
+[]
+
+[AuxVariables]
+  # [./disp_x]
+  # [../]
+  # [./disp_y]
+  # [../]
+  # [./disp_z]
+  # [../]
   [./s00]
     order = CONSTANT
     family = MONOMIAL
@@ -75,27 +75,27 @@
 []
 
 [AuxKernels]
-  [./disp_x]
-    type = GlobalDisplacementAux
-    variable = disp_x
-    scalar_global_strain = global_strain
-    global_strain_uo = global_strain_uo
-    component = 0
-  [../]
-  [./disp_y]
-    type = GlobalDisplacementAux
-    variable = disp_y
-    scalar_global_strain = global_strain
-    global_strain_uo = global_strain_uo
-    component = 1
-  [../]
-  [./disp_z]
-    type = GlobalDisplacementAux
-    variable = disp_z
-    scalar_global_strain = global_strain
-    global_strain_uo = global_strain_uo
-    component = 2
-  [../]
+  # [./disp_x]
+  #   type = GlobalDisplacementAux
+  #   variable = disp_x
+  #   scalar_global_strain = global_strain
+  #   global_strain_uo = global_strain_uo
+  #   component = 0
+  # [../]
+  # [./disp_y]
+  #   type = GlobalDisplacementAux
+  #   variable = disp_y
+  #   scalar_global_strain = global_strain
+  #   global_strain_uo = global_strain_uo
+  #   component = 1
+  # [../]
+  # [./disp_z]
+  #   type = GlobalDisplacementAux
+  #   variable = disp_z
+  #   scalar_global_strain = global_strain
+  #   global_strain_uo = global_strain_uo
+  #   component = 2
+  # [../]
   [./s00]
     type = RankTwoAux
     variable = s00
@@ -153,7 +153,7 @@
 []
 
 [GlobalParams]
-  displacements = 'u_x u_y u_z'
+  displacements = 'disp_x disp_y disp_z'
   block = 0
 []
 
@@ -163,80 +163,72 @@
   [../]
 []
 
-[ScalarKernels]
-  [./global_strain]
-    type = GlobalStrain
-    variable = global_strain
-    global_strain_uo = global_strain_uo
-  [../]
-[]
+# [ScalarKernels]
+#   [./global_strain]
+#     type = GlobalStrain
+#     variable = global_strain
+#     global_strain_uo = global_strain_uo
+#   [../]
+# []
 
 [Functions]
   [./topfunc]
     type = ParsedFunction
-    value = 't*1e3'
+    value = 't'
   [../]
 []
 
 [BCs]
-  [./Periodic]
-    [./all]
-      auto_direction = 'x y z'
-      variable = 'u_x u_y u_z'
-    [../]
-  [../]
+  # [./Periodic]
+  #   [./all]
+  #     auto_direction = 'z'
+  #     variable = 'disp_x disp_y disp_z'
+  #   [../]
+  # [../]
 
   # fix center point location
   [./centerfix_x]
     type = DirichletBC
     boundary = 100
-    variable = u_x
+    variable = disp_x
     value = 0
   [../]
   [./fix_y]
     type = DirichletBC
-    boundary = 100
-    variable = u_y
+    boundary = bottom
+    variable = disp_y
     value = 0
   [../]
   [./centerfix_z]
     type = DirichletBC
     boundary = 100
-    variable = u_z
+    variable = disp_z
     value = 0
   [../]
-  # [./appl_x]
-  #   type = FunctionDirichletBC
-  #   boundary = top
-  #   variable = u_x
-  #   function = topfunc
-  # [../]
-  # [./appl_z]
-  #   type = FunctionDirichletBC
-  #   boundary = top
-  #   variable = u_z
-  #   function = topfunc
-  # [../]
+  [./appl_y]
+    type = FunctionDirichletBC
+    boundary = top
+    variable = disp_y
+    function = topfunc
+  [../]
 []
 
 [Materials]
   [./elasticity_tensor]
     type = ComputeElasticityTensor
     block = 0
-    C_ijkl = '7e5 0.33'
-    fill_method = symmetric_isotropic_E_nu
-    # C_ijkl = '2.827e5 1.21e5 1.21e5 2.827e5 1.21e5 2.827e5 0.808e5 0.808e5 0.808e5'
-    # fill_method = symmetric9
+    C_ijkl = '2.827e5 1.21e5 1.21e5 2.827e5 1.21e5 2.827e5 0.808e5 0.808e5 0.808e5'
+    fill_method = symmetric9
   [../]
   [./strain]
     type = ComputeFiniteStrain
-    global_strain = global_strain
+    # global_strain = global_strain
   [../]
-  [./global_strain]
-    type = ComputeGlobalStrain
-    scalar_global_strain = global_strain
-    global_strain_uo = global_strain_uo
-  [../]
+  # [./global_strain]
+  #   type = ComputeGlobalStrain
+  #   scalar_global_strain = global_strain
+  #   global_strain_uo = global_strain_uo
+  # [../]
   # [./stress]
   #   type = ComputeLinearElasticStress
   # [../]
@@ -247,13 +239,12 @@
   [../]
 []
 
-[UserObjects]
-  [./global_strain_uo]
-    type = GlobalStrainLoadingUserObject
-    loading_function = '0.0 topfunc 0.0 0.0 0.0 0.0'
-    execute_on = 'Initial Linear Nonlinear'
-  [../]
-[]
+# [UserObjects]
+#   [./global_strain_uo]
+#     type = GlobalStrainUserObject
+#     execute_on = 'Initial Linear Nonlinear'
+#   [../]
+# []
 
 [Preconditioning]
   [./SMP]
