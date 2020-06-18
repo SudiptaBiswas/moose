@@ -1,0 +1,390 @@
+[Tests]
+  design = 'GlobalStrain/index.md'
+  issues = '#11314'
+  [convergence]
+    requirement = "convergence check"
+
+    [square_tet4_coarse0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet4_coarse0.e Outputs/file_base=square_tet4_coarse0_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_tet4_coarse1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet4_coarse1.e Outputs/file_base=square_tet4_coarse1_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_tet4_coarse]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet4_coarse.e Outputs/file_base=square_tet4_coarse_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_tet4_refine0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet4_refine0.e Outputs/file_base=square_tet4_refine0_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [square_tet4_refine1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet4_refine1.e Outputs/file_base=square_tet4_refine1_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [square_tet4_refine]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet4_refine.e Outputs/file_base=square_tet4_refine_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_tet10_coarse00]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet10_coarse00.e Outputs/file_base=square_tet10_coarse00_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_tet10_coarse0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet10_coarse0.e Outputs/file_base=square_tet10_coarse0_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_tet10_coarse1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet10_coarse1.e Outputs/file_base=square_tet10_coarse1_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_tet10_coarse]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet10_coarse.e Outputs/file_base=square_tet10_coarse_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_tet10_refine0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet10_refine0.e Outputs/file_base=square_tet10_refine0_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [square_tet10_refine1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet10_refine1.e Outputs/file_base=square_tet10_refine1_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [square_tet10_refine]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_tet10_refine.e Outputs/file_base=square_tet10_refine_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_hex8_coarse0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex8_coarse0.e Outputs/file_base=square_hex8_coarse0_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_hex8_coarse1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex8_coarse1.e Outputs/file_base=square_hex8_coarse1_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_hex8_coarse]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex8_coarse.e Outputs/file_base=square_hex8_coarse_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_hex8_refine0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex8_refine0.e Outputs/file_base=square_hex8_refine0_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [square_hex8_refine1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex8_refine1.e Outputs/file_base=square_hex8_refine1_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [square_hex8_refine]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex8_refine.e Outputs/file_base=square_hex8_refine_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_hex20_coarse0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex20_coarse0.e Outputs/file_base=square_hex20_coarse0_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_hex20_coarse1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex20_coarse1.e Outputs/file_base=square_hex20_coarse1_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_hex20_coarse]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex20_coarse.e Outputs/file_base=square_hex20_coarse_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [square_hex20_refine0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex20_refine0.e Outputs/file_base=square_hex20_refine0_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [square_hex20_refine1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex20_refine1.e Outputs/file_base=square_hex20_refine1_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [square_hex20_refine]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=square_hex20_refine.e Outputs/file_base=square_hex20_refine_xy_out'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_tet4_coarse0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet4_coarse0.e Outputs/file_base=hex_tet4_coarse0_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_tet4_coarse1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet4_coarse1.e Outputs/file_base=hex_tet4_coarse1_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_tet4_coarse]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet4_coarse.e Outputs/file_base=hex_tet4_coarse_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_tet4_refine0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet4_refine0.e Outputs/file_base=hex_tet4_refine0_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [hex_tet4_refine1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet4_refine1.e Outputs/file_base=hex_tet4_refine1_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [hex_tet4_refine]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet4_refine.e Outputs/file_base=hex_tet4_refine_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_tet10_coarse00]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet10_coarse00.e Outputs/file_base=hex_tet10_coarse00_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [hex_tet10_coarse0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet10_coarse0.e Outputs/file_base=hex_tet10_coarse0_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_tet10_coarse1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet10_coarse1.e Outputs/file_base=hex_tet10_coarse1_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_tet10_coarse]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet10_coarse.e Outputs/file_base=hex_tet10_coarse_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_tet10_refine0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet10_refine0.e Outputs/file_base=hex_tet10_refine0_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [hex_tet10_refine1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet10_refine1.e Outputs/file_base=hex_tet10_refine1_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [hex_tet10_refine]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_tet10_refine.e Outputs/file_base=hex_tet10_refine_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_hex8_coarse0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex8_coarse0.e Outputs/file_base=hex_hex8_coarse0_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_hex8_coarse1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex8_coarse1.e Outputs/file_base=hex_hex8_coarse1_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_hex8_coarse]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex8_coarse.e Outputs/file_base=hex_hex8_coarse_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_hex8_refine0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex8_refine0.e Outputs/file_base=hex_hex8_refine0_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [hex_hex8_refine1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex8_refine1.e Outputs/file_base=hex_hex8_refine1_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [hex_hex8_refine]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex8_refine.e Outputs/file_base=hex_hex8_refine_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_hex20_coarse0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex20_coarse0.e Outputs/file_base=hex_hex20_coarse0_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_hex20_coarse1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex20_coarse1.e Outputs/file_base=hex_hex20_coarse1_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_hex20_coarse]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex20_coarse.e Outputs/file_base=hex_hex20_coarse_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+
+    [hex_hex20_refine0]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex20_refine0.e Outputs/file_base=hex_hex20_refine0_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [hex_hex20_refine1]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex20_refine1.e Outputs/file_base=hex_hex20_refine1_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+    [hex_hex20_refine]
+      type = 'RunApp'
+      input = 'disp_composite_mesh_test.i'
+      cli_args = 'Mesh/mesh/file=hex_hex20_refine.e Outputs/file_base=hex_hex20_refine_xy_out Materials/elasticity_tensor1/block=1 Materials/elasticity_tensor2/block=2'
+      min_parallel = 8
+      max_time = 10000
+    []
+  []
+[]

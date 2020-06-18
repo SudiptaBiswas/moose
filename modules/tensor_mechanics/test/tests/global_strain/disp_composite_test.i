@@ -41,7 +41,7 @@
     [./GlobalStrain]
       [./global_strain]
         scalar_global_strain = global_strain
-        applied_stress_tensor = '0.0 0.0 0.0 0.0 1.0 0.0'
+        applied_stress_tensor = '1.0 0.0 0.0 0.0 0.0 0.0'
         displacements = 'u_x u_y u_z'
         auxiliary_displacements = 'disp_x disp_y disp_z'
       [../]
@@ -124,13 +124,13 @@
 [Materials]
   [./elasticity_tensor1]
     type = ComputeElasticityTensor
-    block = 1
+    block = 2
     C_ijkl = '379.3 0.1'
     fill_method = symmetric_isotropic_E_nu
   [../]
   [./elasticity_tensor2]
     type = ComputeElasticityTensor
-    block = 2
+    block = 1
     C_ijkl = '68.3 0.3'
     fill_method = symmetric_isotropic_E_nu
   [../]

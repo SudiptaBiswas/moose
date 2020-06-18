@@ -39,7 +39,7 @@ protected:
   ///Base name prepended to material property name
   const std::string _base_name;
   const VariableValue & _scalar_global_strain;
-  const VariableValue & _scalar_global_strain_old;
+  // const VariableValue & _scalar_global_strain_old;
   MaterialProperty<RankTwoTensor> & _global_strain;
   MaterialProperty<RankTwoTensor> & _global_strain_old;
 

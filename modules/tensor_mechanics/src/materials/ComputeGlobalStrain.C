@@ -31,15 +31,19 @@ ComputeGlobalStrain::validParams()
   params.addCoupledVar("displacements", "The name of the displacement variables");
   params.addRequiredParam<UserObjectName>("global_strain_uo",
                                           "The name of the GlobalStrainUserObject");
-
+  // params.addParam<bool>(
+  // "incremental", false, "Flag to indicate whether an incremental or total model is being used.");
   return params;
 }
 
 ComputeGlobalStrain::ComputeGlobalStrain(const InputParameters & parameters)
   : Material(parameters),
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
+    // _incremental(getParam<bool>("incremental")),
     _scalar_global_strain(coupledScalarValue("scalar_global_strain")),
-    _scalar_global_strain_old(coupledScalarValueOld("scalar_global_strain")),
+    // _scalar_global_strain_old(coupledScalarValueOld("scalar_global_strain")),
+    // _scalar_global_strain_old(_incremental?
+    // &coupledScalarValueOld("scalar_global_strain"):nullptr),
     _global_strain(declareProperty<RankTwoTensor>(_base_name + "global_strain")),
     _global_strain_old(declareProperty<RankTwoTensor>(_base_name + "global_strain_old")),
     _pst(getUserObject<GlobalStrainUserObjectInterface>("global_strain_uo")),
@@ -62,14 +66,14 @@ ComputeGlobalStrain::computeProperties()
   RankTwoTensor & strain = _global_strain[0];
   RankTwoTensor & strain_old = _global_strain_old[0];
   strain.fillFromScalarVariable(_scalar_global_strain);
-  strain_old.fillFromScalarVariable(_scalar_global_strain_old);
+  // strain_old.fillFromScalarVariable(_scalar_global_strain_old);
 
   for (unsigned int dir = 0; dir < _dim; ++dir)
     if (!_periodic_dir(dir))
       for (unsigned int var = 0; var < _ndisp; ++var)
       {
         strain(dir, var) = 0.0;
-        strain_old(dir, var) = 0.0;
+        // strain_old(dir, var) = 0.0;
       }
 
   for (_qp = 0; _qp < _qrule->n_points(); ++_qp)
