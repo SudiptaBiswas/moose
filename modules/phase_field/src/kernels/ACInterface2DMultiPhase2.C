@@ -48,7 +48,9 @@ ACInterface2DMultiPhase2::computeQpJacobian()
   }
 
   Real jac1 = dsum * _grad_u[_qp];
-  Real jac2 = nablaLPsi() * _dkappadgrad_etaa[_qp] * _grad_phi[_j][_qp] * _grad_u[_qp];
+  Real jac2 = 0;
+  if (_grad_u[_qp].norm() > libMesh::TOLERANCE)
+    jac2 = nablaLPsi() * _dkappadgrad_etaa[_qp] * _grad_phi[_j][_qp] * _grad_u[_qp];
   Real jac3 = nablaLPsi() * _kappa[_qp] * _grad_phi[_j][_qp];
   return jac1 + jac2 + jac3;
 }
@@ -77,7 +79,7 @@ ACInterface2DMultiPhase2::computeQpOffDiagJacobian(unsigned int jvar)
 
   Real jac1 = dsum * _grad_u[_qp];
   Real jac2 = 0;
-  if ((*_gradarg[cvar])[_qp].norm_sq() > 1e-8)
+  if ((*_gradarg[cvar])[_qp].norm() > libMesh::TOLERANCE)
     jac2 = -nablaLPsi() * _dkappadgrad_etaa[_qp] * _grad_phi[_j][_qp] * _grad_u[_qp];
   return jac1 + jac2;
 }

@@ -116,7 +116,7 @@ ACInterface2DMultiPhase1::computeQpOffDiagJacobian(unsigned int jvar)
 
   Real jac1 = 0.5 * dsum * _dkappadgrad_etaa[_qp] * sumSquareGradEta();
   Real jac2 = 0;
-  if ((*_grad_eta[cvar])[_qp].norm_sq() > 1e-8)
+  if ((*_grad_eta[cvar])[_qp].norm() > libMesh::TOLERANCE)
     jac2 = -0.5 * nablaLPsi() * (_d2kappadgrad_etaa[_qp] * _grad_phi[_j][_qp]) * sumSquareGradEta();
   Real jac3 = nablaLPsi() * _dkappadgrad_etaa[_qp] * (*_grad_eta[cvar])[_qp] * _grad_phi[_j][_qp];
   Real jac4 =
