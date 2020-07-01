@@ -85,15 +85,15 @@
     type = ACInterface2DMultiPhase1
     variable = etaa0
     etas = 'etab0'
-    kappa_name = kappaa
-    dkappadgrad_etaa_name = dkappadgrad_etaa
-    d2kappadgrad_etaa_name = d2kappadgrad_etaa
+    kappa_name = kappa_etaa0_etab0
+    dkappadgrad_etaa_name = dkappadgrad_etaa0_etab0
+    d2kappadgrad_etaa_name = d2kappadgrad_etaa0_etab0
   [../]
   [./ACa0_int2]
     type = ACInterface2DMultiPhase2
     variable = etaa0
-    kappa_name = kappaa
-    dkappadgrad_etaa_name = dkappadgrad_etaa
+    kappa_name = kappa_etaa0_etab0
+    dkappadgrad_etaa_name = dkappadgrad_etaa0_etab0
   [../]
   [./ea0_dot]
     type = TimeDerivative
@@ -117,15 +117,15 @@
     type = ACInterface2DMultiPhase1
     variable = etab0
     etas = 'etaa0'
-    kappa_name = kappab
-    dkappadgrad_etaa_name = dkappadgrad_etab
-    d2kappadgrad_etaa_name = d2kappadgrad_etab
+    kappa_name = kappa_etab0_etaa0
+    dkappadgrad_etaa_name = dkappadgrad_etab0_etaa0
+    d2kappadgrad_etaa_name = d2kappadgrad_etab0_etaa0
   [../]
   [./ACb0_int2]
     type = ACInterface2DMultiPhase2
     variable = etab0
-    kappa_name = kappab
-    dkappadgrad_etaa_name = dkappadgrad_etab
+    kappa_name = kappa_etab0_etaa0
+    dkappadgrad_etaa_name = dkappadgrad_etab0_etaa0
   [../]
   [./eb0_dot]
     type = TimeDerivative
@@ -217,27 +217,27 @@
   [../]
   [./kappaa]
     type = InterfaceOrientationMultiphaseMaterial
-    kappa_name = kappaa
-    dkappadgrad_etaa_name = dkappadgrad_etaa
-    d2kappadgrad_etaa_name = d2kappadgrad_etaa
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etaa0
     etab = etab0
     anisotropy_strength = 0.05
     kappa_bar = 0.05
     outputs = exodus
-    output_properties = 'kappaa'
+    output_properties = 'kappa_etaa0_etab0'
   [../]
   [./kappab]
     type = InterfaceOrientationMultiphaseMaterial
-    kappa_name = kappab
-    dkappadgrad_etaa_name = dkappadgrad_etab
-    d2kappadgrad_etaa_name = d2kappadgrad_etab
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etab0
     etab = etaa0
     anisotropy_strength = 0.05
     kappa_bar = 0.05
     outputs = exodus
-    output_properties = 'kappab'
+    output_properties = 'kappa_etab0_etaa0'
   [../]
   [./const]
     type = GenericConstantMaterial

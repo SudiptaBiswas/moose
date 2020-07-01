@@ -103,15 +103,21 @@
     type = ACInterface2DMultiPhase1
     variable = etaa0
     etas = 'etab0'
-    kappa_name = kappaa
-    dkappadgrad_etaa_name = dkappadgrad_etaa
-    d2kappadgrad_etaa_name = d2kappadgrad_etaa
+    kappa_name = kappa_etaa0_etab0
+    dkappadgrad_etaa_name = dkappadgrad_etaa0_etab0
+    d2kappadgrad_etaa_name = d2kappadgrad_etaa0_etab0
+    # kappa_name = kappaa
+    # dkappadgrad_etaa_name = dkappadgrad_etaa
+    # d2kappadgrad_etaa_name = d2kappadgrad_etaa
   [../]
   [./ACa0_int2]
     type = ACInterface2DMultiPhase2
     variable = etaa0
-    kappa_name = kappaa
-    dkappadgrad_etaa_name = dkappadgrad_etaa
+    # kappa_name = kappaa
+    # dkappadgrad_etaa_name = dkappadgrad_etaa
+    kappa_name = kappa_etaa0_etab0
+    dkappadgrad_etaa_name = dkappadgrad_etaa0_etab0
+    # d2kappadgrad_etaa_name = d2kappadgrad_etaa0_etab0
     args = 'etab0'
   [../]
   [./ea0_dot]
@@ -143,15 +149,20 @@
     type = ACInterface2DMultiPhase1
     variable = etab0
     etas = 'etaa0'
-    kappa_name = kappab
-    dkappadgrad_etaa_name = dkappadgrad_etab
-    d2kappadgrad_etaa_name = d2kappadgrad_etab
+    # kappa_name = kappab
+    # dkappadgrad_etaa_name = dkappadgrad_etab
+    # d2kappadgrad_etaa_name = d2kappadgrad_etab
+    kappa_name = kappa_etab0_etaa0
+    dkappadgrad_etaa_name = dkappadgrad_etab0_etaa0
+    d2kappadgrad_etaa_name = d2kappadgrad_etab0_etaa0
   [../]
   [./ACb0_int2]
     type = ACInterface2DMultiPhase2
     variable = etab0
-    kappa_name = kappab
-    dkappadgrad_etaa_name = dkappadgrad_etab
+    # kappa_name = kappab
+    # dkappadgrad_etaa_name = dkappadgrad_etab
+    kappa_name = kappa_etab0_etaa0
+    dkappadgrad_etaa_name = dkappadgrad_etab0_etaa0
     args = 'etaa0'
   [../]
   [./eb0_dot]
@@ -237,9 +248,9 @@
   [../]
   [./kappaa]
     type = InterfaceOrientationMultiphaseMaterial
-    kappa_name = kappaa
-    dkappadgrad_etaa_name = dkappadgrad_etaa
-    d2kappadgrad_etaa_name = d2kappadgrad_etaa
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etaa0
     etab = etab0
     # outputs = exodus
@@ -247,9 +258,9 @@
   [../]
   [./kappab]
     type = InterfaceOrientationMultiphaseMaterial
-    kappa_name = kappab
-    dkappadgrad_etaa_name = dkappadgrad_etab
-    d2kappadgrad_etaa_name = d2kappadgrad_etab
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etab0
     etab = etaa0
     # outputs = exodus
@@ -286,6 +297,6 @@
 []
 
 [Outputs]
-  # exodus = true
+  exodus = true
   # file_base = test_case
 []
