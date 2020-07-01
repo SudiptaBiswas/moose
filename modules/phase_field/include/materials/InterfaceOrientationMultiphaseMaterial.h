@@ -35,13 +35,15 @@ private:
   Real _theta0;
   Real _kappa_bar;
 
-  MaterialProperty<Real> & _kappa;
-  MaterialProperty<RealGradient> & _dkappadgrad_etaa;
-  MaterialProperty<RealTensorValue> & _d2kappadgrad_etaa;
-
+  VariableName _etaa_name;
   const VariableValue & _etaa;
   const VariableGradient & _grad_etaa;
 
+  VariableName _etab_name;
   const VariableValue & _etab;
   const VariableGradient & _grad_etab;
+
+  MaterialProperty<Real> & _kappa;
+  MaterialProperty<RealGradient> & _dkappadgrad_etaa;
+  MaterialProperty<RealTensorValue> & _d2kappadgrad_etaa;
 };

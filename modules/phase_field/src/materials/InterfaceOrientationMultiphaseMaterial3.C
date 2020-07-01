@@ -179,7 +179,7 @@ InterfaceOrientationMultiphaseMaterial3::computeQpProperties()
     {
       dndgrad_etaa(0) = -ny;
       dndgrad_etaa(1) = nx;
-      dndgrad_etaa *= (MathUtils::sign(nd(1)) / nsq);
+      dndgrad_etaa /= nsq;
     }
 
     // Calculate interfacial coefficient kappa and its derivatives wrt the angle
@@ -210,10 +210,10 @@ InterfaceOrientationMultiphaseMaterial3::computeQpProperties()
     if (nsq > tol)
     {
       d2ndgrad_etaa2(0, 0) = 2.0 * nx * ny;
-      d2ndgrad_etaa2(0, 1) = n2y - n2x;
-      d2ndgrad_etaa2(1, 0) = n2y - n2x;
+      d2ndgrad_etaa2(0, 1) = (n2y - n2x);
+      d2ndgrad_etaa2(1, 0) = (n2y - n2x);
       d2ndgrad_etaa2(1, 1) = -2.0 * nx * ny;
-      d2ndgrad_etaa2 *= (MathUtils::sign(nd(1)) / n2sq);
+      d2ndgrad_etaa2 /= n2sq;
     }
 
     // Compute derivatives of kappa wrt grad_eta

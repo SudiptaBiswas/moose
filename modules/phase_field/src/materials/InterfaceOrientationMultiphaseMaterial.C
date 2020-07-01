@@ -48,13 +48,17 @@ InterfaceOrientationMultiphaseMaterial::InterfaceOrientationMultiphaseMaterial(
     _j(getParam<unsigned int>("mode_number")),
     _theta0(getParam<Real>("reference_angle")),
     _kappa_bar(getParam<Real>("kappa_bar")),
-    _kappa(declareProperty<Real>(_kappa_name)),
-    _dkappadgrad_etaa(declareProperty<RealGradient>(_dkappadgrad_etaa_name)),
-    _d2kappadgrad_etaa(declareProperty<RealTensorValue>(_d2kappadgrad_etaa_name)),
+    _etaa_name(getVar("etaa", 0)->name()),
     _etaa(coupledValue("etaa")),
     _grad_etaa(coupledGradient("etaa")),
+    _etab_name(getVar("etab", 0)->name()),
     _etab(coupledValue("etab")),
-    _grad_etab(coupledGradient("etab"))
+    _grad_etab(coupledGradient("etab")),
+    _kappa(declareProperty<Real>(_kappa_name + "_" + _etaa_name + "_" + _etab_name)),
+    _dkappadgrad_etaa(declareProperty<RealGradient>(_dkappadgrad_etaa_name + "_" + _etaa_name +
+                                                    "_" + _etab_name)),
+    _d2kappadgrad_etaa(declareProperty<RealTensorValue>(_d2kappadgrad_etaa_name + "_" + _etaa_name +
+                                                        "_" + _etab_name))
 {
   // this currently only works in 2D simulations
   if (_mesh.dimension() != 2)
@@ -64,7 +68,7 @@ InterfaceOrientationMultiphaseMaterial::InterfaceOrientationMultiphaseMaterial(
 void
 InterfaceOrientationMultiphaseMaterial::computeQpProperties()
 {
-  const Real tol = 1e-9;
+  const Real tol = libMesh::TOLERANCE;
   const Real cutoff = 1.0 - tol;
   // if (_grad_etaa[_qp].norm() > tol)
   {
@@ -109,6 +113,8 @@ InterfaceOrientationMultiphaseMaterial::computeQpProperties()
 
     // Calculate interfacial coefficient kappa and its derivatives wrt the angle
     Real anglediff = _j * (angle - _theta0 * libMesh::pi / 180.0);
+    // _kappa[_qp] = 0.0;
+    // if (_grad_etaa[_qp].norm() > tol && _grad_etab[_qp].norm() > tol)
     _kappa[_qp] =
         _kappa_bar * (1.0 + _delta * std::cos(anglediff)) * (1.0 + _delta * std::cos(anglediff));
     Real dkappadangle = -2.0 * _kappa_bar * _delta * _j * (1.0 + _delta * std::cos(anglediff)) *
@@ -141,9 +147,12 @@ InterfaceOrientationMultiphaseMaterial::computeQpProperties()
     }
 
     // Compute derivatives of kappa wrt grad_eta
-    _dkappadgrad_etaa[_qp] = dkappadangle * dangledn * dndgrad_etaa;
-    _d2kappadgrad_etaa[_qp] = d2kappadangle * dangledn * dangledn * dndgrad_etaa_sq +
-                              dkappadangle * d2angledn2 * dndgrad_etaa_sq +
-                              dkappadangle * dangledn * d2ndgrad_etaa2;
+    if (_grad_etaa[_qp].norm() > tol && _grad_etab[_qp].norm() > tol)
+    {
+      _dkappadgrad_etaa[_qp] = dkappadangle * dangledn * dndgrad_etaa;
+      _d2kappadgrad_etaa[_qp] = d2kappadangle * dangledn * dangledn * dndgrad_etaa_sq +
+                                dkappadangle * d2angledn2 * dndgrad_etaa_sq +
+                                dkappadangle * dangledn * d2ndgrad_etaa2;
+    }
   }
 }
