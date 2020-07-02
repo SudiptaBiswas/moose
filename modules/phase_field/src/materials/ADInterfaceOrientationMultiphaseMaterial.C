@@ -65,6 +65,7 @@ void
 ADInterfaceOrientationMultiphaseMaterial::computeQpProperties()
 {
   const Real tol = libMesh::TOLERANCE;
+  // const Real tol = 1e-5;
   const Real cutoff = 1.0 - tol;
   ADRealGradient grada = _grad_etaa[_qp];
   ADRealGradient gradb = _grad_etab[_qp];
@@ -80,20 +81,32 @@ ADInterfaceOrientationMultiphaseMaterial::computeQpProperties()
   if (grada.norm() > tol && gradb.norm() > tol)
     nd = _grad_etaa[_qp] - _grad_etab[_qp];
 
-  if (_use_tolerance)
-    nd += RealVectorValue(tol);
-
   const ADReal nx = nd(0);
   const ADReal ny = nd(1);
-  const ADReal nsq = nd.norm_sq();
+  ADReal nsq;
+  if (_use_tolerance)
+    nsq = (nd + RealVectorValue(tol)).norm_sq();
+  else
+    nsq = nd.norm_sq();
 
   if (nsq > tol)
     n = std::max(-cutoff, std::min(nx / std::sqrt(nsq), cutoff));
 
+  // if (nsq > tol)
+  //   n = nx / std::sqrt(nsq);
+  //
+  // if (n > cutoff)
+  //   n = cutoff;
+  //
+  // if (n < -cutoff)
+  //   n = -cutoff;
+
   // Calculate the orientation angle
   const ADReal angle = std::acos(n) * MathUtils::sign(ny);
+  // const ADReal angle = std::acos(n) * ny / std::abs(ny);
   // Compute derivatives of the angle wrt n
   const ADReal dangledn = -MathUtils::sign(ny) / std::sqrt(1.0 - n * n);
+  // const ADReal dangledn = -ny / std::abs(ny) / std::sqrt(1.0 - n * n);
 
   // Compute derivative of n wrt grad_eta
   ADRealGradient dndgrad_etaa;
@@ -101,7 +114,7 @@ ADInterfaceOrientationMultiphaseMaterial::computeQpProperties()
   {
     dndgrad_etaa(0) = ny * ny;
     dndgrad_etaa(1) = -nx * ny;
-    dndgrad_etaa /= (nsq * std::sqrt(nsq));
+    dndgrad_etaa /= nsq * std::sqrt(nsq);
   }
 
   // Calculate interfacial coefficient kappa and its derivatives wrt the angle
