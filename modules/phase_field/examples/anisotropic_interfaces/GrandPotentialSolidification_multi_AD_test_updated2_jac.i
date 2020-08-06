@@ -11,8 +11,8 @@
 []
 
 [GlobalParams]
-  radius = 0.4
-  int_width = 0.1
+  # radius = 0.4
+  # int_width = 0.1
   use_tolerance = false
   kappa_name = kappa_op
   dkappadgrad_etaa_name = dkappadgrad_etaa
@@ -138,66 +138,21 @@
 []
 
 [ICs]
-  # [./w]
-  #   type = SmoothCircleIC
-  #   variable = w
-  #   # note w = A*(c-cleq), A = 1.0, cleq = 0.0 ,i.e., w = c (in the matrix/liquid phase)
-  #   outvalue = -4.0
-  #   invalue = 0.0
-  # [../]
-  # [./etaa0]
-  #   type = SmoothCircleIC
-  #   variable = etaa0
-  #   #Solid phase
-  #   outvalue = 0.0
-  #   invalue = 1.0
-  # [../]
-  # [./etab0]
-  #   type = SmoothCircleIC
-  #   variable = etab0
-  #   #Liquid phase
-  #   outvalue = 1.0
-  #   invalue = 0.0
-  # [../]
   [./etaa0]
-    type = SmoothCircleIC
+    type = RandomIC
     variable = etaa0
-    #Solid phase
-    x1 = -2
-    y1 = 0
-    outvalue = 0.0
-    invalue = 1.0
   [../]
   [./etaa1]
-    type = SmoothCircleIC
+    type = RandomIC
     variable = etaa1
-    #Solid phase
-    x1 = 2
-    y1 = 0
-    outvalue = 0.0
-    invalue = 1.0
   [../]
   [./etab0]
-    type = SpecifiedSmoothCircleIC
+    type = RandomIC
     variable = etab0
-    #Liquid phase
-    x_positions = '-2 2'
-    y_positions = '0 0'
-    z_positions = '0 0'
-    radii = '0.4 0.4'
-    outvalue = 1.0
-    invalue = 0.0
   [../]
   [./w]
-    type = SpecifiedSmoothCircleIC
+    type = RandomIC
     variable = w
-    #Liquid phase
-    x_positions = '-2 2'
-    y_positions = '0 0'
-    z_positions = '0 0'
-    radii = '0.4 0.4'
-    outvalue = -4.0
-    invalue = 0.0
   [../]
 []
 
@@ -229,11 +184,11 @@
     type = ADTimeDerivative
     variable = etaa0
   [../]
-  [./etaa0_kappa]
-    type = ADACKappaFunction
-    variable = etaa0
-    v = ' etab0 etaa1'
-  [../]
+  # [./etaa0_kappa]
+  #   type = ADACKappaFunction
+  #   variable = etaa0
+  #   v = ' etab0 etaa1'
+  # [../]
 
   [./ACa1_bulk]
     type = ADACGrGrMulti
@@ -260,11 +215,11 @@
     type = ADTimeDerivative
     variable = etaa1
   [../]
-  [./etaa1_kappa]
-    type = ADACKappaFunction
-    variable = etaa1
-    v = ' etab0 etaa0'
-  [../]
+  # [./etaa1_kappa]
+  #   type = ADACKappaFunction
+  #   variable = etaa1
+  #   v = ' etab0 etaa0'
+  # [../]
 # Order parameter eta_beta0
   [./ACb0_bulk]
     type = ADACGrGrMulti
@@ -291,11 +246,11 @@
     type = ADTimeDerivative
     variable = etab0
   [../]
-  [./etab0_kappa]
-    type = ADACKappaFunction
-    variable = etab0
-    v = ' etaa0 etaa1'
-  [../]
+  # [./etab0_kappa]
+  #   type = ADACKappaFunction
+  #   variable = etab0
+  #   v = ' etaa0 etaa1'
+  # [../]
 #Chemical potential
   [./w_dot]
     type = ADSusceptibilityTimeDerivative
@@ -520,11 +475,11 @@
   type = Transient
   scheme = bdf2
   solve_type = NEWTON
-  line_search = none
-  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
-  # petsc_options_value = 'hypre    boomeramg      31'
-  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
-  petsc_options_value = 'lu       superlu_dist '
+  # line_search = none
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
+  petsc_options_value = 'hypre    boomeramg      31'
+  # petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
+  # petsc_options_value = 'lu       superlu_dist '
    l_tol = 1.0e-3
   l_max_its = 30
   nl_max_its = 15

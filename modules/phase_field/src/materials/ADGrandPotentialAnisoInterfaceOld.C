@@ -7,15 +7,15 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "ADGrandPotentialAnisoInterface.h"
+#include "ADGrandPotentialAnisoInterfaceOld.h"
 // #include "Conversion.h"
 // #include "IndirectSort.h"
 // #include "libmesh/utility.h"
 
-registerMooseObject("PhaseFieldApp", ADGrandPotentialAnisoInterface);
+registerMooseObject("PhaseFieldApp", ADGrandPotentialAnisoInterfaceOld);
 
 InputParameters
-ADGrandPotentialAnisoInterface::validParams()
+ADGrandPotentialAnisoInterfaceOld::validParams()
 {
   InputParameters params = ADMaterial::validParams();
   params.addClassDescription("Calculate Grand Potential interface parameters for a specified "
@@ -27,7 +27,8 @@ ADGrandPotentialAnisoInterface::validParams()
   return params;
 }
 
-ADGrandPotentialAnisoInterface::ADGrandPotentialAnisoInterface(const InputParameters & parameters)
+ADGrandPotentialAnisoInterfaceOld::ADGrandPotentialAnisoInterfaceOld(
+    const InputParameters & parameters)
   : ADMaterial(parameters),
     DerivativeMaterialPropertyNameInterface(),
     _num_eta(coupledComponents("etas")),
@@ -71,7 +72,7 @@ ADGrandPotentialAnisoInterface::ADGrandPotentialAnisoInterface(const InputParame
 }
 
 void
-ADGrandPotentialAnisoInterface::computeQpProperties()
+ADGrandPotentialAnisoInterfaceOld::computeQpProperties()
 {
   ADReal Val = 0.0;
   ADReal dvaldetam = 0.0;
@@ -96,23 +97,23 @@ ADGrandPotentialAnisoInterface::computeQpProperties()
   for (unsigned int m = 0; m < _num_eta - 1; ++m)
     for (unsigned int n = m + 1; n < _num_eta; ++n)
     {
-      Val2 = (1000000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + 0.01) *
-             (1000000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + 0.01);
-      // Val = (1000000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + libMesh::TOLERANCE) *
-      //       (1000000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + libMesh::TOLERANCE);
+      Val2 = (1000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + 0.01) *
+             (1000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + 0.01);
+      // Val = (1000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + libMesh::TOLERANCE) *
+      //       (1000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + libMesh::TOLERANCE);
 
-      dvaldetam2 = (1000000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + 0.01);
-      dvaldetan2 = (1000000.0 * ((*_eta[m])[_qp]) * ((*_eta[m])[_qp]) + 0.01);
-      // dvaldeta = (1000000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + libMesh::TOLERANCE);
+      dvaldetam2 = (1000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + 0.01);
+      dvaldetan2 = (1000.0 * ((*_eta[m])[_qp]) * ((*_eta[m])[_qp]) + 0.01);
+      // dvaldeta = (1000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + libMesh::TOLERANCE);
 
       sum_val2 += 2.0 * Val2;
-      sum_dvaldeta2[m] += 4.0 * 1000000.0 * (*_eta[m])[_qp] * dvaldetam2;
-      sum_dvaldeta2[n] += 4.0 * 1000000.0 * (*_eta[n])[_qp] * dvaldetan2;
+      sum_dvaldeta2[m] += 4.0 * 1000.0 * (*_eta[m])[_qp] * dvaldetam2;
+      sum_dvaldeta2[n] += 4.0 * 1000.0 * (*_eta[n])[_qp] * dvaldetan2;
 
       sum_kappa2 += Val2 * ((*_kappa_comp[m][n])[_qp] + (*_kappa_comp[n][m])[_qp]);
-      sum_kappa_dvaldeta2[m] += 2.0 * 1000000.0 * (*_eta[m])[_qp] * dvaldetam *
+      sum_kappa_dvaldeta2[m] += 2.0 * 1000.0 * (*_eta[m])[_qp] * dvaldetam *
                                 ((*_kappa_comp[m][n])[_qp] + (*_kappa_comp[n][m])[_qp]);
-      sum_kappa_dvaldeta2[n] += 2.0 * 1000000.0 * (*_eta[n])[_qp] * dvaldetan *
+      sum_kappa_dvaldeta2[n] += 2.0 * 1000.0 * (*_eta[n])[_qp] * dvaldetan *
                                 ((*_kappa_comp[m][n])[_qp] + (*_kappa_comp[n][m])[_qp]);
 
       // sum_dkappadgrad_etaa +=
@@ -123,45 +124,45 @@ ADGrandPotentialAnisoInterface::computeQpProperties()
     for (unsigned int n = 0; n < _num_eta; ++n)
       if (m != n)
       {
-        Val = (1000000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] * (*_eta[m])[_qp] + 0.01) *
-              (1000000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] * (*_eta[n])[_qp] + 0.01);
-        // Val = (1000000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + libMesh::TOLERANCE) *
-        //       (1000000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + libMesh::TOLERANCE);
+        Val = (1000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + 0.01) *
+              (1000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + 0.01);
+        // Val = (1000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + libMesh::TOLERANCE) *
+        //       (1000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + libMesh::TOLERANCE);
 
-        // dvaldetam = (1000000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + 0.01);
-        // dvaldetan = (1000000.0 * ((*_eta[m])[_qp]) * ((*_eta[m])[_qp]) + 0.01);
-        // dvaldeta = (1000000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + libMesh::TOLERANCE);
+        // dvaldetam = (1000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + 0.01);
+        // dvaldetan = (1000.0 * ((*_eta[m])[_qp]) * ((*_eta[m])[_qp]) + 0.01);
+        // dvaldeta = (1000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + libMesh::TOLERANCE);
 
         sum_val += Val;
-        // sum_dvaldeta[m] += 4.0 * 1000000.0 * (*_eta[m])[_qp] * dvaldetam;
-        // sum_dvaldeta[n] += 4.0 * 1000000.0 * (*_eta[n])[_qp] * dvaldetan;
+        // sum_dvaldeta[m] += 4.0 * 1000.0 * (*_eta[m])[_qp] * dvaldetam;
+        // sum_dvaldeta[n] += 4.0 * 1000.0 * (*_eta[n])[_qp] * dvaldetan;
 
         sum_kappa += Val * (*_kappa_comp[m][n])[_qp];
-        // sum_kappa_dvaldeta[m] += 2.0 * 1000000.0 * (*_eta[m])[_qp] * dvaldetam *
+        // sum_kappa_dvaldeta[m] += 2.0 * 1000.0 * (*_eta[m])[_qp] * dvaldetam *
         // ((*_kappa_comp[m][n])[_qp] + (*_kappa_comp[n][m])[_qp]);
-        // sum_kappa_dvaldeta[n] += 2.0 * 1000000.0 * (*_eta[n])[_qp] * dvaldetan *
+        // sum_kappa_dvaldeta[n] += 2.0 * 1000.0 * (*_eta[n])[_qp] * dvaldetan *
         // ((*_kappa_comp[m][n])[_qp] + (*_kappa_comp[n][m])[_qp]);
 
         sum_dkappadgrad_etaa += Val * (*_dkappadgrad_etaa_comp[m][n])[_qp];
 
-        // Val = (1000000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + 0.01) *
-        //       (1000000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + 0.01);
-        // Val = (1000000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + libMesh::TOLERANCE) *
-        //       (1000000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + libMesh::TOLERANCE);
+        // Val = (1000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + 0.01) *
+        //       (1000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + 0.01);
+        // Val = (1000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] + libMesh::TOLERANCE) *
+        //       (1000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] + libMesh::TOLERANCE);
 
-        dvaldetam = 3.0 * 1000000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] *
-                    (1000000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] * (*_eta[n])[_qp] + 0.01);
-        // dvaldetan = (1000000.0 * ((*_eta[m])[_qp]) * ((*_eta[m])[_qp]) + 0.01);
-        // dvaldeta = (1000000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + libMesh::TOLERANCE);
+        dvaldetam = 2.0 * 1000.0 * (*_eta[m])[_qp] * (*_eta[m])[_qp] *
+                    (1000.0 * (*_eta[n])[_qp] * (*_eta[n])[_qp] * (*_eta[n])[_qp] + 0.01);
+        // dvaldetan = (1000.0 * ((*_eta[m])[_qp]) * ((*_eta[m])[_qp]) + 0.01);
+        // dvaldeta = (1000.0 * ((*_eta[n])[_qp]) * ((*_eta[n])[_qp]) + libMesh::TOLERANCE);
 
         // sum_val += 2.0 * Val;
         sum_dvaldeta[m] += 2.0 * dvaldetam;
-        // sum_dvaldeta[n] += 4.0 * 1000000.0 * (*_eta[n])[_qp] * dvaldetan;
+        // sum_dvaldeta[n] += 4.0 * 1000.0 * (*_eta[n])[_qp] * dvaldetan;
 
         // sum_kappa += Val * ((*_kappa_comp[m][n])[_qp] + (*_kappa_comp[n][m])[_qp]);
         sum_kappa_dvaldeta[m] +=
             dvaldetam * ((*_kappa_comp[m][n])[_qp] + (*_kappa_comp[n][m])[_qp]);
-        // sum_kappa_dvaldeta[n] += 2.0 * 1000000.0 * (*_eta[n])[_qp] * dvaldetan *
+        // sum_kappa_dvaldeta[n] += 2.0 * 1000.0 * (*_eta[n])[_qp] * dvaldetan *
         //                          ((*_kappa_comp[m][n])[_qp] + (*_kappa_comp[n][m])[_qp]);
 
         // sum_dkappadgrad_etaa +=

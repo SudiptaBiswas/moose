@@ -11,8 +11,8 @@
 []
 
 [GlobalParams]
-  radius = 0.4
-  int_width = 0.1
+  # radius = 0.4
+  # int_width = 0.1
   use_tolerance = false
   kappa_name = kappa_op
   dkappadgrad_etaa_name = dkappadgrad_etaa
@@ -160,44 +160,44 @@
   #   invalue = 0.0
   # [../]
   [./etaa0]
-    type = SmoothCircleIC
+    type = RandomIC
     variable = etaa0
     #Solid phase
-    x1 = -2
-    y1 = 0
-    outvalue = 0.0
-    invalue = 1.0
+    # x1 = -2
+    # y1 = 0
+    # outvalue = 0.0
+    # invalue = 1.0
   [../]
   [./etaa1]
-    type = SmoothCircleIC
+    type = RandomIC
     variable = etaa1
     #Solid phase
-    x1 = 2
-    y1 = 0
-    outvalue = 0.0
-    invalue = 1.0
+    # x1 = 2
+    # y1 = 0
+    # outvalue = 0.0
+    # invalue = 1.0
   [../]
   [./etab0]
-    type = SpecifiedSmoothCircleIC
+    type = RandomIC
     variable = etab0
     #Liquid phase
-    x_positions = '-2 2'
-    y_positions = '0 0'
-    z_positions = '0 0'
-    radii = '0.4 0.4'
-    outvalue = 1.0
-    invalue = 0.0
+    # x_positions = '-2 2'
+    # y_positions = '0 0'
+    # z_positions = '0 0'
+    # radii = '0.4 0.4'
+    # outvalue = 1.0
+    # invalue = 0.0
   [../]
   [./w]
-    type = SpecifiedSmoothCircleIC
+    type = RandomIC
     variable = w
     #Liquid phase
-    x_positions = '-2 2'
-    y_positions = '0 0'
-    z_positions = '0 0'
-    radii = '0.4 0.4'
-    outvalue = -4.0
-    invalue = 0.0
+    # x_positions = '-2 2'
+    # y_positions = '0 0'
+    # z_positions = '0 0'
+    # radii = '0.4 0.4'
+    # outvalue = -4.0
+    # invalue = 0.0
   [../]
 []
 

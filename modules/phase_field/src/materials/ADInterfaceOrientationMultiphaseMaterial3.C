@@ -7,14 +7,14 @@
 //* Licensed under LGPL 2.1, please see LICENSE for details
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
-#include "ADInterfaceOrientationMultiphaseMaterial.h"
+#include "ADInterfaceOrientationMultiphaseMaterial3.h"
 #include "MooseMesh.h"
 #include "MathUtils.h"
 
-registerMooseObject("PhaseFieldApp", ADInterfaceOrientationMultiphaseMaterial);
+registerMooseObject("PhaseFieldApp", ADInterfaceOrientationMultiphaseMaterial3);
 
 InputParameters
-ADInterfaceOrientationMultiphaseMaterial::validParams()
+ADInterfaceOrientationMultiphaseMaterial3::validParams()
 {
   InputParameters params = Material::validParams();
   params.addClassDescription(
@@ -36,7 +36,7 @@ ADInterfaceOrientationMultiphaseMaterial::validParams()
   return params;
 }
 
-ADInterfaceOrientationMultiphaseMaterial::ADInterfaceOrientationMultiphaseMaterial(
+ADInterfaceOrientationMultiphaseMaterial3::ADInterfaceOrientationMultiphaseMaterial3(
     const InputParameters & parameters)
   : ADMaterial(parameters),
     _kappa_name(getParam<MaterialPropertyName>("kappa_name")),
@@ -58,11 +58,11 @@ ADInterfaceOrientationMultiphaseMaterial::ADInterfaceOrientationMultiphaseMateri
 {
   // this currently only works in 2D simulations
   if (_mesh.dimension() != 2)
-    mooseError("ADInterfaceOrientationMultiphaseMaterial requires a two-dimensional mesh.");
+    mooseError("ADInterfaceOrientationMultiphaseMaterial3 requires a two-dimensional mesh.");
 }
 
 void
-ADInterfaceOrientationMultiphaseMaterial::computeQpProperties()
+ADInterfaceOrientationMultiphaseMaterial3::computeQpProperties()
 {
   const Real tol = libMesh::TOLERANCE;
   // const Real tol = 1e-5;
@@ -102,19 +102,20 @@ ADInterfaceOrientationMultiphaseMaterial::computeQpProperties()
     n = -cutoff;
 
   // Calculate the orientation angle
-  const ADReal angle = std::acos(n) * MathUtils::sign(ny);
+  // const ADReal angle = std::acos(n) * MathUtils::sign(ny);
+  const ADReal angle = std::atan2(ny, nx);
   // const ADReal angle = std::acos(n) * ny / std::abs(ny);
   // Compute derivatives of the angle wrt n
-  const ADReal dangledn = -MathUtils::sign(ny) / std::sqrt(1.0 - n * n);
+  // const ADReal dangledn = -MathUtils::sign(ny) / std::sqrt(1.0 - n * n);
   // const ADReal dangledn = -ny / std::abs(ny) / std::sqrt(1.0 - n * n);
 
   // Compute derivative of n wrt grad_eta
   ADRealGradient dndgrad_etaa;
   if (nsq > tol)
   {
-    dndgrad_etaa(0) = ny * ny;
-    dndgrad_etaa(1) = -nx * ny;
-    dndgrad_etaa /= nsq * std::sqrt(nsq);
+    dndgrad_etaa(0) = -ny;
+    dndgrad_etaa(1) = nx;
+    dndgrad_etaa *= (MathUtils::sign(ny) / nsq);
   }
 
   // Calculate interfacial coefficient kappa and its derivatives wrt the angle
@@ -128,5 +129,5 @@ ADInterfaceOrientationMultiphaseMaterial::computeQpProperties()
 
   // Compute derivatives of kappa wrt grad_eta
   if (grada.norm() > tol && gradb.norm() > tol)
-    _dkappadgrad_etaa[_qp] = dkappadangle * dangledn * dndgrad_etaa;
+    _dkappadgrad_etaa[_qp] = dkappadangle * dndgrad_etaa;
 }

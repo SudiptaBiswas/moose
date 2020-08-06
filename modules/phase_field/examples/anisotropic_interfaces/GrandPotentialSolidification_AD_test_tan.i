@@ -1,17 +1,17 @@
 [Mesh]
   type = GeneratedMesh
   dim = 2
-  nx = 28
-  ny = 28
-  xmin = -7
-  xmax = 7
-  ymin = -7
-  ymax = 7
+  nx = 20
+  ny = 20
+  xmin = -10
+  xmax = 10
+  ymin = -10
+  ymax = 10
   uniform_refine = 2
 []
 
 [GlobalParams]
-  radius = 0.2
+  radius = 0.4
   int_width = 0.1
   x1 = 0.0
   y1 = 0.0
@@ -25,12 +25,13 @@
   [../]
   [./etab0]
   [../]
-  [./T]
-  [../]
 []
 
 [AuxVariables]
   [./bnds]
+  [../]
+  [./T]
+    initial_condition = -0.5
   [../]
 []
 
@@ -85,8 +86,8 @@
     type = ADACInterface2DMultiPhase1
     variable = etaa0
     etas = 'etab0'
-    kappa_name = kappa_etaa0_etab0
-    dkappadgrad_etaa_name = dkappadgrad_etaa0_etab0
+    kappa_name = kappa_op
+    dkappadgrad_etaa_name = dkappadgrad_etaa
     mob_name = adL
     variable_L = false
     # d2kappadgrad_etaa_name = d2kappadgrad_etaa0_etab0
@@ -94,7 +95,7 @@
   [./ACa0_int2]
     type = ADACInterface
     variable = etaa0
-    kappa_name = kappa_etaa0_etab0
+    kappa_name = kappa_op
     mob_name = adL
     variable_L = false
     # dkappadgrad_etaa_name = dkappadgrad_etaa0_etab0
@@ -102,6 +103,13 @@
   [./ea0_dot]
     type = ADTimeDerivative
     variable = etaa0
+  [../]
+  [./etaa0_kappa]
+    type = ADACKappaFunction
+    variable = etaa0
+    mob_name = L
+    kappa_name = kappa_op
+    v = ' etab0'
   [../]
 # Order parameter eta_beta0
   [./ACb0_bulk]
@@ -121,8 +129,8 @@
     type = ADACInterface2DMultiPhase1
     variable = etab0
     etas = 'etaa0'
-    kappa_name = kappa_etab0_etaa0
-    dkappadgrad_etaa_name = dkappadgrad_etab0_etaa0
+    kappa_name = kappa_op
+    dkappadgrad_etaa_name = dkappadgrad_etaa
     variable_L = false
     mob_name = adL
     # d2kappadgrad_etaa_name = d2kappadgrad_etab0_etaa0
@@ -130,7 +138,7 @@
   [./ACb0_int2]
     type = ADACInterface
     variable = etab0
-    kappa_name = kappa_etab0_etaa0
+    kappa_name = kappa_op
     variable_L = false
     mob_name = adL
     # dkappadgrad_etaa_name = dkappadgrad_etab0_etaa0
@@ -138,6 +146,13 @@
   [./eb0_dot]
     type = ADTimeDerivative
     variable = etab0
+  [../]
+  [./etab0_kappa]
+    type = ADACKappaFunction
+    variable = etab0
+    mob_name = L
+    kappa_name = kappa_op
+    v = ' etaa0'
   [../]
 #Chemical potential
   [./w_dot]
@@ -166,20 +181,20 @@
     hj_names = 'ha   hb'
     args = 'etaa0 etab0'
   [../]
-  [./T_dot]
-    type = ADTimeDerivative
-    variable = T
-  [../]
-  [./CoefDiffusion]
-    type = Diffusion
-    variable = T
-  [../]
-  [./etaa0_dot_T]
-    type = CoefCoupledTimeDerivative
-    variable = T
-    v = etaa0
-    coef = -5.0
-  [../]
+  # [./T_dot]
+  #   type = ADTimeDerivative
+  #   variable = T
+  # [../]
+  # [./CoefDiffusion]
+  #   type = Diffusion
+  #   variable = T
+  # [../]
+  # [./etaa0_dot_T]
+  #   type = CoefCoupledTimeDerivative
+  #   variable = T
+  #   v = etaa0
+  #   coef = -5.0
+  # [../]
 []
 
 [Materials]
@@ -224,7 +239,7 @@
     function = 'w/Vm^2/kb + cbeq/Vm'
   [../]
   [./kappaa]
-    type = ADInterfaceOrientationMultiphaseMaterial
+    type = ADInterfaceOrientationMultiphaseMaterial3
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
     # d2kappadgrad_etaa_name = d2kappadgrad
@@ -236,7 +251,7 @@
     output_properties = 'kappa_etaa0_etab0'
   [../]
   [./kappab]
-    type = ADInterfaceOrientationMultiphaseMaterial
+    type = ADInterfaceOrientationMultiphaseMaterial3
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
     # d2kappadgrad_etaa_name = d2kappadgrad
@@ -246,6 +261,12 @@
     kappa_bar = 0.05
     outputs = exodus
     output_properties = 'kappa_etab0_etaa0'
+  [../]
+  [./kappa_op]
+    type = ADGrandPotentialAnisoInterface
+    etas = 'etab0 etaa0'
+    outputs = exodus
+    # output_properties = 'kappa_op dkappadgrad_etaa d2kappadgrad_etaa'
   [../]
   [./const]
     type = ADGenericConstantMaterial
@@ -275,11 +296,11 @@
 [Executioner]
   type = Transient
   scheme = bdf2
-  solve_type = NEWTON
-  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
-  petsc_options_value = 'lu       superlu_dist '
-  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
-  # petsc_options_value = 'hypre    boomeramg      31'
+  solve_type = PJFNK
+  # petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
+  # petsc_options_value = 'lu       superlu_dist '
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart  -pc_factor_shift_type'
+  petsc_options_value = 'hypre    boomeramg      31                   nonzero'
    l_tol = 1.0e-3
   l_max_its = 30
   nl_max_its = 15

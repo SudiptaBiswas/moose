@@ -433,7 +433,7 @@
     etab = etab0
     anisotropy_strength = 0.05
     kappa_bar = 0.05
-    reference_angle = 0
+    reference_angle = 45
     # use_tolerance = true
     outputs = exodus
     output_properties = 'kappa_etaa1_etab0'
@@ -485,7 +485,7 @@
     etaa = etab0
     etab = etaa1
     anisotropy_strength = 0.05
-    reference_angle = 0
+    reference_angle = 45
     kappa_bar = 0.05
     # use_tolerance = true
     outputs = exodus

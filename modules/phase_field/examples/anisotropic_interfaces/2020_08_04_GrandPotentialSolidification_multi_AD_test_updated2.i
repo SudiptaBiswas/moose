@@ -229,11 +229,11 @@
     type = ADTimeDerivative
     variable = etaa0
   [../]
-  [./etaa0_kappa]
-    type = ADACKappaFunction
-    variable = etaa0
-    v = ' etab0 etaa1'
-  [../]
+  # [./etaa0_kappa]
+  #   type = ADACKappaFunction
+  #   variable = etaa0
+  #   v = ' etab0 etaa1'
+  # [../]
 
   [./ACa1_bulk]
     type = ADACGrGrMulti
@@ -260,11 +260,11 @@
     type = ADTimeDerivative
     variable = etaa1
   [../]
-  [./etaa1_kappa]
-    type = ADACKappaFunction
-    variable = etaa1
-    v = ' etab0 etaa0'
-  [../]
+  # [./etaa1_kappa]
+  #   type = ADACKappaFunction
+  #   variable = etaa1
+  #   v = ' etab0 etaa0'
+  # [../]
 # Order parameter eta_beta0
   [./ACb0_bulk]
     type = ADACGrGrMulti
@@ -291,11 +291,11 @@
     type = ADTimeDerivative
     variable = etab0
   [../]
-  [./etab0_kappa]
-    type = ADACKappaFunction
-    variable = etab0
-    v = ' etaa0 etaa1'
-  [../]
+  # [./etab0_kappa]
+  #   type = ADACKappaFunction
+  #   variable = etab0
+  #   v = ' etaa0 etaa1'
+  # [../]
 #Chemical potential
   [./w_dot]
     type = ADSusceptibilityTimeDerivative
