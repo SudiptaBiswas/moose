@@ -492,7 +492,7 @@
     output_properties = 'kappa_etab0_etaa1'
   [../]
   [./kappa_op]
-    type = ADGrandPotentialAnisoInterface
+    type = ADGrandPotentialAnisoInterfaceOld
     etas = 'etab0 etaa0 etaa1'
     outputs = exodus
   [../]
