@@ -297,10 +297,10 @@
   type = Transient
   scheme = bdf2
   solve_type = NEWTON
-  # petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
-  # petsc_options_value = 'lu       superlu_dist '
-  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
-  petsc_options_value = 'hypre    boomeramg      31'
+  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
+  petsc_options_value = 'lu       superlu_dist '
+  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
+  # petsc_options_value = 'hypre    boomeramg      31'
    l_tol = 1.0e-3
   l_max_its = 30
   nl_max_its = 15

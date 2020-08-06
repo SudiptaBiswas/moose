@@ -15,13 +15,13 @@
 /**
  * Calculate Grand Potential interface parameters for a specified interfacial free energy and width.
  */
-class ADGrandPotentialAnisoInterface : public ADMaterial,
-                                       public DerivativeMaterialPropertyNameInterface
+class ADGrandPotentialAnisoInterfaceOld : public ADMaterial,
+                                          public DerivativeMaterialPropertyNameInterface
 {
 public:
   static InputParameters validParams();
 
-  ADGrandPotentialAnisoInterface(const InputParameters & parameters);
+  ADGrandPotentialAnisoInterfaceOld(const InputParameters & parameters);
 
 protected:
   virtual void computeQpProperties();

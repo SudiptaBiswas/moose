@@ -3,15 +3,15 @@
   dim = 2
   nx = 40
   ny = 40
-  xmin = -10
-  xmax = 10
-  ymin = -10
-  ymax = 10
-  uniform_refine = 2
+  xmin = -20
+  xmax = 20
+  ymin = -20
+  ymax = 20
+  uniform_refine = 3
 []
 
 [GlobalParams]
-  radius = 0.4
+  radius = 0.2
   int_width = 0.1
   use_tolerance = false
   kappa_name = kappa_op
@@ -31,6 +31,10 @@
   [./etab0]
   [../]
   [./etaa1]
+  [../]
+  [./etaa2]
+  [../]
+  [./etaa3]
   [../]
   # [./T]
   # [../]
@@ -82,7 +86,7 @@
   [./bnds]
     type = BndsCalcAux
     variable = bnds
-    v = 'etaa0 etaa1 etab0'
+    v = 'etaa0 etaa1 etab0 etaa2 etaa3'
     # v = 'etaa0 etab0'
   [../]
   [./kappa_grad_x]
@@ -163,8 +167,8 @@
     type = SmoothCircleIC
     variable = etaa0
     #Solid phase
-    x1 = -2
-    y1 = 0
+    x1 = -5
+    y1 = -5
     outvalue = 0.0
     invalue = 1.0
   [../]
@@ -172,8 +176,26 @@
     type = SmoothCircleIC
     variable = etaa1
     #Solid phase
-    x1 = 2
-    y1 = 0
+    x1 = 5
+    y1 = -5
+    outvalue = 0.0
+    invalue = 1.0
+  [../]
+  [./etaa2]
+    type = SmoothCircleIC
+    variable = etaa2
+    #Solid phase
+    x1 = -5
+    y1 = 5
+    outvalue = 0.0
+    invalue = 1.0
+  [../]
+  [./etaa3]
+    type = SmoothCircleIC
+    variable = etaa3
+    #Solid phase
+    x1 = 5
+    y1 = 5
     outvalue = 0.0
     invalue = 1.0
   [../]
@@ -181,10 +203,10 @@
     type = SpecifiedSmoothCircleIC
     variable = etab0
     #Liquid phase
-    x_positions = '-2 2'
-    y_positions = '0 0'
-    z_positions = '0 0'
-    radii = '0.4 0.4'
+    x_positions = '-5 5 -5 5'
+    y_positions = '-5 -5 5 5'
+    z_positions = '0 0 0 0'
+    radii = '0.2 0.2 0.2 0.2'
     outvalue = 1.0
     invalue = 0.0
   [../]
@@ -192,10 +214,10 @@
     type = SpecifiedSmoothCircleIC
     variable = w
     #Liquid phase
-    x_positions = '-2 2'
-    y_positions = '0 0'
-    z_positions = '0 0'
-    radii = '0.4 0.4'
+    x_positions = '-5 5 -5 5'
+    y_positions = '-5 -5 5 5'
+    z_positions = '0 0 0 0'
+    radii = '0.2 0.2 0.2 0.2'
     outvalue = -4.0
     invalue = 0.0
   [../]
@@ -206,8 +228,8 @@
   [./ACa0_bulk]
     type = ADACGrGrMulti
     variable = etaa0
-    v =           'etab0 etaa1'
-    gamma_names = 'gab gab'
+    v =           'etab0 etaa1 etaa2 etaa3'
+    gamma_names = 'gab   gab   gab   gab'
   [../]
   [./ACa0_sw]
     type = ADACSwitching
@@ -219,7 +241,7 @@
   [./ACa0_int1]
     type = ADACInterface2DMultiPhase1
     variable = etaa0
-    etas = 'etab0 etaa1'
+    etas = 'etab0 etaa1 etaa2 etaa3'
   [../]
   [./ACa0_int2]
     type = ADACInterface
@@ -232,14 +254,14 @@
   [./etaa0_kappa]
     type = ADACKappaFunction
     variable = etaa0
-    v = ' etab0 etaa1'
+    v = ' etab0 etaa1 etaa2 etaa3'
   [../]
 
   [./ACa1_bulk]
     type = ADACGrGrMulti
     variable = etaa1
-    v =           'etab0 etaa0'
-    gamma_names = 'gab gab'
+    v =           'etab0 etaa0 etaa2 etaa3'
+    gamma_names = 'gab   gab   gab   gab'
   [../]
   [./ACa1_sw]
     type = ADACSwitching
@@ -250,7 +272,7 @@
   [./ACa1_int1]
     type = ADACInterface2DMultiPhase1
     variable = etaa1
-    etas = 'etab0 etaa0'
+    etas = 'etab0 etaa0 etaa2 etaa3'
   [../]
   [./ACa1_int2]
     type = ADACInterface
@@ -263,14 +285,76 @@
   [./etaa1_kappa]
     type = ADACKappaFunction
     variable = etaa1
-    v = ' etab0 etaa0'
+    v = ' etab0 etaa0 etaa2 etaa3'
+  [../]
+
+  [./ACa2_bulk]
+    type = ADACGrGrMulti
+    variable = etaa2
+    v =           'etab0 etaa0 etaa1 etaa3'
+    gamma_names = 'gab   gab   gab   gab'
+  [../]
+  [./ACa2_sw]
+    type = ADACSwitching
+    variable = etaa2
+    Fj_names  = 'omegaa omegab'
+    hj_names  = 'ha     hb'
+  [../]
+  [./ACa2_int1]
+    type = ADACInterface2DMultiPhase1
+    variable = etaa2
+    etas = 'etab0 etaa0 etaa1 etaa3'
+  [../]
+  [./ACa2_int2]
+    type = ADACInterface
+    variable = etaa2
+  [../]
+  [./ea2_dot]
+    type = ADTimeDerivative
+    variable = etaa2
+  [../]
+  [./etaa2_kappa]
+    type = ADACKappaFunction
+    variable = etaa2
+    v = ' etab0 etaa0 etaa1 etaa3'
+  [../]
+
+  [./ACa3_bulk]
+    type = ADACGrGrMulti
+    variable = etaa3
+    v =           'etab0 etaa0 etaa1 etaa2'
+    gamma_names = 'gab   gab   gab   gab'
+  [../]
+  [./ACa3_sw]
+    type = ADACSwitching
+    variable = etaa3
+    Fj_names  = 'omegaa omegab'
+    hj_names  = 'ha     hb'
+  [../]
+  [./ACa3_int1]
+    type = ADACInterface2DMultiPhase1
+    variable = etaa3
+    etas = 'etab0 etaa0 etaa1 etaa2'
+  [../]
+  [./ACa3_int2]
+    type = ADACInterface
+    variable = etaa3
+  [../]
+  [./ea3_dot]
+    type = ADTimeDerivative
+    variable = etaa3
+  [../]
+  [./etaa3_kappa]
+    type = ADACKappaFunction
+    variable = etaa3
+    v = ' etab0 etaa0 etaa1 etaa2'
   [../]
 # Order parameter eta_beta0
   [./ACb0_bulk]
     type = ADACGrGrMulti
     variable = etab0
-    v =           'etaa0 etaa1'
-    gamma_names = 'gab gab'
+    v =           'etaa0 etaa1 etaa2 etaa3'
+    gamma_names = 'gab   gab   gab   gab'
   [../]
   [./ACb0_sw]
     type = ADACSwitching
@@ -281,7 +365,7 @@
   [./ACb0_int1]
     type = ADACInterface2DMultiPhase1
     variable = etab0
-    etas = 'etaa0 etaa1'
+    etas = 'etaa0 etaa1 etaa2 etaa3'
   [../]
   [./ACb0_int2]
     type = ADACInterface
@@ -294,7 +378,7 @@
   [./etab0_kappa]
     type = ADACKappaFunction
     variable = etab0
-    v = ' etaa0 etaa1'
+    v = ' etaa0 etaa1 etaa2 etaa3'
   [../]
 #Chemical potential
   [./w_dot]
@@ -313,7 +397,7 @@
     v = etaa0
     Fj_names = 'rhoa rhob'
     hj_names = 'ha   hb'
-    args = 'etaa0 etab0 etaa1'
+    args = 'etaa0 etab0 etaa1 etaa2 etaa3'
   [../]
   [./coupled_etaa1dot]
     type = ADCoupledSwitchingTimeDerivative
@@ -321,7 +405,23 @@
     v = etaa1
     Fj_names = 'rhoa rhob'
     hj_names = 'ha   hb'
-    args = 'etaa0 etab0 etaa1'
+    args = 'etaa0 etab0 etaa1 etaa2 etaa3'
+  [../]
+  [./coupled_etaa2dot]
+    type = ADCoupledSwitchingTimeDerivative
+    variable = w
+    v = etaa2
+    Fj_names = 'rhoa rhob'
+    hj_names = 'ha   hb'
+    args = 'etaa0 etab0 etaa1 etaa2 etaa3'
+  [../]
+  [./coupled_etaa3dot]
+    type = ADCoupledSwitchingTimeDerivative
+    variable = w
+    v = etaa3
+    Fj_names = 'rhoa rhob'
+    hj_names = 'ha   hb'
+    args = 'etaa0 etab0 etaa1 etaa2 etaa3'
   [../]
   [./coupled_etab0dot]
     type = ADCoupledSwitchingTimeDerivative
@@ -329,7 +429,7 @@
     v = etab0
     Fj_names = 'rhoa rhob'
     hj_names = 'ha   hb'
-    args = 'etaa0 etab0 etaa1'
+    args = 'etaa0 etab0 etaa1 etaa2 etaa3'
   [../]
   # [./T_dot]
   #   type = ADTimeDerivative
@@ -351,13 +451,13 @@
   [./ha]
     type = ADSwitchingFunctionMultiPhaseMaterial
     h_name = ha
-    all_etas = 'etaa0 etaa1 etab0'
-    phase_etas = 'etaa0 etaa1'
+    all_etas = 'etaa0 etaa1 etaa2 etaa3 etab0'
+    phase_etas = 'etaa0 etaa1 etaa2 etaa3'
   [../]
   [./hb]
     type = ADSwitchingFunctionMultiPhaseMaterial
     h_name = hb
-    all_etas = 'etaa0 etaa1 etab0'
+    all_etas = 'etaa0 etaa1 etaa2 etaa3 etab0'
     phase_etas = 'etab0'
   [../]
   [./omegaa]
@@ -438,6 +538,32 @@
     outputs = exodus
     output_properties = 'kappa_etaa1_etab0'
   [../]
+  [./kappaa20]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa2
+    etab = etab0
+    reference_angle = 0
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa2_etab0'
+  [../]
+  [./kappaa30]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa3
+    etab = etab0
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    reference_angle = 0
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa3_etab0'
+  [../]
   [./kappaa01]
     type = ADInterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
@@ -451,6 +577,32 @@
     outputs = exodus
     output_properties = 'kappa_etaa0_etaa1'
   [../]
+  [./kappaa02]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa0
+    etab = etaa2
+    reference_angle = 0
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa0_etaa2'
+  [../]
+  [./kappaa03]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa0
+    etab = etaa3
+    reference_angle = 0
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa0_etaa3'
+  [../]
   [./kappaa11]
     type = ADInterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
@@ -463,6 +615,110 @@
     # use_tolerance = true
     outputs = exodus
     output_properties = 'kappa_etaa1_etaa0'
+  [../]
+  [./kappaa12]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa1
+    etab = etaa2
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    reference_angle = 0
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa1_etaa2'
+  [../]
+  [./kappaa13]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa1
+    etab = etaa3
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    reference_angle = 0
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa1_etaa3'
+  [../]
+  [./kappaa21]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa2
+    etab = etaa0
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    reference_angle = 0
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa2_etaa0'
+  [../]
+  [./kappaa22]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa2
+    etab = etaa1
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    reference_angle = 0
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa2_etaa1'
+  [../]
+  [./kappaa23]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa2
+    etab = etaa3
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    reference_angle = 0
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa2_etaa3'
+  [../]
+  [./kappaa31]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa3
+    etab = etaa0
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    reference_angle = 0
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa3_etaa0'
+  [../]
+  [./kappaa32]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa3
+    etab = etaa2
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    reference_angle = 0
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa3_etaa2'
+  [../]
+  [./kappaa33]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etaa3
+    etab = etaa1
+    anisotropy_strength = 0.05
+    kappa_bar = 0.05
+    reference_angle = 0
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etaa3_etaa1'
   [../]
   [./kappab00]
     type = ADInterfaceOrientationMultiphaseMaterial
@@ -491,9 +747,36 @@
     outputs = exodus
     output_properties = 'kappa_etab0_etaa1'
   [../]
+  [./kappab02]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    # d2kappadgrad_etaa_name = d2kappadgrad
+    etaa = etab0
+    etab = etaa2
+    anisotropy_strength = 0.05
+    reference_angle = 0
+    kappa_bar = 0.05
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etab0_etaa2'
+  [../]
+  [./kappab03]
+    type = ADInterfaceOrientationMultiphaseMaterial
+    kappa_name = kappa
+    dkappadgrad_etaa_name = dkappadgrad
+    etaa = etab0
+    etab = etaa3
+    anisotropy_strength = 0.05
+    reference_angle = 0
+    kappa_bar = 0.05
+    # use_tolerance = true
+    outputs = exodus
+    output_properties = 'kappa_etab0_etaa3'
+  [../]
   [./kappa_op]
-    type = ADGrandPotentialAnisoInterface
-    etas = 'etab0 etaa0 etaa1'
+    type = ADGrandPotentialAnisoInterfaceOld
+    etas = 'etab0 etaa0 etaa1 etaa2 etaa3'
     outputs = exodus
   [../]
   [./const]
@@ -530,7 +813,7 @@
   nl_max_its = 15
   nl_rel_tol = 1.0e-8
   nl_abs_tol = 1e-10
-  end_time = 2.0
+  end_time = 10.0
   dtmax = 0.05
   [./TimeStepper]
     type = IterationAdaptiveDT
@@ -542,7 +825,7 @@
 
 [Adaptivity]
  initial_steps = 5
- max_h_level = 3
+ max_h_level = 4
  initial_marker = err_eta
  marker = err_bnds
 [./Markers]

@@ -13,14 +13,12 @@
 [GlobalParams]
   radius = 0.4
   int_width = 0.1
-  use_tolerance = false
+  # use_tolerance = false
+  mob_name = L
   kappa_name = kappa_op
   dkappadgrad_etaa_name = dkappadgrad_etaa
   variable_L = false
-  mob_name = L
-  # x1 = 0.0
-  # y1 = 0.0
-  # derivative_order = 2
+  d2kappadgrad_etaa_name = d2kappadgrad_etaa
 []
 
 [Variables]
@@ -86,13 +84,13 @@
     # v = 'etaa0 etab0'
   [../]
   [./kappa_grad_x]
-    type = ADMaterialRealVectorValueAux
+    type = MaterialRealVectorValueAux
     property = dkappadgrad_etaa
     variable = kappa_grad_x
     component = 0
   [../]
   [./kappa_grad_y]
-    type = ADMaterialRealVectorValueAux
+    type = MaterialRealVectorValueAux
     property = dkappadgrad_etaa
     variable = kappa_grad_y
     component = 1
@@ -204,111 +202,119 @@
 [Kernels]
 # Order parameter eta_alpha0
   [./ACa0_bulk]
-    type = ADACGrGrMulti
+    type = ACGrGrMulti
     variable = etaa0
     v =           'etab0 etaa1'
     gamma_names = 'gab gab'
   [../]
   [./ACa0_sw]
-    type = ADACSwitching
+    type = ACSwitching
     variable = etaa0
     Fj_names  = 'omegaa omegab'
     hj_names  = 'ha     hb'
-    # args = 'etab0 w T'
+    args = 'etab0 etaa1 w T'
   [../]
   [./ACa0_int1]
-    type = ADACInterface2DMultiPhase1
+    type = ACInterface2DMultiPhase1
     variable = etaa0
     etas = 'etab0 etaa1'
+    # args = 'etab0 etaa1'
   [../]
   [./ACa0_int2]
-    type = ADACInterface
+    type = ACInterface2DMultiPhase2
     variable = etaa0
+    args = 'etab0 etaa1'
   [../]
   [./ea0_dot]
-    type = ADTimeDerivative
+    type = TimeDerivative
     variable = etaa0
   [../]
   [./etaa0_kappa]
-    type = ADACKappaFunction
+    type = ACKappaFunction
     variable = etaa0
     v = ' etab0 etaa1'
   [../]
 
   [./ACa1_bulk]
-    type = ADACGrGrMulti
+    type = ACGrGrMulti
     variable = etaa1
     v =           'etab0 etaa0'
     gamma_names = 'gab gab'
   [../]
   [./ACa1_sw]
-    type = ADACSwitching
+    type = ACSwitching
     variable = etaa1
     Fj_names  = 'omegaa omegab'
     hj_names  = 'ha     hb'
+    args = 'etab0 etaa0 w T'
   [../]
   [./ACa1_int1]
-    type = ADACInterface2DMultiPhase1
+    type = ACInterface2DMultiPhase1
     variable = etaa1
     etas = 'etab0 etaa0'
+    # args = 'etab0 etaa0'
   [../]
   [./ACa1_int2]
-    type = ADACInterface
+    type = ACInterface2DMultiPhase2
     variable = etaa1
+    args = 'etaa0 etab0'
   [../]
   [./ea1_dot]
-    type = ADTimeDerivative
+    type = TimeDerivative
     variable = etaa1
   [../]
   [./etaa1_kappa]
-    type = ADACKappaFunction
+    type = ACKappaFunction
     variable = etaa1
     v = ' etab0 etaa0'
   [../]
 # Order parameter eta_beta0
   [./ACb0_bulk]
-    type = ADACGrGrMulti
+    type = ACGrGrMulti
     variable = etab0
     v =           'etaa0 etaa1'
     gamma_names = 'gab gab'
   [../]
   [./ACb0_sw]
-    type = ADACSwitching
+    type = ACSwitching
     variable = etab0
     Fj_names  = 'omegaa omegab'
     hj_names  = 'ha     hb'
+    args = 'etaa0 etaa1 w T'
   [../]
   [./ACb0_int1]
-    type = ADACInterface2DMultiPhase1
+    type = ACInterface2DMultiPhase1
     variable = etab0
+    # args = 'etaa0 etaa1'
     etas = 'etaa0 etaa1'
   [../]
   [./ACb0_int2]
-    type = ADACInterface
+    type = ACInterface2DMultiPhase2
     variable = etab0
+    args = 'etaa0 etaa1'
   [../]
   [./eb0_dot]
-    type = ADTimeDerivative
+    type = TimeDerivative
     variable = etab0
   [../]
   [./etab0_kappa]
-    type = ADACKappaFunction
+    type = ACKappaFunction
     variable = etab0
     v = ' etaa0 etaa1'
   [../]
 #Chemical potential
   [./w_dot]
-    type = ADSusceptibilityTimeDerivative
+    type = SusceptibilityTimeDerivative
     variable = w
     f_name = chi
   [../]
   [./Diffusion]
-    type = ADMatDiffusion
+    type = MatDiffusion
     variable = w
     diffusivity = Dchi
   [../]
   [./coupled_etaa0dot]
-    type = ADCoupledSwitchingTimeDerivative
+    type = CoupledSwitchingTimeDerivative
     variable = w
     v = etaa0
     Fj_names = 'rhoa rhob'
@@ -316,7 +322,7 @@
     args = 'etaa0 etab0 etaa1'
   [../]
   [./coupled_etaa1dot]
-    type = ADCoupledSwitchingTimeDerivative
+    type = CoupledSwitchingTimeDerivative
     variable = w
     v = etaa1
     Fj_names = 'rhoa rhob'
@@ -324,7 +330,7 @@
     args = 'etaa0 etab0 etaa1'
   [../]
   [./coupled_etab0dot]
-    type = ADCoupledSwitchingTimeDerivative
+    type = CoupledSwitchingTimeDerivative
     variable = w
     v = etab0
     Fj_names = 'rhoa rhob'
@@ -332,7 +338,7 @@
     args = 'etaa0 etab0 etaa1'
   [../]
   # [./T_dot]
-  #   type = ADTimeDerivative
+  #   type = TimeDerivative
   #   variable = T
   # [../]
   # [./CoefDiffusion]
@@ -349,73 +355,51 @@
 
 [Materials]
   [./ha]
-    type = ADSwitchingFunctionMultiPhaseMaterial
+    type = SwitchingFunctionMultiPhaseMaterial
     h_name = ha
     all_etas = 'etaa0 etaa1 etab0'
     phase_etas = 'etaa0 etaa1'
   [../]
   [./hb]
-    type = ADSwitchingFunctionMultiPhaseMaterial
+    type = SwitchingFunctionMultiPhaseMaterial
     h_name = hb
     all_etas = 'etaa0 etaa1 etab0'
     phase_etas = 'etab0'
   [../]
   [./omegaa]
-    type = ADDerivativeParsedMaterial
+    type = DerivativeParsedMaterial
     args = 'w'
     f_name = omegaa
     material_property_names = 'Vm ka caeq'
     function = '-0.5*w^2/Vm^2/ka-w/Vm*caeq'
   [../]
   [./omegab]
-    type = ADDerivativeParsedMaterial
+    type = DerivativeParsedMaterial
     args = 'w T'
     f_name = omegab
     material_property_names = 'Vm kb cbeq S Tm'
     function = '-0.5*w^2/Vm^2/kb-w/Vm*cbeq-S*(T-Tm)'
   [../]
   [./rhoa]
-    type = ADDerivativeParsedMaterial
+    type = DerivativeParsedMaterial
     args = 'w'
     f_name = rhoa
     material_property_names = 'Vm ka caeq'
     function = 'w/Vm^2/ka + caeq/Vm'
   [../]
   [./rhob]
-    type = ADDerivativeParsedMaterial
+    type = DerivativeParsedMaterial
     args = 'w'
     f_name = rhob
     material_property_names = 'Vm kb cbeq'
     function = 'w/Vm^2/kb + cbeq/Vm'
   [../]
-  # [./kappaa]
-  #   type = ADInterfaceOrientationMultiphaseMaterial
-  #   kappa_name = kappa
-  #   dkappadgrad_etaa_name = dkappadgrad
-  #   # d2kappadgrad_etaa_name = d2kappadgrad
-  #   etaa = etaa0
-  #   etab = etab0
-  #   anisotropy_strength = 0.05
-  #   kappa_bar = 0.05
-  #   outputs = exodus
-  #   output_properties = 'kappa_etaa0_etab0'
-  # [../]
-  # [./kappab]
-  #   type = ADInterfaceOrientationMultiphaseMaterial
-  #   kappa_name = kappa
-  #   dkappadgrad_etaa_name = dkappadgrad
-  #   # d2kappadgrad_etaa_name = d2kappadgrad
-  #   etaa = etab0
-  #   etab = etaa0
-  #   anisotropy_strength = 0.05
-  #   kappa_bar = 0.05
-  #   outputs = exodus
-  #   output_properties = 'kappa_etab0_etaa0'
-  # [../]
+
   [./kappaa00]
-    type = ADInterfaceOrientationMultiphaseMaterial
+    type = InterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etaa0
     etab = etab0
     reference_angle = 0
@@ -426,9 +410,10 @@
     output_properties = 'kappa_etaa0_etab0'
   [../]
   [./kappaa10]
-    type = ADInterfaceOrientationMultiphaseMaterial
+    type = InterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etaa1
     etab = etab0
     anisotropy_strength = 0.05
@@ -439,9 +424,10 @@
     output_properties = 'kappa_etaa1_etab0'
   [../]
   [./kappaa01]
-    type = ADInterfaceOrientationMultiphaseMaterial
+    type = InterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etaa0
     etab = etaa1
     reference_angle = 0
@@ -452,9 +438,10 @@
     output_properties = 'kappa_etaa0_etaa1'
   [../]
   [./kappaa11]
-    type = ADInterfaceOrientationMultiphaseMaterial
+    type = InterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etaa1
     etab = etaa0
     anisotropy_strength = 0.05
@@ -465,10 +452,10 @@
     output_properties = 'kappa_etaa1_etaa0'
   [../]
   [./kappab00]
-    type = ADInterfaceOrientationMultiphaseMaterial
+    type = InterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
-    # d2kappadgrad_etaa_name = d2kappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etab0
     etab = etaa0
     anisotropy_strength = 0.05
@@ -479,9 +466,10 @@
     output_properties = 'kappa_etab0_etaa0'
   [../]
   [./kappab01]
-    type = ADInterfaceOrientationMultiphaseMaterial
+    type = InterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
+    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etab0
     etab = etaa1
     anisotropy_strength = 0.05
@@ -492,17 +480,23 @@
     output_properties = 'kappa_etab0_etaa1'
   [../]
   [./kappa_op]
-    type = ADGrandPotentialAnisoInterface
+    type = GrandPotentialAnisoInterface
     etas = 'etab0 etaa0 etaa1'
     outputs = exodus
+    # output_properties = 'kappa_op dkappadgrad_etaa d2kappadgrad_etaa'
   [../]
   [./const]
-    type = ADGenericConstantMaterial
+    type = GenericConstantMaterial
     prop_names =  'L     D    chi  Vm   ka    caeq kb    cbeq  gab mu   S   Tm'
     prop_values = '33.33 1.0  0.1  1.0  10.0  0.1  10.0  0.9   4.5 10.0 1.0 5.0'
   [../]
+  # [./const_ad]
+  #   type = GenericConstantMaterial
+  #   prop_names =  'adL  '
+  #   prop_values = '33.33 '
+  # [../]
   [./Mobility]
-    type = ADParsedMaterial
+    type = ParsedMaterial
     f_name = Dchi
     material_property_names = 'D chi'
     function = 'D*chi'
@@ -519,12 +513,12 @@
 [Executioner]
   type = Transient
   scheme = bdf2
-  solve_type = NEWTON
-  line_search = none
-  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
-  # petsc_options_value = 'hypre    boomeramg      31'
-  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
-  petsc_options_value = 'lu       superlu_dist '
+  solve_type = PJFNK
+  # line_search = none
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
+  petsc_options_value = 'hypre    boomeramg      31'
+  # petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
+  # petsc_options_value = 'lu       superlu_dist '
    l_tol = 1.0e-3
   l_max_its = 30
   nl_max_its = 15
