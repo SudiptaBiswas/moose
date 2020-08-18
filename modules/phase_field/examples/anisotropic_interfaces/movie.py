@@ -114,6 +114,6 @@ import itertools
 
 # window.start()
 # img2mov('solidification_multi2*.png', 'solidification_multi2.mp4', duration=10)
-img2mov('solidification_quarter_*.png', 'solidification_quarter2.mp4', duration=10)
+img2mov('solidification_4P*.png', 'solidification_4P_test.mp4', duration=10)
 
 # img2mov('solidification_directional4_*.png', 'solidification_directional4.mp4', duration=10)
