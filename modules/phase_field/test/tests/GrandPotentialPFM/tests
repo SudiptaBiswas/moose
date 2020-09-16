@@ -80,4 +80,12 @@
     design = '/GrandPotentialSinteringMaterial.md'
     requirement = 'The system shall provide a Grand Potential based sintering model with ideal solution defect free energies'
   [../]
+  [./GrandPotentialAnisotropyAntitrap_AD]
+    type = 'Exodiff'
+    input = 'GrandPotentialAnisotropyAntitrap_AD.i'
+    exodiff = 'GrandPotentialAnisotropyAntitrap_out.e'
+    issues = '#13373'
+    design = '/AntitrappingCurrent.md'
+    requirement = 'MOOSE shall provide a Grand Potential based dendritic solidification capability for alloy with antitrapping current'
+  [../]
 []
