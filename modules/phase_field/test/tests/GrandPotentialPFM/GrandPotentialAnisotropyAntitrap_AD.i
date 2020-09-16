@@ -66,89 +66,82 @@
 [Kernels]
 # Order parameter eta_alpha0
   [./ACa0_bulk]
-    type = ACGrGrMulti
+    type = ADACGrGrMulti
     variable = etaa0
     v =           'etab0'
     gamma_names = 'gab'
   [../]
   [./ACa0_sw]
-    type = ACSwitching
+    type = ADACSwitching
     variable = etaa0
     Fj_names  = 'omegaa omegab'
     hj_names  = 'ha     hb'
-    args = 'etab0 w'
   [../]
   [./ACa0_int1]
-    type = ACInterface2DMultiPhase1
+    type = ADACInterface2DMultiPhase1
     variable = etaa0
     etas = 'etab0'
     kappa_name = kappa_etaa0_etab0
     dkappadgrad_etaa_name = dkappadgrad_etaa0_etab0
-    d2kappadgrad_etaa_name = d2kappadgrad_etaa0_etab0
     variable_L = false
   [../]
   [./ACa0_int2]
-    type = ACInterface2DMultiPhase2
+    type = ADACInterface
     variable = etaa0
     kappa_name = kappa_etaa0_etab0
-    dkappadgrad_etaa_name = dkappadgrad_etaa0_etab0
     args = 'etab0'
     variable_L = false
   [../]
   [./ea0_dot]
-    type = TimeDerivative
+    type = ADTimeDerivative
     variable = etaa0
   [../]
 # Order parameter eta_beta0
   [./ACb0_bulk]
-    type = ACGrGrMulti
+    type = ADACGrGrMulti
     variable = etab0
     v =           'etaa0'
     gamma_names = 'gab'
   [../]
   [./ACb0_sw]
-    type = ACSwitching
+    type = ADACSwitching
     variable = etab0
     Fj_names  = 'omegaa omegab'
     hj_names  = 'ha     hb'
-    args = 'etaa0 w'
   [../]
   [./ACb0_int1]
-    type = ACInterface2DMultiPhase1
+    type = ADACInterface2DMultiPhase1
     variable = etab0
     etas = 'etaa0'
     kappa_name = kappa_etab0_etaa0
     dkappadgrad_etaa_name = dkappadgrad_etab0_etaa0
-    d2kappadgrad_etaa_name = d2kappadgrad_etab0_etaa0
     variable_L = false
   [../]
   [./ACb0_int2]
-    type = ACInterface2DMultiPhase2
+    type = ADACInterface
     variable = etab0
     kappa_name = kappa_etab0_etaa0
-    dkappadgrad_etaa_name = dkappadgrad_etab0_etaa0
+    # dkappadgrad_etaa_name = dkappadgrad_etab0_etaa0
     args = 'etaa0'
     variable_L = false
   [../]
   [./eb0_dot]
-    type = TimeDerivative
+    type = ADTimeDerivative
     variable = etab0
   [../]
 #Chemical potential
   [./w_dot]
-    type = SusceptibilityTimeDerivative
+    type = ADSusceptibilityTimeDerivative
     variable = w
     f_name = chi
-    args = '' # in this case chi (the susceptibility) is simply a constant
   [../]
   [./Diffusion]
-    type = MatDiffusion
+    type = ADMatDiffusion
     variable = w
     diffusivity = Dchi
-    args = ''
   [../]
   [./coupled_etaa0dot]
-    type = CoupledSwitchingTimeDerivative
+    type = ADCoupledSwitchingTimeDerivative
     variable = w
     v = etaa0
     Fj_names = 'rhoa rhob'
@@ -156,7 +149,7 @@
     args = 'etaa0 etab0'
   [../]
   [./coupled_etab0dot]
-    type = CoupledSwitchingTimeDerivative
+    type = ADCoupledSwitchingTimeDerivative
     variable = w
     v = etab0
     Fj_names = 'rhoa rhob'
@@ -164,13 +157,13 @@
     args = 'etaa0 etab0'
   [../]
   [./coupled_etaa0dot_int]
-    type = AntitrappingCurrent
+    type = ADAntitrappingCurrent
     variable = w
     v = etaa0
     f_name = rhodiff
   [../]
   [./coupled_etab0dot_int]
-    type = AntitrappingCurrent
+    type = ADAntitrappingCurrent
     variable = w
     v = etab0
     f_name = rhodiff
@@ -179,47 +172,47 @@
 
 [Materials]
   [./ha]
-    type = SwitchingFunctionMultiPhaseMaterial
+    type = ADSwitchingFunctionMultiPhaseMaterial
     h_name = ha
     all_etas = 'etaa0 etab0'
     phase_etas = 'etaa0'
   [../]
   [./hb]
-    type = SwitchingFunctionMultiPhaseMaterial
+    type = ADSwitchingFunctionMultiPhaseMaterial
     h_name = hb
     all_etas = 'etaa0 etab0'
     phase_etas = 'etab0'
   [../]
   [./omegaa]
-    type = DerivativeParsedMaterial
+    type = ADDerivativeParsedMaterial
     args = 'w'
     f_name = omegaa
     material_property_names = 'Vm ka caeq'
     function = '-0.5*w^2/Vm^2/ka-w/Vm*caeq'
   [../]
   [./omegab]
-    type = DerivativeParsedMaterial
+    type = ADDerivativeParsedMaterial
     args = 'w'
     f_name = omegab
     material_property_names = 'Vm kb cbeq'
     function = '-0.5*w^2/Vm^2/kb-w/Vm*cbeq'
   [../]
   [./rhoa]
-    type = DerivativeParsedMaterial
+    type = ADDerivativeParsedMaterial
     args = 'w'
     f_name = rhoa
     material_property_names = 'Vm ka caeq'
     function = 'w/Vm^2/ka + caeq/Vm'
   [../]
   [./rhob]
-    type = DerivativeParsedMaterial
+    type = ADDerivativeParsedMaterial
     args = 'w'
     f_name = rhob
     material_property_names = 'Vm kb cbeq'
     function = 'w/Vm^2/kb + cbeq/Vm'
   [../]
   [./int]
-    type = DerivativeParsedMaterial
+    type = ADDerivativeParsedMaterial
     args = 'w'
     f_name = rhodiff
     material_property_names = 'rhoa rhob'
@@ -228,28 +221,26 @@
     function = 'int_width*(rhob-rhoa)'
   [../]
   [./kappaa]
-    type = InterfaceOrientationMultiphaseMaterial
+    type = ADInterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
-    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etaa0
     etab = etab0
   [../]
   [./kappab]
-    type = InterfaceOrientationMultiphaseMaterial
+    type = ADInterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
     dkappadgrad_etaa_name = dkappadgrad
-    d2kappadgrad_etaa_name = d2kappadgrad
     etaa = etab0
     etab = etaa0
   [../]
   [./const]
-    type = GenericConstantMaterial
+    type = ADGenericConstantMaterial
     prop_names =  'L   D    chi  Vm   ka    caeq kb    cbeq  gab mu'
     prop_values = '1.0 1.0  0.1  1.0  10.0  0.1  10.0  0.9   4.5 10.0'
   [../]
   [./Mobility]
-    type = ParsedMaterial
+    type = ADParsedMaterial
     f_name = Dchi
     material_property_names = 'D chi'
     function = 'D*chi'
@@ -266,8 +257,9 @@
 [Executioner]
   type = Transient
   scheme = bdf2
-  petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_pc_type -pc_asm_overlap'
-  petsc_options_value = 'asm      31                  lu           1'
+  solve_type = NEWTON
+  petsc_options_iname = '-pc_type -pc_factor_mat_solver_package'
+  petsc_options_value = 'lu       superlu_dist '
   l_tol = 1.0e-3
   nl_rel_tol = 1.0e-8
   nl_abs_tol = 1e-8
@@ -280,4 +272,5 @@
 
 [Outputs]
   exodus = true
+  # file_base = GrandPotentialAnisotropyAntitrap_out
 []
