@@ -23,7 +23,8 @@ import itertools
 # camera.SetFocalPoint(0.0000, 0.0000, 0.0000)
 
 # reader0 = chigger.exodus.ExodusReader('GrandPotentialSolidification_multi_out.e', timestep=1)
-reader0 = chigger.exodus.ExodusReader('2020_08_04_GrandPotentialSolidification_4P_AD_test_updatedOld_out.e', timestep=1)
+# reader0 = chigger.exodus.ExodusReader('2020_08_04_GrandPotentialSolidification_4P_AD_test_updatedOld_out.e', timestep=1)
+reader0 = chigger.exodus.ExodusReader('2020_09_17_GrandPotentialSolidification_4P_AD_test_updatedOld_out.e', timestep=1)
 # reader0 = chigger.exodus.ExodusReader('multiphase_omega_test_exodus.e', timestep=1)
 exodus0 = chigger.exodus.ExodusResult(reader0, edges=False, edge_color=[0.2, 0.2, 0.2], variable='bnds', cmap='viridis',
                                       local_range=True, viewport=[0,0,1,1])
@@ -102,7 +103,7 @@ window = chigger.RenderWindow(exodus0, time, moose, inl, text1, text2, size=[600
 
 reader0.update()
 times = reader0.getTimes()
-for i in range(0,192):
+for i, t in enumerate(times):
     time.update(time=times[i])
     reader0.setOptions(timestep=i)
     exodus0.update()
@@ -114,8 +115,8 @@ for i in range(0,192):
     # line2.setOptions(y=etaa2)
     # line3.setOptions(y=etaa3)
     # line4.setOptions(y=etaa4)
-    window.write('solidification_4P_%04d.png' % i)
+    window.write('dendrite_4P_%04d.png' % i)
 
 window.start()
 
-img2mov('solidification_4P*.png', 'solidification_multi_4P.mp4', duration=10)
+img2mov('dendrite_4P*.png', 'dendrtite_multi_4P.mp4', duration=10)
