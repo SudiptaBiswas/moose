@@ -94,4 +94,5 @@ private:
   const MooseArray<Real> & _JxW_face;
 
   std::array<VectorPostprocessorValue *, 3> _centroid;
+  unsigned int _count;
 };
