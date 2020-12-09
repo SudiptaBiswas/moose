@@ -90,4 +90,5 @@ private:
   const MooseArray<Real> & _coord;
   const QBase * const & _qrule_face;
   const MooseArray<Real> & _JxW_face;
+  unsigned int _count;
 };

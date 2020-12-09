@@ -78,6 +78,7 @@ FeatureVolumeVectorPostprocessor::FeatureVolumeVectorPostprocessor(
 void
 FeatureVolumeVectorPostprocessor::initialize()
 {
+  _count = 0;
 }
 
 void
@@ -195,7 +196,7 @@ FeatureVolumeVectorPostprocessor::accumulateVolumes(
 {
   unsigned int dominant_feature_id = FeatureFloodCount::invalid_id;
   Real max_var_value = std::numeric_limits<Real>::lowest();
-
+  // unsigned int count = 0;
   for (MooseIndex(var_to_features) var_index = 0; var_index < var_to_features.size(); ++var_index)
   {
     // Only sample "active" variables
@@ -217,7 +218,11 @@ FeatureVolumeVectorPostprocessor::accumulateVolumes(
       }
       // Solution based volume calculation (integral value)
       else
+      {
         _feature_volumes[feature_id] += integral_value;
+        _count++;
+        mooseWarning("Count = ", _count);
+      }
     }
   }
 
