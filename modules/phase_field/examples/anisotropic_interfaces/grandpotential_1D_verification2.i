@@ -8,7 +8,7 @@
   ymax = 1
   ymin = -1
   elem_type = QUAD4
-  uniform_refine = 2
+  uniform_refine = 3
 []
 
 [Variables]
@@ -69,7 +69,7 @@
   [./bnds]
   [../]
   [./T]
-    initial_condition = -1.0
+    initial_condition = 0.0
   [../]
 []
 
@@ -175,6 +175,18 @@
     hj_names = 'ha   hb'
     args = 'etaa0 etab0'
   [../]
+  [./coupled_etaa0dot_int]
+    type = AntitrappingCurrent
+    variable = w
+    v = etaa0
+    f_name = rhodiff
+  [../]
+  [./coupled_etab0dot_int]
+    type = AntitrappingCurrent
+    variable = w
+    v = etab0
+    f_name = rhodiff
+  [../]
   # [./T_dot]
   #   type = TimeDerivative
   #   variable = T
@@ -253,6 +265,42 @@
     outputs = exodus
     output_properties = 'rhob'
   [../]
+  [./int]
+    type = DerivativeParsedMaterial
+    args = 'w'
+    f_name = rhodiff
+    material_property_names = 'rhoa rhob'
+    constant_names = 'int_width a'
+    constant_expressions = '0.5 1/2/sqrt(2)'
+    function = 'a*int_width*(rhob-rhoa)'
+  [../]
+  [./cs]
+    type = DerivativeParsedMaterial
+    args = 'w '
+    f_name = ca
+    material_property_names = 'Vm ka caeq'
+    function = 'w/Vm/ka+caeq'
+    output_properties = 'ca'
+    outputs = exodus
+  [../]
+  [./cl]
+    type = DerivativeParsedMaterial
+    args = 'w '
+    f_name = cb
+    material_property_names = 'Vm ka cbeq'
+    function = 'w/Vm/ka+cbeq'
+    output_properties = 'cb'
+    outputs = exodus
+  [../]
+  [./c]
+    type = DerivativeParsedMaterial
+    args = 'w etaa0 etab0 T'
+    f_name = c
+    material_property_names = 'ca cb ha hb'
+    function = 'ha*ca+hb*cb'
+    outputs = exodus
+    output_properties = 'c'
+  [../]
   [./kappaa]
     type = InterfaceOrientationMultiphaseMaterial
     kappa_name = kappa
@@ -279,10 +327,22 @@
     outputs = exodus
     # output_properties = 'kappab'
   [../]
+  [./D]
+    type = DerivativeParsedMaterial
+    # args = 'w '
+    f_name = D
+    material_property_names = 'ha hb'
+    constant_names =  'Dl Ds'
+    constant_expressions = '1.0 1e-3'
+    function = 'ha*Ds+hb*Dl'
+    # function = '1.0'
+    outputs = exodus
+    output_properties = 'D'
+  [../]
   [./const]
     type = GenericConstantMaterial
-    prop_names =  'kappa_c   L      D    chi  Vm   ka    caeq kb    cbeq  gab mu   S   Tm'
-    prop_values = '0         1.0    1.0  0.1  1.0  10.0  0.1  10.0  0.9   1.5 1.0 1.0 1.0'
+    prop_names =  'kappa_c   L      chi  Vm   ka    caeq kb    cbeq  gab mu   S   Tm'
+    prop_values = '0         1.0    0.1  1.0  10.0  0.1  10.0  0.9   1.5 1.0 1.0 1.0'
     outputs = exodus
   [../]
   [./Mobility]
@@ -314,52 +374,52 @@
 [VectorPostprocessors]
   [./etaa]
     type = LineValueSampler
-    start_point = '-5 0.5 0.0'
-    end_point = '5 0.5 0.0'
+    start_point = '-10 0.5 0.0'
+    end_point = '10 0.5 0.0'
     sort_by = x
-    num_points = 20
+    num_points = 50
     variable = etaa0
   [../]
   [./etab]
     type = LineValueSampler
-    start_point = '-5 0.5 0.0'
-    end_point = '5 0.5 0.0'
+    start_point = '-10 0.5 0.0'
+    end_point = '10 0.5 0.0'
     sort_by = x
-    num_points = 20
+    num_points = 50
     variable = etab0
   [../]
 []
 
-# [Adaptivity]
-#  initial_steps = 2
-#  max_h_level = 2
-#  initial_marker = err_eta
-#  marker = err_bnds
-# [./Markers]
-#    [./err_eta]
-#      type = ErrorFractionMarker
-#      coarsen = 0.3
-#      refine = 0.9
-#      indicator = ind_eta
-#    [../]
-#    [./err_bnds]
-#      type = ErrorFractionMarker
-#      coarsen = 0.3
-#      refine = 0.9
-#      indicator = ind_bnds
-#    [../]
-#  [../]
-#  [./Indicators]
-#    [./ind_eta]
-#      type = GradientJumpIndicator
-#      variable = etaa0
-#     [../]
-#     [./ind_bnds]
-#       type = GradientJumpIndicator
-#       variable = bnds
-#    [../]
-#  [../]
-# []
+[Adaptivity]
+ initial_steps = 2
+ max_h_level = 2
+ initial_marker = err_eta
+ marker = err_bnds
+[./Markers]
+   [./err_eta]
+     type = ErrorFractionMarker
+     coarsen = 0.3
+     refine = 0.9
+     indicator = ind_eta
+   [../]
+   [./err_bnds]
+     type = ErrorFractionMarker
+     coarsen = 0.3
+     refine = 0.9
+     indicator = ind_bnds
+   [../]
+ [../]
+ [./Indicators]
+   [./ind_eta]
+     type = GradientJumpIndicator
+     variable = etaa0
+    [../]
+    [./ind_bnds]
+      type = GradientJumpIndicator
+      variable = bnds
+   [../]
+ [../]
+[]
 
 [Preconditioning]
   [./SMP]
@@ -381,7 +441,7 @@
   nl_rel_tol = 1.0e-8
   nl_abs_tol = 1e-10
   # dt = 0.1
-  end_time = 10.0
+  end_time = 100.0
   [./TimeStepper]
     type = IterationAdaptiveDT
     dt = 0.0005
