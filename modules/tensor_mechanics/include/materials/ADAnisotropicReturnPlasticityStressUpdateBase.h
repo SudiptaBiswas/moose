@@ -35,6 +35,7 @@ public:
 protected:
   virtual void initQpStatefulProperties() override;
   virtual void propagateQpStatefulProperties() override;
+
   /**
    * Does the model require the elasticity tensor to be isotropic?
    */
@@ -52,7 +53,12 @@ protected:
                                      const ADDenseVector & /*stress_dev*/,
                                      const ADReal & /*delta_gamma*/) override;
 
+  virtual void rotateHillTensor(ADDenseMatrix & hill_tensor);
+
   /// Plasticity strain tensor material property
   ADMaterialProperty<RankTwoTensor> & _plasticity_strain;
   const MaterialProperty<RankTwoTensor> & _plasticity_strain_old;
+
+  Real _angle;
+  ADDenseMatrix _transformation_tensor;
 };
