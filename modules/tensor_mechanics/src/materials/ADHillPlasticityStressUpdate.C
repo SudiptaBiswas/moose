@@ -30,10 +30,14 @@ ADHillPlasticityStressUpdate::validParams()
                                                          "hill_constants_size = 6",
                                                          "Hill material constants in order: F, "
                                                          "G, H, L, M, N");
-  params.addParam<Real>(
-      "orientation_angle",
-      0.0,
-      "Provide the orientation angle of the principal material axis with respect to y-axis");
+
+  // params.addRequiredParam<std::vector<Real>>("hill_constants",
+  //                                            "Hill material constants in order: F, "
+  //                                            "G, H, L, M, N");
+  // params.addParam<Real>(
+  //     "orientation_angle",
+  //     0.0,
+  //     "Provide the orientation angle of the principal material axis with respect to y-axis");
 
   return params;
 }
@@ -58,13 +62,41 @@ ADHillPlasticityStressUpdate::ADHillPlasticityStressUpdate(const InputParameters
 {
   _hill_constants_input = getParam<std::vector<Real>>("hill_constants");
 
-  // Hill constants, some constraints apply
+  // Calculate appropriate equivalent plastic strain
   const Real & F = _hill_constants_input[0];
   const Real & G = _hill_constants_input[1];
   const Real & H = _hill_constants_input[2];
   const Real & L = _hill_constants_input[3];
   const Real & M = _hill_constants_input[4];
   const Real & N = _hill_constants_input[5];
+
+  // _hill_constants(0) = _hill_constants_input[0];
+  // _hill_constants(1) = _hill_constants_input[1];
+  // _hill_constants(2) = _hill_constants_input[2];
+  // _hill_constants(3) = _hill_constants_input[3];
+  // _hill_constants(4) = _hill_constants_input[4];
+  // _hill_constants(5) = _hill_constants_input[5];
+
+  // mooseWarning("hill_constants_input = {",
+  //              _hill_constants(0),
+  //              " ",
+  //              _hill_constants(1),
+  //              " ",
+  //              _hill_constants(2),
+  //              " ",
+  //              _hill_constants(3),
+  //              " ",
+  //              _hill_constants(4),
+  //              " ",
+  //              _hill_constants(5),
+  //              "}");
+
+  // const ADReal & F = _hill_constants(0);
+  // const ADReal & G = _hill_constants(1);
+  // const ADReal & H = _hill_constants(2);
+  // const ADReal & L = _hill_constants(3);
+  // const ADReal & M = _hill_constants(4);
+  // const ADReal & N = _hill_constants(5);
 
   _hill_tensor.zero();
 
@@ -79,29 +111,80 @@ ADHillPlasticityStressUpdate::ADHillPlasticityStressUpdate(const InputParameters
   _hill_tensor(4, 4) = 2.0 * L;
   _hill_tensor(5, 5) = 2.0 * M;
 
-  mooseWarning("hill_constants_initial = {",
-               _hill_tensor(0, 0),
-               " ",
-               _hill_tensor(0, 1),
-               " ",
-               _hill_tensor(0, 2),
-               " ",
-               _hill_tensor(1, 1),
-               " ",
-               _hill_tensor(1, 2),
-               " ",
-               _hill_tensor(2, 2),
-               " ",
-               _hill_tensor(3, 3),
-               " ",
-               _hill_tensor(4, 4),
-               " ",
-               _hill_tensor(5, 5),
-               "}");
+  // ADGeneralizedRadialReturnStressUpdate::rotateHillConstants(_hill_constants);
+  //
+  // mooseWarning("hill_constants_rotated = {",
+  //              _hill_constants(0),
+  //              " ",
+  //              _hill_constants(1),
+  //              " ",
+  //              _hill_constants(2),
+  //              " ",
+  //              _hill_constants(3),
+  //              " ",
+  //              _hill_constants(4),
+  //              " ",
+  //              _hill_constants(5),
+  //              "}");
 
-  ADAnisotropicReturnPlasticityStressUpdateBase::rotateHillTensor(_hill_tensor);
+  // mooseWarning("hill_constants_rotated = {",
+  //              _hill_constants[0],
+  //              " ",
+  //              _hill_constants[1],
+  //              " ",
+  //              _hill_constants[2],
+  //              " ",
+  //              _hill_constants[3],
+  //              " ",
+  //              _hill_constants[4],
+  //              " ",
+  //              _hill_constants[5],
+  //              "}");
 
-  mooseWarning("hill_constants_rotated = {",
+  // Hill constants, some constraints apply
+  // const ADReal & F = _hill_constants(0);
+  // const ADReal & G = _hill_constants(1);
+  // const ADReal & H = _hill_constants(2);
+  // const ADReal & L = _hill_constants(3);
+  // const ADReal & M = _hill_constants(4);
+  // const ADReal & N = _hill_constants(5);
+  //
+  // _hill_tensor.zero();
+  //
+  // _hill_tensor(0, 0) = G + H;
+  // _hill_tensor(1, 1) = F + H;
+  // _hill_tensor(2, 2) = F + G;
+  // _hill_tensor(0, 1) = _hill_tensor(1, 0) = -H;
+  // _hill_tensor(0, 2) = _hill_tensor(2, 0) = -G;
+  // _hill_tensor(1, 2) = _hill_tensor(2, 1) = -F;
+  //
+  // _hill_tensor(3, 3) = 2.0 * N;
+  // _hill_tensor(4, 4) = 2.0 * L;
+  // _hill_tensor(5, 5) = 2.0 * M;
+
+  // mooseWarning("hill_constants_initial = {",
+  //              _hill_tensor(0, 0),
+  //              " ",
+  //              _hill_tensor(0, 1),
+  //              " ",
+  //              _hill_tensor(0, 2),
+  //              " ",
+  //              _hill_tensor(1, 1),
+  //              " ",
+  //              _hill_tensor(1, 2),
+  //              " ",
+  //              _hill_tensor(2, 2),
+  //              " ",
+  //              _hill_tensor(3, 3),
+  //              " ",
+  //              _hill_tensor(4, 4),
+  //              " ",
+  //              _hill_tensor(5, 5),
+  //              "}");
+  //
+  ADGeneralizedRadialReturnStressUpdate::rotateHillTensor(_hill_tensor);
+  //
+  mooseWarning("hill_tensor_rotated = {",
                _hill_tensor(0, 0),
                " ",
                _hill_tensor(0, 1),

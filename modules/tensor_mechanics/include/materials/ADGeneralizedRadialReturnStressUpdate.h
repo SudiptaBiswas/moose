@@ -162,6 +162,9 @@ protected:
   void outputIterationSummary(std::stringstream * iter_output,
                               const unsigned int total_it) override;
 
+  virtual void rotateHillConstants(ADDenseVector & hill_constants);
+  virtual void rotateHillTensor(ADDenseMatrix & hill_tensor);
+
   /// Equivalent creep/plastic strain
   ADMaterialProperty<Real> & _effective_inelastic_strain;
   const MaterialProperty<Real> & _effective_inelastic_strain_old;
@@ -178,4 +181,8 @@ protected:
 
   /// Maximum integration error time step
   Real _max_integration_error_time_step;
+
+  MooseEnum _rotation_axis;
+  Real _angle;
+  ADDenseMatrix _transformation_tensor;
 };
