@@ -1,59 +1,22 @@
 [Mesh]
   [gmg]
-    type = GeneratedMeshGenerator
+    type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 60
-    ny = 60
-    nz = 60
+    nx = 150
+    ny = 150
+    nz = 150
     xmax = 1.5
     ymax = 1.5
     zmax = 1.5
-    uniform_refine = 2
-    parallel_type = replicated
-    # partition = square
+    partition = square
   []
 []
 
-[Adaptivity]
-  initial_steps = 3
-  max_h_level = 3
-  # stop_time = 1.0e-10
-  initial_marker = combo
-  [./Markers]
-    [combo]
-      type = ComboMarker
-      markers = 'err_bnds err_c'
-    []
-    [./err_bnds]
-      type = ErrorFractionMarker
-      coarsen = 0.1
-      refine = 0.9
-      indicator = ind_bnds
-    [../]
-    [./err_c]
-      type = ErrorFractionMarker
-      coarsen = 0.1
-      refine = 0.9
-      indicator = ind_c
-    [../]
-  [../]
-  [./Indicators]
-     [./ind_bnds]
-       type = GradientJumpIndicator
-       variable = bnds
-    [../]
-    [./ind_c]
-      type = GradientJumpIndicator
-      variable = c
-   [../]
-  [../]
-[]
-
 [GlobalParams]
-  op_num = 15
-  var_name_base = gr
+  # op_num = 10
+  # var_name_base = gr
   displacements = 'u_x u_y u_z'
-  int_width = 0.03
+  # int_width = 0.03
 []
 
 [Variables]
@@ -79,41 +42,9 @@
     order = FIRST
     family = LAGRANGE
   [../]
-  [./bnds]
-  [../]
   [./c]
     order = FIRST
     family = LAGRANGE
-  [../]
-  [./gr0]
-  [../]
-  [./gr1]
-  [../]
-  [./gr2]
-  [../]
-  [./gr3]
-  [../]
-  [./gr4]
-  [../]
-  [./gr5]
-  [../]
-  [./gr6]
-  [../]
-  [./gr7]
-  [../]
-  [./gr8]
-  [../]
-  [./gr10]
-  [../]
-  [./gr11]
-  [../]
-  [./gr12]
-  [../]
-  [./gr13]
-  [../]
-  [./gr14]
-  [../]
-  [./gr9]
   [../]
   [./C1111]
     order = CONSTANT
@@ -128,18 +59,6 @@
     order = FIRST
     family = LAGRANGE
   [../]
-  [./var_indices]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./unique_grains]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [halos]
-    order = CONSTANT
-    family = MONOMIAL
-  []
   [global_strain]
     order = SIXTH
     family = SCALAR
@@ -163,15 +82,6 @@
     invalue = 1.0
     outvalue = 0.0
     int_width = 0.03
-  []
-  [./PolycrystalICs]
-    [./PolycrystalColoringIC]
-      polycrystal_ic_uo = voronoi
-    [../]
-  [../]
-  [bnds]
-    type = BndsCalcIC
-    variable = bnds
   []
 []
 
@@ -219,11 +129,6 @@
 []
 
 [AuxKernels]
-  [./bnds_aux]
-    type = BndsCalcAux
-    variable = bnds
-    execute_on = timestep_end
-  [../]
   [./C1111]
     type = RankFourAux
     variable = C1111
@@ -234,27 +139,6 @@
     index_i = 0
     execute_on = timestep_end
   [../]
-  [unique_grains_calc]
-    type = FeatureFloodCountAux
-    variable = unique_grains
-    flood_counter = grain_tracker
-    field_display = UNIQUE_REGION
-    execute_on = 'initial timestep_end'
-  []
-  [var_indices_calc]
-    type = FeatureFloodCountAux
-    variable = var_indices
-    flood_counter = grain_tracker
-    field_display = VARIABLE_COLORING
-    execute_on = 'initial timestep_end'
-  []
-  [halos]
-    type = FeatureFloodCountAux
-    variable = halos
-    flood_counter = grain_tracker
-    field_display = HALOS
-    execute_on = 'initial timestep_end'
-  []
 []
 
 [Materials]
@@ -270,19 +154,20 @@
     prop_values = pressure
     # factor = 1e-6
   []
-  # [./gc]
-  #   type = GenericConstantMaterial
-  #   prop_names = gc_prop
-  #   prop_values = '0.0012'
-  # [../]
-  [./gc]
+  [pressure_void]
     type = ParsedMaterial
-    f_name = gc_prop
-    #function = 'if(bnds < 0.75, if(bnds>0.25, 0.5, 2.5), 2.5)'
-    function = 'if(bnds < 0.75 & c < 0.5, 0.0012, 0.012)'
-    args = 'bnds c'
-    outputs = nemesis
+    block = 0
+    f_name = pressure_void
+    args = 'c'
+    material_property_names = 'fracture_pressure'
+    function = 'fracture_pressure * c'
+  []
+  [./gc]
+    type = GenericConstantMaterial
+    prop_names = gc_prop
+    prop_values = '0.0012'
   [../]
+
   [./define_mobility]
     type = ParsedMaterial
     material_property_names = 'gc_prop visco'
@@ -352,12 +237,13 @@
     derivative_order = 2
     f_name = F
   [../]
+
   [./const_stress]
     type = ComputeExtraStressConstant
     block = 0
     base_name = void
     extra_stress_tensor = '-1 -1 -1 0 0 0'
-    prefactor = fracture_pressure
+    prefactor = pressure_void
   [../]
   [elasticity_tensor]
     type = ComputeConcentrationDependentElasticityTensor
@@ -375,22 +261,6 @@
     type = GlobalStrainUserObject
     applied_stress_tensor = '0 0 0 0 0 0'
     execute_on = 'Initial Linear Nonlinear'
-  []
-  [voronoi]
-    type = PolycrystalVoronoi
-    rand_seed = 486
-    # grain_num = 50
-    # file_name = 3d_fracture_grains100.txt
-    file_name = 3d_fracture_domain1p5_grains30.txt
-    # coloring_algorithm = jp
-  []
-  [grain_tracker]
-    type = GrainTracker
-    compute_var_to_feature_map = true
-    execute_on = 'initial timestep_begin'
-    halo_level = 3
-    remap_grains = false
-    compute_halo_maps = true
   []
 []
 
@@ -436,7 +306,7 @@
   nl_max_its = 20  ##max nonlinear iterations Previous:50
   start_time=0
   line_search = 'none'
-  end_time = 2000
+  end_time = 200
   dtmax = 1
   dtmin = 1e-14
   automatic_scaling = true
@@ -456,5 +326,6 @@
   print_linear_residuals = true
   nemesis = true
   csv = true
+  perf_graph = true
 #gnuplot = true
 []

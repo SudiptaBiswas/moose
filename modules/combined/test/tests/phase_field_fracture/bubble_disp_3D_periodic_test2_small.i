@@ -12,7 +12,7 @@
   []
   [cnode]
     type = ExtraNodesetGenerator
-    coord = '0.75 0.75 0'
+    coord = '0.75 0.75 0.75'
     new_boundary = 100
     input = gmg
   []
@@ -181,8 +181,8 @@
 [Functions]
  [./pressure]
    type = PiecewiseLinear
-   x = '0 200'
-   y = '0 200.0'
+   x = '0 150   200'
+   y = '0 200.0 200.0'
  [../]
 []
 
@@ -435,10 +435,12 @@
 [Executioner]
   type = Transient
   solve_type = PJFNK
+  petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
+  petsc_options_value = 'asm 31 preonly lu 1'
   # petsc_options_iname = '-pc_type -sub_pc_type -ksp_type -pc_asm_overlap -pc_factor_levels -pc_factor_shift_type -pc_factor_shift_amount'
-  # petsc_options_value = 'asm ilu preonly  1  0 NONZERO 1e-10'
-  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_factor_shift_type'
-  petsc_options_value = 'hypre    boomeramg      31 nonzero'
+  # petsc_options_value = 'asm lu preonly  1  0 NONZERO 1e-10'
+  # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_factor_shift_type'
+  # petsc_options_value = 'hypre    boomeramg      31 nonzero'
   # petsc_options_iname = '-pc_type -ksp_type -snes_type -pc_factor_shift_type -pc_factor_shift_amount '
   # petsc_options_value = 'ilu preonly  vinewtonrsls NONZERO 1e-10'
 #  petsc_options_iname = '-ksp_type -pc_type -sub_pc_type -snes_max_it -sub_pc_factor_shift_type -pc_asm_overlap -snes_type'

@@ -1,59 +1,21 @@
 [Mesh]
   [gmg]
-    type = GeneratedMeshGenerator
+    type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 60
-    ny = 60
-    nz = 60
-    xmax = 1.5
-    ymax = 1.5
-    zmax = 1.5
-    uniform_refine = 2
-    parallel_type = replicated
-    # partition = square
+    nx = 200
+    ny = 200
+    nz = 200
+    xmax = 2.0
+    ymax = 2.0
+    zmax = 2.0
+    partition = square
   []
   [cnode]
     type = ExtraNodesetGenerator
-    coord = '0.75 0.75 0.75'
+    coord = '1.0 1.0 1.0'
     new_boundary = 100
     input = gmg
   []
-[]
-
-[Adaptivity]
-  initial_steps = 2
-  max_h_level = 2
-  # stop_time = 1.0e-10
-  initial_marker = combo
-  # marker = combo
-  [./Markers]
-    [combo]
-      type = ComboMarker
-      markers = 'err_bnds err_c'
-    []
-    [./err_bnds]
-      type = ErrorFractionMarker
-      coarsen = 0.1
-      refine = 0.9
-      indicator = ind_bnds
-    [../]
-    [./err_c]
-      type = ErrorFractionMarker
-      coarsen = 0.1
-      refine = 0.9
-      indicator = ind_c
-    [../]
-  [../]
-  [./Indicators]
-     [./ind_bnds]
-       type = GradientJumpIndicator
-       variable = bnds
-    [../]
-    [./ind_c]
-      type = GradientJumpIndicator
-      variable = c
-   [../]
-  [../]
 []
 
 [Problem]
@@ -63,62 +25,36 @@
 []
 
 [GlobalParams]
-  op_num = 15
-  var_name_base = gr
-  int_width = 0.03
+  # op_num = 10
+  # var_name_base = gr
+  # int_width = 0.03
   displacements = 'u_x u_y u_z'
-[]
-
-[UserObjects]
-  [voronoi]
-    type = PolycrystalVoronoi
-    rand_seed = 486
-    # grain_num = 50
-    # file_name = 3d_fracture_grains100.txt
-    file_name = 3d_fracture_domain1p5_grains30.txt
-    use_kdtree = true
-    grain_patch_size = 30
-    use_single_map = false
-    # coloring_algorithm = jp
-  []
-  [grain_tracker]
-    type = GrainTracker
-    compute_var_to_feature_map = true
-    execute_on = 'initial timestep_begin'
-    halo_level = 3
-    remap_grains = false
-    compute_halo_maps = true
-    use_single_map = false
-  []
 []
 
 [MultiApps]
   [damage]
     type = TransientMultiApp
-    input_files = 'bubble_c_3D_grain_pd4_periodic_adaptive.i'
+    input_files = 'bubble_c_3D_periodic_d2p0.i'
   []
 []
 
 [Transfers]
   [to_disp_x]
-    # type = MultiAppCopyTransfer
-    type = MultiAppInterpolationTransfer
+    type = MultiAppCopyTransfer
     multi_app = 'damage'
     direction = to_multiapp
     source_variable = 'u_x'
     variable = 'u_x'
   []
   [to_disp_y]
-    # type = MultiAppCopyTransfer
-    type = MultiAppInterpolationTransfer
+    type = MultiAppCopyTransfer
     multi_app = 'damage'
     direction = to_multiapp
     source_variable = 'u_y'
     variable = 'u_y'
   []
   [to_disp_z]
-    # type = MultiAppCopyTransfer
-    type = MultiAppInterpolationTransfer
+    type = MultiAppCopyTransfer
     multi_app = 'damage'
     direction = to_multiapp
     source_variable = 'u_z'
@@ -132,8 +68,7 @@
     to_aux_scalar = 'global_strain'
   []
   [from_d]
-    # type = MultiAppCopyTransfer
-    type = MultiAppInterpolationTransfer
+    type = MultiAppCopyTransfer
     multi_app = 'damage'
     direction = from_multiapp
     source_variable = 'd'
@@ -188,39 +123,7 @@
   [../]
   [./force_z]
   [../]
-  [./bnds]
-  [../]
   [./c]
-  [../]
-  [./gr0]
-  [../]
-  [./gr1]
-  [../]
-  [./gr2]
-  [../]
-  [./gr3]
-  [../]
-  [./gr4]
-  [../]
-  [./gr5]
-  [../]
-  [./gr6]
-  [../]
-  [./gr7]
-  [../]
-  [./gr8]
-  [../]
-  [./gr10]
-  [../]
-  [./gr11]
-  [../]
-  [./gr12]
-  [../]
-  [./gr13]
-  [../]
-  [./gr14]
-  [../]
-  [./gr9]
   [../]
   [./C1111]
     order = CONSTANT
@@ -231,36 +134,15 @@
     family = MONOMIAL
     order = CONSTANT
   [../]
-  [./var_indices]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [./unique_grains]
-    order = CONSTANT
-    family = MONOMIAL
-  [../]
-  [halos]
-    order = CONSTANT
-    family = MONOMIAL
-  []
 []
 
 [ICs]
-  [./PolycrystalICs]
-    [./PolycrystalColoringIC]
-      polycrystal_ic_uo = voronoi
-    [../]
-  [../]
-  [bnds]
-    type = BndsCalcIC
-    variable = bnds
-  []
   [c]
     type = SmoothCircleIC
     variable = c
-    x1 = 0.75
-    y1 = 0.75
-    z1 = 0.75
+    x1 = 1.0
+    y1 = 1.0
+    z1 = 1.0
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
@@ -277,11 +159,6 @@
 []
 
 [AuxKernels]
-  [./bnds_aux]
-    type = BndsCalcAux
-    variable = bnds
-    execute_on = timestep_end
-  [../]
   [./C1111]
     type = RankFourAux
     variable = C1111
@@ -292,27 +169,6 @@
     index_i = 0
     execute_on = timestep_end
   [../]
-  [unique_grains_calc]
-    type = FeatureFloodCountAux
-    variable = unique_grains
-    flood_counter = grain_tracker
-    field_display = UNIQUE_REGION
-    execute_on = 'initial timestep_end'
-  []
-  [var_indices_calc]
-    type = FeatureFloodCountAux
-    variable = var_indices
-    flood_counter = grain_tracker
-    field_display = VARIABLE_COLORING
-    execute_on = 'initial timestep_end'
-  []
-  [halos]
-    type = FeatureFloodCountAux
-    variable = halos
-    flood_counter = grain_tracker
-    field_display = HALOS
-    execute_on = 'initial timestep_end'
-  []
 []
 
 [Materials]
@@ -328,18 +184,18 @@
     prop_values = pressure
     # factor = 1e-6
   []
-  # [./gc]
-  #   type = GenericConstantMaterial
-  #   prop_names = gc_prop
-  #   prop_values = '0.0012'
-  # [../]
-  [./gc]
+  [pressure_void]
     type = ParsedMaterial
-    f_name = gc_prop
-    #function = 'if(bnds < 0.75, if(bnds>0.25, 0.5, 2.5), 2.5)'
-    function = 'if(bnds < 0.75 & c < 0.5, 0.0012, 0.012)'
-    args = 'bnds c'
+    f_name = pressure_void
+    args = 'c'
+    material_property_names = 'fracture_pressure'
+    function = 'fracture_pressure * c'
     outputs = nemesis
+  []
+  [./gc]
+    type = GenericConstantMaterial
+    prop_names = gc_prop
+    prop_values = '0.0012'
   [../]
   [./define_mobility]
     type = ParsedMaterial
@@ -404,7 +260,7 @@
     type = ComputeExtraStressConstant
     block = 0
     extra_stress_tensor = '-1 -1 -1 0 0 0'
-    prefactor = fracture_pressure
+    prefactor = pressure_void
   [../]
   [elasticity_tensor]
     type = ComputeConcentrationDependentElasticityTensor
@@ -509,10 +365,10 @@
 [Executioner]
   type = Transient
   solve_type = PJFNK
-  petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
-  petsc_options_value = 'asm 31 preonly lu 1'
-  #petsc_options_iname = '-pc_type -sub_pc_type -ksp_type -pc_asm_overlap -pc_factor_levels -pc_factor_shift_type -pc_factor_shift_amount'
-  #petsc_options_value = 'asm ilu preonly  1  0 NONZERO 1e-10'
+  petsc_options_iname = '-pc_type -sub_pc_type -ksp_gmres_restart -ksp_type -pc_asm_overlap -pc_factor_levels -pc_factor_shift_type -pc_factor_shift_amount'
+  petsc_options_value = 'asm lu 31 preonly 1  0 NONZERO 1e-10'
+  # petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
+  # petsc_options_value = 'asm 31 preonly lu 1'
   # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_factor_shift_type'
   # petsc_options_value = 'hypre    boomeramg      31 nonzero'
   #petsc_options_iname = '-pc_type -ksp_type -snes_type -pc_factor_shift_type -pc_factor_shift_amount '
