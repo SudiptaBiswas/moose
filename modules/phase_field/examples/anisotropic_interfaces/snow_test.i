@@ -30,18 +30,18 @@
 
 [Kernels]
   [./w_dot]
-    type = ADTimeDerivative
+    type = TimeDerivative
     variable = w
   [../]
   [./anisoACinterface1]
-    type = ADACInterfaceKobayashi1
+    type = ACInterfaceKobayashi1
     variable = w
-    mob_name = adM
+    mob_name = M
   [../]
   [./anisoACinterface2]
-    type = ADACInterfaceKobayashi2
+    type = ACInterfaceKobayashi2
     variable = w
-    mob_name = adM
+    mob_name = M
   [../]
   [./AllenCahn]
     type = AllenCahn
@@ -51,15 +51,15 @@
     args = T
   [../]
   [./T_dot]
-    type = ADTimeDerivative
+    type = TimeDerivative
     variable = T
   [../]
   [./CoefDiffusion]
-    type = ADDiffusion
+    type = Diffusion
     variable = T
   [../]
   [./w_dot_T]
-    type = ADCoefCoupledTimeDerivative
+    type = CoefCoupledTimeDerivative
     variable = T
     v = w
     coef = -1.8
@@ -78,16 +78,13 @@
     outputs = exodus
   [../]
   [./material]
-    type = ADInterfaceOrientationMaterial
-    mode_number = 4
+    type = InterfaceOrientationMaterial
     op = w
+    mode_number = 4
+    # eps_bar = 0.05
+    reference_angle = 30
   [../]
-  [./consts1]
-    type = ADGenericConstantMaterial
-    prop_names  = 'adM'
-    prop_values = '3333.333'
-  [../]
-  [./consts2]
+  [./consts]
     type = GenericConstantMaterial
     prop_names  = 'M'
     prop_values = '3333.333'
@@ -102,7 +99,7 @@
   [tip]
     type = FindValueOnLine
     start_point = '4.5 4.5 0.0'
-    end_point = '9.0 4.5 0.0'
+    end_point = '9.0 7.0 0.0'
     v = w
     target = 0.5
     tol = 0.1
@@ -119,10 +116,9 @@
 [Executioner]
   type = Transient
   scheme = bdf2
-  solve_type = NEWTON
-
-  petsc_options_iname = '-pc_type'
-  petsc_options_value = 'lu   '
+  solve_type = PJFNK
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart'
+  petsc_options_value = 'hypre    boomeramg      31'
 
   nl_abs_tol = 1e-10
   nl_rel_tol = 1e-08
@@ -154,5 +150,5 @@
   exodus = true
   csv = true
   perf_graph = true
-  file_base = snow_ref_coarse0
+  file_base = snow_30_coarse0
 []
