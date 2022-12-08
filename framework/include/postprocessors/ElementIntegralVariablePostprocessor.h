@@ -12,6 +12,9 @@
 #include "ElementIntegralPostprocessor.h"
 #include "MooseVariableInterface.h"
 
+// Forward Declarations
+class ElementIntegralPostprocessor;
+
 /**
  * This postprocessor computes a volume integral of the specified variable.
  *
@@ -33,4 +36,6 @@ protected:
   const VariableValue & _u;
   /// Holds the solution gradient at the current quadrature points
   const VariableGradient & _grad_u;
+
+  bool _use_abs_value;
 };
