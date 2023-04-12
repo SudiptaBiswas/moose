@@ -2,9 +2,9 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 30
-    ny = 30
-    nz = 30
+    nx = 150
+    ny = 150
+    nz = 150
     xmax = 1.5
     ymax = 1.5
     zmax = 1.5
@@ -34,7 +34,7 @@
 [MultiApps]
   [damage]
     type = TransientMultiApp
-    input_files = 'bubble_c_3D_periodic_d1p5_random.i'
+    input_files = 'bubble_c_3D_periodic_d1p5_crit160.i'
   []
 []
 
@@ -134,10 +134,6 @@
     family = MONOMIAL
     order = CONSTANT
   [../]
-  [u_vww]
-    order = CONSTANT
-    family = MONOMIAL
-  []
 []
 
 [ICs]
@@ -152,19 +148,12 @@
     outvalue = 0.0
     int_width = 0.03
   []
-  [u_vww]
-    type = VolumeWeightedWeibull
-    variable = u_vww
-    reference_volume = 2.96e-7 #This is the volume of an element for a 150x150 mesh
-    weibull_modulus = 15.0
-    median = 0.5
-  []
 []
 
 [Functions]
  [./pressure]
    type = PiecewiseLinear
-   x = '0 150 200'
+   x = '0 50 200'
    y = '0 200 200'
  [../]
 []
@@ -204,11 +193,9 @@
     outputs = nemesis
   []
   [./gc]
-    type = ParsedMaterial
-    f_name = gc_prop
-    args = 'u_vww'
-    function = '0.012*u_vww'
-    outputs = nemesis
+    type = GenericConstantMaterial
+    prop_names = gc_prop
+    prop_values = '0.0012'
   [../]
   [./define_mobility]
     type = ParsedMaterial
@@ -250,7 +237,7 @@
     function = '((1.0-d)^2+eta)/((1.0-d)^2+d*(1-0.5*d)*(4/3.14159/l*E*gc_prop/sigma^2))'
     material_property_names = 'gc_prop l'
     constant_names       = 'E sigma eta'
-    constant_expressions = '385000 130 1e-4'
+    constant_expressions = '385000 160 1e-4'
     derivative_order = 2
   [../]
   [./fracture_energy]
@@ -396,7 +383,7 @@
   line_search = 'none'
   end_time = 200
   num_steps = 1500
-  dt = 1.0
+  dt = 1
   dtmin = 1e-15
   automatic_scaling = true
 #  [./TimeStepper]

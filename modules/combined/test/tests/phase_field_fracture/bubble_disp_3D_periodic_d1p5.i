@@ -2,17 +2,20 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 150
-    ny = 150
-    nz = 150
-    xmax = 1.5
-    ymax = 1.5
-    zmax = 1.5
+    nx = 30
+    ny = 30
+    nz = 30
+    xmin = -0.75
+    xmax = 0.75
+    ymin = -0.75
+    ymax = 0.75
+    zmin = -0.75
+    zmax = 0.75
     partition = square
   []
   [cnode]
     type = ExtraNodesetGenerator
-    coord = '0.75 0.75 0.75'
+    coord = '0.0 0.0 0.0'
     new_boundary = 100
     input = gmg
   []
@@ -140,9 +143,9 @@
   [c]
     type = SmoothCircleIC
     variable = c
-    x1 = 0.75
-    y1 = 0.75
-    z1 = 0.75
+    x1 = 0.0
+    y1 = 0.0
+    z1 = 0.0
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
@@ -153,7 +156,7 @@
 [Functions]
  [./pressure]
    type = PiecewiseLinear
-   x = '0 150 200'
+   x = '0 50 200'
    y = '0 200 200'
  [../]
 []
@@ -383,7 +386,7 @@
   line_search = 'none'
   end_time = 200
   num_steps = 1500
-  dt = 5
+  dt = 1
   dtmin = 1e-15
   automatic_scaling = true
 #  [./TimeStepper]

@@ -2,17 +2,20 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 185
-    ny = 185
-    nz = 185
-    xmax = 1.85
-    ymax = 1.85
-    zmax = 1.85
+    nx = 370
+    ny = 370
+    nz = 370
+    xmin = -0.925
+    xmax = 0.925
+    ymin = -0.925
+    ymax = 0.925
+    zmin = -0.925
+    zmax = 0.925
     partition = square
   []
   [cnode]
     type = ExtraNodesetGenerator
-    coord = '0.925 0.925 0.925'
+    coord = '0.0 0.0 0.0'
     new_boundary = 100
     input = gmg
   []
@@ -140,9 +143,9 @@
   [c]
     type = SmoothCircleIC
     variable = c
-    x1 = 0.925
-    y1 = 0.925
-    z1 = 0.925
+    x1 = 0.0
+    y1 = 0.0
+    z1 = 0.0
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
@@ -153,7 +156,7 @@
 [Functions]
  [./pressure]
    type = PiecewiseLinear
-   x = '0 150 200'
+   x = '0 50 200'
    y = '0 200 200'
  [../]
 []
@@ -365,10 +368,10 @@
 [Executioner]
   type = Transient
   solve_type = PJFNK
-  petsc_options_iname = '-pc_type -sub_pc_type -ksp_gmres_restart -ksp_type -pc_asm_overlap -pc_factor_levels -pc_factor_shift_type -pc_factor_shift_amount'
-  petsc_options_value = 'asm lu 31 preonly 1  0 NONZERO 1e-10'
-  # petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
-  # petsc_options_value = 'asm 31 preonly lu 1'
+  # petsc_options_iname = '-pc_type -sub_pc_type -ksp_gmres_restart -ksp_type -pc_asm_overlap -pc_factor_levels -pc_factor_shift_type -pc_factor_shift_amount'
+  # petsc_options_value = 'asm lu 31 preonly 1  0 NONZERO 1e-10'
+  petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
+  petsc_options_value = 'asm 31 preonly lu 1'
   # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_factor_shift_type'
   # petsc_options_value = 'hypre    boomeramg      31 nonzero'
   #petsc_options_iname = '-pc_type -ksp_type -snes_type -pc_factor_shift_type -pc_factor_shift_amount '
@@ -383,7 +386,7 @@
   line_search = 'none'
   end_time = 200
   num_steps = 1500
-  dt = 5
+  dt = 1
   dtmin = 1e-15
   automatic_scaling = true
 #  [./TimeStepper]

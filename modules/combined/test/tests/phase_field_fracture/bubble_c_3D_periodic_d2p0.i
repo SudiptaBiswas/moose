@@ -2,12 +2,15 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 200
-    ny = 200
-    nz = 200
-    xmax = 2.0
-    ymax = 2.0
-    zmax = 2.0
+    nx = 40
+    ny = 40
+    nz = 40
+    xmin = -1.0
+    xmax = 1.0
+    ymin = -1.0
+    ymax = 1.0
+    zmin = -1.0
+    zmax = 1.0
     partition = square
   []
 []
@@ -75,9 +78,9 @@
   [c]
     type = SmoothCircleIC
     variable = c
-    x1 = 1.0
-    y1 = 1.0
-    z1 = 1.0
+    x1 = 0.0
+    y1 = 0.0
+    z1 = 0.0
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
@@ -88,8 +91,8 @@
 [Functions]
   [./pressure]
     type = PiecewiseLinear
-    x = '0 150 200'
-    y = '0 200 200'
+    x = '0 75  200'
+    y = '0 300 300'
   [../]
 []
 
@@ -218,7 +221,7 @@
     function = '((1.0-d)^2+eta)/((1.0-d)^2+d*(1-0.5*d)*(4/3.14159/l*E*gc_prop/sigma^2))'
     material_property_names = 'gc_prop l'
     constant_names       = 'E sigma eta'
-    constant_expressions = '385000 130 1e-4'
+    constant_expressions = '385000 200 1e-4'
     derivative_order = 2
   [../]
   [./fracture_energy]

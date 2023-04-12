@@ -2,12 +2,15 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 185
-    ny = 185
-    nz = 185
-    xmax = 1.85
-    ymax = 1.85
-    zmax = 1.85
+    nx = 370
+    ny = 370
+    nz = 370
+    xmin = -0.925
+    xmax = 0.925
+    ymin = -0.925
+    ymax = 0.925
+    zmin = -0.925
+    zmax = 0.925
     partition = square
   []
 []
@@ -75,9 +78,9 @@
   [c]
     type = SmoothCircleIC
     variable = c
-    x1 = 0.925
-    y1 = 0.925
-    z1 = 0.925
+    x1 = 0.0
+    y1 = 0.0
+    z1 = 0.0
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
@@ -88,7 +91,7 @@
 [Functions]
   [./pressure]
     type = PiecewiseLinear
-    x = '0 150 200'
+    x = '0 50 200'
     y = '0 200 200'
   [../]
 []

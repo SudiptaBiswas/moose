@@ -1,16 +1,16 @@
 [Mesh]
   [gmg]
     type = DistributedRectilinearMeshGenerator
-    dim = 3
-    nx = 34
-    ny = 34
-    nz = 34
-    xmin = -0.85
-    xmax = 0.85
-    ymin = -0.85
-    ymax = 0.85
-    zmin = -0.85
-    zmax = 0.85
+    dim = 2
+    nx = 440
+    ny = 440
+    # nz = 32
+    xmin = -1.1
+    xmax = 1.1
+    ymin = -1.1
+    ymax = 1.1
+    # zmin = -0.8
+    # zmax = 0.8
     partition = square
   []
 []
@@ -18,7 +18,7 @@
 [GlobalParams]
   # op_num = 10
   # var_name_base = gr
-  displacements = 'u_x u_y u_z'
+  displacements = 'u_x u_y'
   # int_width = 0.03
 []
 
@@ -41,10 +41,6 @@
     order = FIRST
     family = LAGRANGE
   [../]
-  [./force_z]
-    order = FIRST
-    family = LAGRANGE
-  [../]
   [./c]
     order = FIRST
     family = LAGRANGE
@@ -63,14 +59,12 @@
     family = LAGRANGE
   [../]
   [global_strain]
-    order = SIXTH
+    order = THIRD
     family = SCALAR
   []
   [u_x]
   []
   [u_y]
-  []
-  [u_z]
   []
 []
 
@@ -80,7 +74,7 @@
     variable = c
     x1 = 0.0
     y1 = 0.0
-    z1 = 0.0
+    # z1 = 0.0
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
@@ -91,7 +85,7 @@
 [Functions]
   [./pressure]
     type = PiecewiseLinear
-    x = '0 50 200'
+    x = '0 50  200'
     y = '0 200 200'
   [../]
 []
@@ -221,7 +215,7 @@
     function = '((1.0-d)^2+eta)/((1.0-d)^2+d*(1-0.5*d)*(4/3.14159/l*E*gc_prop/sigma^2))'
     material_property_names = 'gc_prop l'
     constant_names       = 'E sigma eta'
-    constant_expressions = '385000 200 1e-4'
+    constant_expressions = '385000 130 1e-4'
     derivative_order = 2
   [../]
   [./fracture_energy]
@@ -262,7 +256,7 @@
 [UserObjects]
   [global_strain_uo]
     type = GlobalStrainUserObject
-    applied_stress_tensor = '0 0 0 0 0 0'
+    # applied_stress_tensor = '-60.0 -60.0 -60.0 0 0 0'
     execute_on = 'Initial Linear Nonlinear'
   []
 []
@@ -307,7 +301,7 @@
   nl_abs_tol = 1e-6
   l_max_its = 10   ##max linear iterations Previous:200
   nl_max_its = 20  ##max nonlinear iterations Previous:50
-  start_time=0
+  start_time = 0
   line_search = 'none'
   end_time = 200
   dtmax = 1

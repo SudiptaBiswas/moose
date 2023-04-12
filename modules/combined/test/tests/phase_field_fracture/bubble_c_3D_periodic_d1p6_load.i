@@ -2,15 +2,15 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 34
-    ny = 34
-    nz = 34
-    xmin = -0.85
-    xmax = 0.85
-    ymin = -0.85
-    ymax = 0.85
-    zmin = -0.85
-    zmax = 0.85
+    nx = 32
+    ny = 32
+    nz = 32
+    xmin = -0.8
+    xmax = 0.8
+    ymin = -0.8
+    ymax = 0.8
+    zmin = -0.8
+    zmax = 0.8
     partition = square
   []
 []
@@ -91,8 +91,8 @@
 [Functions]
   [./pressure]
     type = PiecewiseLinear
-    x = '0 50 200'
-    y = '0 200 200'
+    x = '0 75  200'
+    y = '0 300 300'
   [../]
 []
 
@@ -221,7 +221,7 @@
     function = '((1.0-d)^2+eta)/((1.0-d)^2+d*(1-0.5*d)*(4/3.14159/l*E*gc_prop/sigma^2))'
     material_property_names = 'gc_prop l'
     constant_names       = 'E sigma eta'
-    constant_expressions = '385000 200 1e-4'
+    constant_expressions = '385000 160 1e-4'
     derivative_order = 2
   [../]
   [./fracture_energy]
@@ -262,7 +262,7 @@
 [UserObjects]
   [global_strain_uo]
     type = GlobalStrainUserObject
-    applied_stress_tensor = '0 0 0 0 0 0'
+    applied_stress_tensor = '-60.0 -60.0 -60.0 0 0 0'
     execute_on = 'Initial Linear Nonlinear'
   []
 []
@@ -307,7 +307,7 @@
   nl_abs_tol = 1e-6
   l_max_its = 10   ##max linear iterations Previous:200
   nl_max_its = 20  ##max nonlinear iterations Previous:50
-  start_time=0
+  start_time = 0
   line_search = 'none'
   end_time = 200
   dtmax = 1

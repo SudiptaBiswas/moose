@@ -2,9 +2,9 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 150
-    ny = 150
-    nz = 150
+    nx = 30
+    ny = 30
+    nz = 30
     xmax = 1.5
     ymax = 1.5
     zmax = 1.5

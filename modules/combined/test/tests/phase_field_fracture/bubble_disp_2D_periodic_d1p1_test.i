@@ -1,18 +1,21 @@
 [Mesh]
   [gmg]
     type = DistributedRectilinearMeshGenerator
-    dim = 3
-    nx = 30
-    ny = 30
-    nz = 30
-    xmax = 1.5
-    ymax = 1.5
-    zmax = 1.5
+    dim = 2
+    nx = 440
+    ny = 440
+    # nz = 32
+    xmin = -1.1
+    xmax = 1.1
+    ymin = -1.1
+    ymax = 1.1
+    # zmin = -0.8
+    # zmax = 0.8
     partition = square
   []
   [cnode]
     type = ExtraNodesetGenerator
-    coord = '0.75 0.75 0.75'
+    coord = '0.0 0.0 0.0'
     new_boundary = 100
     input = gmg
   []
@@ -28,13 +31,13 @@
   # op_num = 10
   # var_name_base = gr
   # int_width = 0.03
-  displacements = 'u_x u_y u_z'
+  displacements = 'u_x u_y'
 []
 
 [MultiApps]
   [damage]
     type = TransientMultiApp
-    input_files = 'bubble_c_3D_periodic_d1p5_random.i'
+    input_files = 'bubble_c_2D_periodic_d1p1_test.i'
   []
 []
 
@@ -53,13 +56,13 @@
     source_variable = 'u_y'
     variable = 'u_y'
   []
-  [to_disp_z]
-    type = MultiAppCopyTransfer
-    multi_app = 'damage'
-    direction = to_multiapp
-    source_variable = 'u_z'
-    variable = 'u_z'
-  []
+  # [to_disp_z]
+  #   type = MultiAppCopyTransfer
+  #   multi_app = 'damage'
+  #   direction = to_multiapp
+  #   source_variable = 'u_z'
+  #   variable = 'u_z'
+  # []
   [to_global_strain]
     type = MultiAppScalarToAuxScalarTransfer
     multi_app = 'damage'
@@ -78,7 +81,7 @@
 
 [Variables]
   [./global_strain]
-    order = SIXTH
+    order = THIRD
     family = SCALAR
   [../]
 []
@@ -89,22 +92,25 @@
       [./mech]
         add_variables = true
         strain = SMALL
-        additional_generate_output = 'stress_yy stress_xy stress_xx stress_zz stress_xz stress_yz '
-                                     'strain_xx strain_xy strain_yy strain_zz strain_xz strain_yz '
-                                     'hydrostatic_stress mid_principal_stress min_principal_stress max_principal_stress'
+        incremental = false
+        additional_generate_output = 'stress_yy stress_xy stress_xx strain_xx strain_xy strain_yy strain_zz hydrostatic_stress mid_principal_stress min_principal_stress max_principal_stress'
+
+        # additional_generate_output = 'stress_yy stress_xy stress_xx stress_zz stress_xz stress_yz '
+        #                              'strain_xx strain_xy strain_yy strain_zz strain_xz strain_yz '
+        #                              'hydrostatic_stress mid_principal_stress min_principal_stress max_principal_stress'
         decomposition_method = EigenSolution
         global_strain = global_strain
-        save_in = 'force_x force_y force_z'
+        save_in = 'force_x force_y'
         extra_vector_tags = 'ref'
       [../]
     [../]
     [./GlobalStrain]
       [./global_strain]
         scalar_global_strain = global_strain
-        applied_stress_tensor = '0 0 0 0 0 0'
-        displacements = 'u_x u_y u_z'
-        auxiliary_displacements = 'disp_x disp_y disp_z'
-        global_displacements = 'ug_x ug_y ug_z'
+        # applied_stress_tensor = '-60.0 -60.0 -60.0 0 0 0'
+        displacements = 'u_x u_y'
+        auxiliary_displacements = 'disp_x disp_y'
+        global_displacements = 'ug_x ug_y'
       [../]
     [../]
   [../]
@@ -134,37 +140,26 @@
     family = MONOMIAL
     order = CONSTANT
   [../]
-  [u_vww]
-    order = CONSTANT
-    family = MONOMIAL
-  []
 []
 
 [ICs]
   [c]
     type = SmoothCircleIC
     variable = c
-    x1 = 0.75
-    y1 = 0.75
-    z1 = 0.75
+    x1 = 0.0
+    y1 = 0.0
+    z1 = 0.0
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
     int_width = 0.03
-  []
-  [u_vww]
-    type = VolumeWeightedWeibull
-    variable = u_vww
-    reference_volume = 2.96e-7 #This is the volume of an element for a 150x150 mesh
-    weibull_modulus = 15.0
-    median = 0.5
   []
 []
 
 [Functions]
  [./pressure]
    type = PiecewiseLinear
-   x = '0 150 200'
+   x = '0 50 200'
    y = '0 200 200'
  [../]
 []
@@ -204,11 +199,9 @@
     outputs = nemesis
   []
   [./gc]
-    type = ParsedMaterial
-    f_name = gc_prop
-    args = 'u_vww'
-    function = '0.012*u_vww'
-    outputs = nemesis
+    type = GenericConstantMaterial
+    prop_names = gc_prop
+    prop_values = '0.0012'
   [../]
   [./define_mobility]
     type = ParsedMaterial
@@ -250,7 +243,7 @@
     function = '((1.0-d)^2+eta)/((1.0-d)^2+d*(1-0.5*d)*(4/3.14159/l*E*gc_prop/sigma^2))'
     material_property_names = 'gc_prop l'
     constant_names       = 'E sigma eta'
-    constant_expressions = '385000 130 1e-4'
+    constant_expressions = '385000 160 1e-4'
     derivative_order = 2
   [../]
   [./fracture_energy]
@@ -289,8 +282,8 @@
 [BCs]
   [./Periodic]
     [./all]
-      auto_direction = 'x y z'
-      variable = 'u_x u_y u_z'
+      auto_direction = 'x y'
+      variable = 'u_x u_y'
     [../]
   [../]
   [./yfix]
@@ -305,12 +298,12 @@
     boundary = 100
     value = 0
   [../]
-  [./zfix]
-    type = DirichletBC
-    variable = u_z
-    boundary = 100
-    value = 0
-  [../]
+  # [./zfix]
+  #   type = DirichletBC
+  #   variable = u_z
+  #   boundary = 100
+  #   value = 0
+  # [../]
   # [./Pressure]
   #   [./coolantPressure]
   #     boundary = 'top right front'
@@ -351,21 +344,21 @@
     variable = force_x
     boundary = right
   [../]
-  [./ave_stress_front]
-    type = SideAverageValue
-    variable = stress_zz
-    boundary = front
-  [../]
-  [./disp_z_front]
-    type = SideAverageValue
-    variable = disp_z
-    boundary = front
-  [../]
-  [./react_z_front]
-    type = NodalSum
-    variable = force_z
-    boundary = front
-  [../]
+  # [./ave_stress_front]
+  #   type = SideAverageValue
+  #   variable = stress_zz
+  #   boundary = front
+  # [../]
+  # [./disp_z_front]
+  #   type = SideAverageValue
+  #   variable = disp_z
+  #   boundary = front
+  # [../]
+  # [./react_z_front]
+  #   type = NodalSum
+  #   variable = force_z
+  #   boundary = front
+  # [../]
 []
 
 [Preconditioning]
@@ -382,6 +375,8 @@
   # petsc_options_value = 'asm lu 31 preonly 1  0 NONZERO 1e-10'
   petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
   petsc_options_value = 'asm 31 preonly lu 1'
+  # petsc_options_iname = '-pc_type -pc_factor_mat_solving_package'
+  # petsc_options_value = 'lu superlu_dist'
   # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_factor_shift_type'
   # petsc_options_value = 'hypre    boomeramg      31 nonzero'
   #petsc_options_iname = '-pc_type -ksp_type -snes_type -pc_factor_shift_type -pc_factor_shift_amount '
@@ -396,7 +391,7 @@
   line_search = 'none'
   end_time = 200
   num_steps = 1500
-  dt = 1.0
+  dt = 1
   dtmin = 1e-15
   automatic_scaling = true
 #  [./TimeStepper]

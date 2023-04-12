@@ -1,18 +1,52 @@
 [Mesh]
   [gmg]
-    type = DistributedRectilinearMeshGenerator
+    type = GeneratedMeshGenerator
     dim = 3
-    nx = 34
-    ny = 34
-    nz = 34
-    xmin = -0.85
-    xmax = 0.85
-    ymin = -0.85
-    ymax = 0.85
-    zmin = -0.85
-    zmax = 0.85
-    partition = square
+    nx = 30
+    ny = 30
+    nz = 30
+    xmax = 1.5
+    ymax = 1.5
+    zmax = 1.5
+    uniform_refine = 2
+    # parallel_type = replicated
   []
+[]
+
+[Adaptivity]
+  initial_steps = 2
+  max_h_level = 3
+  # stop_time = 1.0e-10
+  marker = combo
+  initial_marker = err_c
+  [./Markers]
+    [combo]
+      type = ComboMarker
+      markers = 'err_d err_c'
+    []
+    [./err_d]
+      type = ErrorFractionMarker
+      coarsen = 0.1
+      refine = 0.9
+      indicator = ind_d
+    [../]
+    [./err_c]
+      type = ErrorFractionMarker
+      coarsen = 0.1
+      refine = 0.9
+      indicator = ind_c
+    [../]
+  [../]
+  [./Indicators]
+     [./ind_d]
+       type = GradientJumpIndicator
+       variable = d
+    [../]
+    [./ind_c]
+      type = GradientJumpIndicator
+      variable = c
+   [../]
+  [../]
 []
 
 [GlobalParams]
@@ -78,9 +112,9 @@
   [c]
     type = SmoothCircleIC
     variable = c
-    x1 = 0.0
-    y1 = 0.0
-    z1 = 0.0
+    x1 = 0.75
+    y1 = 0.75
+    z1 = 0.75
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
@@ -91,7 +125,7 @@
 [Functions]
   [./pressure]
     type = PiecewiseLinear
-    x = '0 50 200'
+    x = '0 150 200'
     y = '0 200 200'
   [../]
 []
@@ -221,7 +255,7 @@
     function = '((1.0-d)^2+eta)/((1.0-d)^2+d*(1-0.5*d)*(4/3.14159/l*E*gc_prop/sigma^2))'
     material_property_names = 'gc_prop l'
     constant_names       = 'E sigma eta'
-    constant_expressions = '385000 200 1e-4'
+    constant_expressions = '385000 130 1e-4'
     derivative_order = 2
   [../]
   [./fracture_energy]

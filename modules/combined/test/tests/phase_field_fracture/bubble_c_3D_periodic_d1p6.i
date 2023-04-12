@@ -2,15 +2,15 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 34
-    ny = 34
-    nz = 34
-    xmin = -0.85
-    xmax = 0.85
-    ymin = -0.85
-    ymax = 0.85
-    zmin = -0.85
-    zmax = 0.85
+    nx = 32
+    ny = 32
+    nz = 32
+    xmin = -0.8
+    xmax = 0.8
+    ymin = -0.8
+    ymax = 0.8
+    zmin = -0.8
+    zmax = 0.8
     partition = square
   []
 []
@@ -91,8 +91,8 @@
 [Functions]
   [./pressure]
     type = PiecewiseLinear
-    x = '0 50 200'
-    y = '0 200 200'
+    x = '0 75  200'
+    y = '0 300 300'
   [../]
 []
 

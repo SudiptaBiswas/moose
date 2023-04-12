@@ -2,17 +2,20 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 30
-    ny = 30
-    nz = 30
-    xmax = 1.5
-    ymax = 1.5
-    zmax = 1.5
+    nx = 36
+    ny = 36
+    nz = 36
+    xmin = -0.9
+    xmax = 0.9
+    ymin = -0.9
+    ymax = 0.9
+    zmin = -0.9
+    zmax = 0.9
     partition = square
   []
   [cnode]
     type = ExtraNodesetGenerator
-    coord = '0.75 0.75 0.75'
+    coord = '0.0 0.0 0.0'
     new_boundary = 100
     input = gmg
   []
@@ -34,7 +37,7 @@
 [MultiApps]
   [damage]
     type = TransientMultiApp
-    input_files = 'bubble_c_3D_periodic_d1p5_random.i'
+    input_files = 'bubble_c_3D_periodic_d1p8_load.i'
   []
 []
 
@@ -89,6 +92,7 @@
       [./mech]
         add_variables = true
         strain = SMALL
+        incremental = false
         additional_generate_output = 'stress_yy stress_xy stress_xx stress_zz stress_xz stress_yz '
                                      'strain_xx strain_xy strain_yy strain_zz strain_xz strain_yz '
                                      'hydrostatic_stress mid_principal_stress min_principal_stress max_principal_stress'
@@ -101,7 +105,7 @@
     [./GlobalStrain]
       [./global_strain]
         scalar_global_strain = global_strain
-        applied_stress_tensor = '0 0 0 0 0 0'
+        applied_stress_tensor = '-30.0 -30.0 -30.0 0 0 0'
         displacements = 'u_x u_y u_z'
         auxiliary_displacements = 'disp_x disp_y disp_z'
         global_displacements = 'ug_x ug_y ug_z'
@@ -134,38 +138,27 @@
     family = MONOMIAL
     order = CONSTANT
   [../]
-  [u_vww]
-    order = CONSTANT
-    family = MONOMIAL
-  []
 []
 
 [ICs]
   [c]
     type = SmoothCircleIC
     variable = c
-    x1 = 0.75
-    y1 = 0.75
-    z1 = 0.75
+    x1 = 0.0
+    y1 = 0.0
+    z1 = 0.0
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
     int_width = 0.03
-  []
-  [u_vww]
-    type = VolumeWeightedWeibull
-    variable = u_vww
-    reference_volume = 2.96e-7 #This is the volume of an element for a 150x150 mesh
-    weibull_modulus = 15.0
-    median = 0.5
   []
 []
 
 [Functions]
  [./pressure]
    type = PiecewiseLinear
-   x = '0 150 200'
-   y = '0 200 200'
+   x = '0 75 200'
+   y = '0 300 240'
  [../]
 []
 
@@ -204,11 +197,9 @@
     outputs = nemesis
   []
   [./gc]
-    type = ParsedMaterial
-    f_name = gc_prop
-    args = 'u_vww'
-    function = '0.012*u_vww'
-    outputs = nemesis
+    type = GenericConstantMaterial
+    prop_names = gc_prop
+    prop_values = '0.0012'
   [../]
   [./define_mobility]
     type = ParsedMaterial
@@ -250,7 +241,7 @@
     function = '((1.0-d)^2+eta)/((1.0-d)^2+d*(1-0.5*d)*(4/3.14159/l*E*gc_prop/sigma^2))'
     material_property_names = 'gc_prop l'
     constant_names       = 'E sigma eta'
-    constant_expressions = '385000 130 1e-4'
+    constant_expressions = '385000 160 1e-4'
     derivative_order = 2
   [../]
   [./fracture_energy]
@@ -380,8 +371,10 @@
   solve_type = PJFNK
   # petsc_options_iname = '-pc_type -sub_pc_type -ksp_gmres_restart -ksp_type -pc_asm_overlap -pc_factor_levels -pc_factor_shift_type -pc_factor_shift_amount'
   # petsc_options_value = 'asm lu 31 preonly 1  0 NONZERO 1e-10'
-  petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
-  petsc_options_value = 'asm 31 preonly lu 1'
+  # petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
+  # petsc_options_value = 'asm 31 preonly lu 1'
+  petsc_options_iname = '-pc_type -pc_factor_mat_solving_package'
+  petsc_options_value = 'lu superlu_dist'
   # petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_factor_shift_type'
   # petsc_options_value = 'hypre    boomeramg      31 nonzero'
   #petsc_options_iname = '-pc_type -ksp_type -snes_type -pc_factor_shift_type -pc_factor_shift_amount '
@@ -396,7 +389,7 @@
   line_search = 'none'
   end_time = 200
   num_steps = 1500
-  dt = 1.0
+  dt = 1
   dtmin = 1e-15
   automatic_scaling = true
 #  [./TimeStepper]

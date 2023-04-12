@@ -2,9 +2,9 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 60
-    ny = 60
-    nz = 60
+    nx = 30
+    ny = 30
+    nz = 30
     xmax = 1.5
     ymax = 1.5
     zmax = 1.5
@@ -115,7 +115,7 @@
                                      'strain_xx strain_xy strain_yy strain_zz strain_xz strain_yz '
                                      'hydrostatic_stress mid_principal_stress min_principal_stress max_principal_stress'
         decomposition_method = EigenSolution
-        # global_strain = global_strain
+        global_strain = global_strain
         save_in = 'force_x force_y force_z'
         extra_vector_tags = 'ref'
       [../]
@@ -247,7 +247,7 @@
     args = 'c'
     material_property_names = 'fracture_pressure'
     function = 'fracture_pressure * c'
-    outputs = nemesis
+    # outputs = nemesis
   []
   [./gc]
     type = GenericConstantMaterial
@@ -277,8 +277,8 @@
     #decomposition_type = strain_vol_dev
     decomposition_type = none
     use_snes_vi_solver = true
-    output_properties = 'hist'
-    outputs = nemesis
+    # output_properties = 'hist'
+    # outputs = nemesis
   [../]
   [./indicator_function]
     type = DerivativeParsedMaterial
@@ -453,7 +453,7 @@
   line_search = 'none'
   end_time = 200
   num_steps = 1500
-  dt = 1
+  dt = 1.0
   dtmin = 1e-15
   automatic_scaling = true
 #  [./TimeStepper]
@@ -480,4 +480,8 @@
   csv = true
   nemesis = true
 #gnuplot = true
+[]
+
+[Debug]
+  show_var_residual_norms = true
 []

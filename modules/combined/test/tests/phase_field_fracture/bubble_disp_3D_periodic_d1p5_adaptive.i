@@ -1,6 +1,6 @@
 [Mesh]
   [gmg]
-    type = DistributedRectilinearMeshGenerator
+    type = GeneratedMeshGenerator
     dim = 3
     nx = 30
     ny = 30
@@ -8,7 +8,8 @@
     xmax = 1.5
     ymax = 1.5
     zmax = 1.5
-    partition = square
+    # parallel_type = replicated
+    # uniform_refine = 1
   []
   [cnode]
     type = ExtraNodesetGenerator
@@ -16,6 +17,42 @@
     new_boundary = 100
     input = gmg
   []
+[]
+
+[Adaptivity]
+  initial_steps = 1
+  max_h_level = 2
+  # stop_time = 1.0e-10
+  marker = combo
+  initial_marker = err_c
+  [./Markers]
+    [combo]
+      type = ComboMarker
+      markers = 'err_d err_c'
+    []
+    [./err_d]
+      type = ErrorFractionMarker
+      coarsen = 0.1
+      refine = 0.9
+      indicator = ind_d
+    [../]
+    [./err_c]
+      type = ErrorFractionMarker
+      coarsen = 0.1
+      refine = 0.9
+      indicator = ind_c
+    [../]
+  [../]
+  [./Indicators]
+     [./ind_d]
+       type = GradientJumpIndicator
+       variable = d
+    [../]
+    [./ind_c]
+      type = GradientJumpIndicator
+      variable = c
+   [../]
+  [../]
 []
 
 [Problem]
@@ -34,27 +71,27 @@
 [MultiApps]
   [damage]
     type = TransientMultiApp
-    input_files = 'bubble_c_3D_periodic_d1p5_random.i'
+    input_files = 'bubble_c_3D_periodic_d1p5_adaptive.i'
   []
 []
 
 [Transfers]
   [to_disp_x]
-    type = MultiAppCopyTransfer
+    type = MultiAppInterpolationTransfer
     multi_app = 'damage'
     direction = to_multiapp
     source_variable = 'u_x'
     variable = 'u_x'
   []
   [to_disp_y]
-    type = MultiAppCopyTransfer
+    type = MultiAppInterpolationTransfer
     multi_app = 'damage'
     direction = to_multiapp
     source_variable = 'u_y'
     variable = 'u_y'
   []
   [to_disp_z]
-    type = MultiAppCopyTransfer
+    type = MultiAppInterpolationTransfer
     multi_app = 'damage'
     direction = to_multiapp
     source_variable = 'u_z'
@@ -68,7 +105,7 @@
     to_aux_scalar = 'global_strain'
   []
   [from_d]
-    type = MultiAppCopyTransfer
+    type = MultiAppInterpolationTransfer
     multi_app = 'damage'
     direction = from_multiapp
     source_variable = 'd'
@@ -134,10 +171,6 @@
     family = MONOMIAL
     order = CONSTANT
   [../]
-  [u_vww]
-    order = CONSTANT
-    family = MONOMIAL
-  []
 []
 
 [ICs]
@@ -151,13 +184,6 @@
     invalue = 1.0
     outvalue = 0.0
     int_width = 0.03
-  []
-  [u_vww]
-    type = VolumeWeightedWeibull
-    variable = u_vww
-    reference_volume = 2.96e-7 #This is the volume of an element for a 150x150 mesh
-    weibull_modulus = 15.0
-    median = 0.5
   []
 []
 
@@ -204,11 +230,9 @@
     outputs = nemesis
   []
   [./gc]
-    type = ParsedMaterial
-    f_name = gc_prop
-    args = 'u_vww'
-    function = '0.012*u_vww'
-    outputs = nemesis
+    type = GenericConstantMaterial
+    prop_names = gc_prop
+    prop_values = '0.0012'
   [../]
   [./define_mobility]
     type = ParsedMaterial
@@ -396,7 +420,7 @@
   line_search = 'none'
   end_time = 200
   num_steps = 1500
-  dt = 1.0
+  dt = 1
   dtmin = 1e-15
   automatic_scaling = true
 #  [./TimeStepper]

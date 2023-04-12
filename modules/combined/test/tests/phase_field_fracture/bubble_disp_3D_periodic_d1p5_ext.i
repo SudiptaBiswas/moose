@@ -34,7 +34,7 @@
 [MultiApps]
   [damage]
     type = TransientMultiApp
-    input_files = 'bubble_c_3D_periodic_d1p5_random.i'
+    input_files = 'bubble_c_3D_periodic_d1p5_ext.i'
   []
 []
 
@@ -101,7 +101,7 @@
     [./GlobalStrain]
       [./global_strain]
         scalar_global_strain = global_strain
-        applied_stress_tensor = '0 0 0 0 0 0'
+        applied_stress_tensor = '1.0 2.0 3.0 0 0 0'
         displacements = 'u_x u_y u_z'
         auxiliary_displacements = 'disp_x disp_y disp_z'
         global_displacements = 'ug_x ug_y ug_z'
@@ -134,10 +134,6 @@
     family = MONOMIAL
     order = CONSTANT
   [../]
-  [u_vww]
-    order = CONSTANT
-    family = MONOMIAL
-  []
 []
 
 [ICs]
@@ -152,19 +148,12 @@
     outvalue = 0.0
     int_width = 0.03
   []
-  [u_vww]
-    type = VolumeWeightedWeibull
-    variable = u_vww
-    reference_volume = 2.96e-7 #This is the volume of an element for a 150x150 mesh
-    weibull_modulus = 15.0
-    median = 0.5
-  []
 []
 
 [Functions]
  [./pressure]
    type = PiecewiseLinear
-   x = '0 150 200'
+   x = '0 50 200'
    y = '0 200 200'
  [../]
 []
@@ -204,11 +193,9 @@
     outputs = nemesis
   []
   [./gc]
-    type = ParsedMaterial
-    f_name = gc_prop
-    args = 'u_vww'
-    function = '0.012*u_vww'
-    outputs = nemesis
+    type = GenericConstantMaterial
+    prop_names = gc_prop
+    prop_values = '0.0012'
   [../]
   [./define_mobility]
     type = ParsedMaterial
@@ -396,7 +383,7 @@
   line_search = 'none'
   end_time = 200
   num_steps = 1500
-  dt = 1.0
+  dt = 1
   dtmin = 1e-15
   automatic_scaling = true
 #  [./TimeStepper]

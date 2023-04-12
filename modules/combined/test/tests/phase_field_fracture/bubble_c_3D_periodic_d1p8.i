@@ -2,15 +2,15 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 34
-    ny = 34
-    nz = 34
-    xmin = -0.85
-    xmax = 0.85
-    ymin = -0.85
-    ymax = 0.85
-    zmin = -0.85
-    zmax = 0.85
+    nx = 36
+    ny = 36
+    nz = 36
+    xmin = -0.9
+    xmax = 0.9
+    ymin = -0.9
+    ymax = 0.9
+    zmin = -0.9
+    zmax = 0.9
     partition = square
   []
 []

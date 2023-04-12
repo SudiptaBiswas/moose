@@ -2,15 +2,12 @@
   [gmg]
     type = DistributedRectilinearMeshGenerator
     dim = 3
-    nx = 34
-    ny = 34
-    nz = 34
-    xmin = -0.85
-    xmax = 0.85
-    ymin = -0.85
-    ymax = 0.85
-    zmin = -0.85
-    zmax = 0.85
+    nx = 150
+    ny = 150
+    nz = 150
+    xmax = 1.5
+    ymax = 1.5
+    zmax = 1.5
     partition = square
   []
 []
@@ -78,9 +75,9 @@
   [c]
     type = SmoothCircleIC
     variable = c
-    x1 = 0.0
-    y1 = 0.0
-    z1 = 0.0
+    x1 = 0.75
+    y1 = 0.75
+    z1 = 0.75
     radius = 0.5
     invalue = 1.0
     outvalue = 0.0
@@ -307,7 +304,7 @@
   nl_abs_tol = 1e-6
   l_max_its = 10   ##max linear iterations Previous:200
   nl_max_its = 20  ##max nonlinear iterations Previous:50
-  start_time=0
+  start_time = 0
   line_search = 'none'
   end_time = 200
   dtmax = 1
