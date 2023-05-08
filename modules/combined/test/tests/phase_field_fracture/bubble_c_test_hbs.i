@@ -1,6 +1,6 @@
 [Mesh]
   type = FileMesh
-  file = b101_out.e
+  file = 2022_05_07_HBS_bub_gas_xolotl_sat_test6_vsrc_T1100_exodus.e-s4700
 []
 
 #[Adaptivity]
@@ -25,7 +25,7 @@
 #[]
 
 [GlobalParams]
-  op_num = 9
+  op_num = 8
   var_name_base = gr
   displacements = 'disp_x disp_y'
 []
@@ -33,7 +33,7 @@
 [UserObjects]
   [soln]
     type = SolutionUserObject
-    mesh = b101_out.e
+    mesh = 2022_05_07_HBS_bub_gas_xolotl_sat_test6_vsrc_T1100_exodus.e-s4700
     timestep = 'LATEST'
     execute_on = 'initial'
   []
@@ -68,13 +68,16 @@
     order = FIRST
     family = LAGRANGE
     [InitialCondition]
+      # type = FunctionIC
+      # variable = c
+      # function = f_etab
       type = SmoothCircleIC
-      x1 = 1.4
-      y1 = 1.4
-      radius = 0.5
+      x1 = 625
+      y1 = 625
+      radius = 100.0
       invalue = 1.0
       outvalue = 0.0
-      int_width = 0.05
+      int_width = 10.0
     []
   []
   [gr0]
@@ -133,13 +136,13 @@
       function = f_gr7
     []
   []
-  [gr8]
-    [InitialCondition]
-      type = FunctionIC
-      variable = gr8
-      function = f_gr8
-    []
-  []
+  # [gr8]
+  #   [InitialCondition]
+  #     type = FunctionIC
+  #     variable = gr8
+  #     function = f_gr8
+  #   []
+  # []
 
   # [./euler_angle]
   #   order = CONSTANT
@@ -199,49 +202,48 @@
   [f_gr0]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr0'
+    from_variable = 'eta0'
   []
   [f_gr1]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr1'
+    from_variable = 'eta1'
   []
   [f_gr2]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr2'
+    from_variable = 'eta2'
   []
   [f_gr3]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr3'
+    from_variable = 'eta3'
   []
   [f_gr4]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr4'
+    from_variable = 'eta4'
   []
   [f_gr5]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr5'
+    from_variable = 'eta5'
   []
   [f_gr6]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr6'
+    from_variable = 'eta6'
   []
   [f_gr7]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr7'
+    from_variable = 'eta7'
   []
-  [f_gr8]
+  [f_etab]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr8'
+    from_variable = 'etab'
   []
-
 []
 
 [Bounds]
@@ -322,14 +324,14 @@
   [pfbulkmat]
     type = GenericConstantMaterial
     prop_names = 'l visco'
-    prop_values = '0.01 1e-3'
+    prop_values = '5.0 1e-3'
   []
   [pressure]
     type = GenericFunctionMaterial
     block = 0
     prop_names = fracture_pressure
     prop_values = pressure
-    factor = 1e-6
+    # factor = 1e-6
   []
   [gc]
     type = ParsedMaterial

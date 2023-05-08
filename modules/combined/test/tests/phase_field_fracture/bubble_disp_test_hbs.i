@@ -1,6 +1,6 @@
 [Mesh]
   type = FileMesh
-  file = b101_out.e
+  file = 2022_05_07_HBS_bub_gas_xolotl_sat_test6_vsrc_T1100_exodus.e-s4700
 []
 
 #[Adaptivity]
@@ -24,23 +24,91 @@
 # [../]
 #[]
 
+[Problem]
+  type = ReferenceResidualProblem
+  reference_vector = 'ref'
+  extra_tag_vectors = 'ref'
+[]
+
 [GlobalParams]
-  op_num = 9
+  op_num = 8
   var_name_base = gr
-  displacements = 'disp_x disp_y'
 []
 
 [UserObjects]
   [soln]
     type = SolutionUserObject
-    mesh = b101_out.e
+    mesh = 2022_05_07_HBS_bub_gas_xolotl_sat_test6_vsrc_T1100_exodus.e-s4700
     timestep = 'LATEST'
     execute_on = 'initial'
+  []
+  [grain_tracker]
+    type = GrainTracker
+    compute_var_to_feature_map = true
+    execute_on = 'initial timestep_begin'
+    halo_level = 3
+    remap_grains = false
+    compute_halo_maps = true
+  []
+[]
+
+[MultiApps]
+  [damage]
+    type = TransientMultiApp
+    input_files = 'bubble_c_test_hbs.i'
+  []
+[]
+
+[Transfers]
+  [to_disp_x]
+    type = MultiAppCopyTransfer
+    multi_app = 'damage'
+    direction = to_multiapp
+    source_variable = 'disp_x'
+    variable = 'disp_x'
+  []
+  [to_disp_y]
+    type = MultiAppCopyTransfer
+    multi_app = 'damage'
+    direction = to_multiapp
+    source_variable = 'disp_y'
+    variable = 'disp_y'
+  []
+  [from_d]
+    type = MultiAppCopyTransfer
+    multi_app = 'damage'
+    direction = from_multiapp
+    source_variable = 'd'
+    variable = 'd'
   []
 []
 
 [Variables]
+  [disp_x]
+  []
+  [disp_y]
+  []
+[]
+
+[AuxVariables]
   [d]
+  []
+[]
+
+[Modules]
+  [TensorMechanics]
+    [Master]
+      displacements = 'disp_x disp_y'
+      [mech]
+        add_variables = true
+        strain = SMALL
+        additional_generate_output = 'stress_yy stress_xy stress_xx strain_xx strain_xy strain_yy strain_zz hydrostatic_stress mid_principal_stress min_principal_stress max_principal_stress'
+        decomposition_method = EigenSolution
+        save_in = 'force_x force_y'
+        displacements = 'disp_x disp_y'
+        extra_vector_tags = 'ref'
+      []
+    []
   []
 []
 
@@ -68,13 +136,16 @@
     order = FIRST
     family = LAGRANGE
     [InitialCondition]
+      # type = FunctionIC
+      # variable = c
+      # function = f_etab
       type = SmoothCircleIC
-      x1 = 1.4
-      y1 = 1.4
-      radius = 0.5
+      x1 = 625
+      y1 = 625
+      radius = 200.0
       invalue = 1.0
       outvalue = 0.0
-      int_width = 0.05
+      int_width = 20.0
     []
   []
   [gr0]
@@ -133,13 +204,13 @@
       function = f_gr7
     []
   []
-  [gr8]
-    [InitialCondition]
-      type = FunctionIC
-      variable = gr8
-      function = f_gr8
-    []
-  []
+  # [gr8]
+  #   [InitialCondition]
+  #     type = FunctionIC
+  #     variable = gr8
+  #     function = f_gr8
+  #   []
+  # []
 
   # [./euler_angle]
   #   order = CONSTANT
@@ -166,14 +237,6 @@
     order = CONSTANT
     family = MONOMIAL
   []
-  [bounds_dummy]
-    order = FIRST
-    family = LAGRANGE
-  []
-  [disp_x]
-  []
-  [disp_y]
-  []
 []
 
 [Functions]
@@ -185,12 +248,17 @@
   #   type = PiecewiseLinear
   #   data_file = 'pressure.csv'
   #   format = columns
+  #   scale_factor = 1e-6
   # [../]
   [pressure]
     type = PiecewiseLinear
     x = '0 150 200'
     y = '80 200 200'
   []
+  # [pressure]
+  #   type = ParsedFunction
+  #   value = '100'
+  # []
   [f_bnds]
     type = SolutionFunction
     solution = soln
@@ -199,84 +267,49 @@
   [f_gr0]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr0'
+    from_variable = 'eta0'
   []
   [f_gr1]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr1'
+    from_variable = 'eta1'
   []
   [f_gr2]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr2'
+    from_variable = 'eta2'
   []
   [f_gr3]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr3'
+    from_variable = 'eta3'
   []
   [f_gr4]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr4'
+    from_variable = 'eta4'
   []
   [f_gr5]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr5'
+    from_variable = 'eta5'
   []
   [f_gr6]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr6'
+    from_variable = 'eta6'
   []
   [f_gr7]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr7'
+    from_variable = 'eta7'
   []
-  [f_gr8]
+  [f_etab]
     type = SolutionFunction
     solution = soln
-    from_variable = 'gr8'
+    from_variable = 'etab'
   []
 
-[]
-
-[Bounds]
-  [d_upper_bound]
-    type = ConstantBoundsAux
-    variable = bounds_dummy
-    bounded_variable = d
-    bound_type = upper
-    bound_value = 1.0
-  []
-  [d_lower_bound]
-    type = VariableOldValueBoundsAux
-    variable = bounds_dummy
-    bounded_variable = d
-    bound_type = lower
-  []
-[]
-
-[Kernels]
-  [pfbulk]
-    type = AllenCahn
-    variable = d
-    mob_name = L
-    f_name = F
-  []
-  [dcdt]
-    type = TimeDerivative
-    variable = d
-  []
-  [acint]
-    type = ACInterface
-    variable = d
-    mob_name = L
-    kappa_name = kappa_op
-  []
 []
 
 [AuxKernels]
@@ -322,14 +355,14 @@
   [pfbulkmat]
     type = GenericConstantMaterial
     prop_names = 'l visco'
-    prop_values = '0.01 1e-3'
+    prop_values = '5.0 1e-3'
   []
   [pressure]
     type = GenericFunctionMaterial
     block = 0
     prop_names = fracture_pressure
     prop_values = pressure
-    factor = 1e-6
+    # factor = 1e-6
   []
   [gc]
     type = ParsedMaterial
@@ -361,12 +394,14 @@
     type = ComputeSmallStrain
     block = 0
     base_name = void
+    displacements = 'disp_x disp_y'
   []
 
   [strain]
     type = ComputeSmallStrain
     block = 0
     base_name = matrix
+    displacements = 'disp_x disp_y'
   []
 
   [damage_stress]
@@ -421,7 +456,6 @@
     derivative_order = 2
     f_name = F
   []
-
   [const_stress]
     type = ComputeExtraStressConstant
     block = 0
@@ -452,14 +486,26 @@
   []
 []
 
-[UserObjects]
-  [grain_tracker]
-    type = GrainTracker
-    compute_var_to_feature_map = true
-    execute_on = 'initial timestep_begin'
-    halo_level = 3
-    remap_grains = false
-    compute_halo_maps = true
+[BCs]
+  [yfix]
+    type = DirichletBC
+    variable = disp_y
+    boundary = bottom
+    value = 0
+  []
+  [xfix]
+    type = DirichletBC
+    variable = disp_x
+    boundary = left
+    value = 0
+  []
+  [Pressure]
+    [coolantPressure]
+      boundary = 'top right'
+      factor = 30
+      function = 1
+      displacements = 'disp_x disp_y'
+    []
   []
 []
 
@@ -479,6 +525,22 @@
     variable = force_y
     boundary = top
   []
+  [ave_stress_right]
+    type = SideAverageValue
+    variable = stress_xx
+    boundary = right
+  []
+  [disp_x_right]
+    type = SideAverageValue
+    variable = disp_x
+    boundary = right
+  []
+  [react_x_top]
+    type = NodalSum
+    variable = force_x
+    boundary = right
+  []
+
 []
 
 [Preconditioning]
@@ -494,19 +556,18 @@
   solve_type = NEWTON
   petsc_options_iname = '-pc_type -ksp_type -snes_type -pc_factor_shift_type -pc_factor_shift_amount '
   petsc_options_value = 'lu preonly  vinewtonrsls NONZERO 1e-10'
-
-  #  solve_type = PJFNK
-  #  petsc_options_iname = '-pc_type -sub_pc_type -snes_type'
-  #  petsc_options_value = 'asm lu vinewtonrsls'
+  #  petsc_options_iname = '-ksp_type -pc_type -sub_pc_type -snes_max_it -sub_pc_factor_shift_type -pc_asm_overlap -snes_type'
+  #  petsc_options_value = 'gmres asm lu 100 NONZERO 2 vinewtonrsls'
   nl_rel_tol = 1e-6 ##nonlinear relative tolerance
   nl_abs_tol = 1e-6
   l_max_its = 10 ##max linear iterations Previous:200
   nl_max_its = 20 ##max nonlinear iterations Previous:50
   start_time = 0
   line_search = 'none'
-  end_time = 2000
-  dtmax = 1
-  dtmin = 1e-14
+  end_time = 500
+  num_steps = 1500
+  dt = 5
+  dtmin = 1e-15
   automatic_scaling = true
   #  [./TimeStepper]
   #    type = IterationAdaptiveDT
@@ -516,13 +577,20 @@
   #    growth_factor = 1.2
   #    cutback_factor = 0.5
   #  [../]
+
+  picard_max_its = 20
+  picard_rel_tol = 1e-6
+  picard_abs_tol = 1e-6
+  accept_on_max_picard_iteration = true
 []
 
 [Outputs]
-  print_linear_converged_reason = false
-  print_nonlinear_converged_reason = false
-  print_linear_residuals = false
-  exodus = true
+  # [exodus]
+  #   type = Exodus
+  #   interval = 25
+  #   execute_on = 'initial timestep_end'
+  # []
   csv = true
+  exodus = true
   #gnuplot = true
 []
