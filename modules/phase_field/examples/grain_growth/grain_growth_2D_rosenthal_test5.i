@@ -1,0 +1,293 @@
+# This simulation predicts GB migration of a 2D copper polycrystal with 100 grains represented with 18 order parameters
+# Mesh adaptivity and time step adaptivity are used
+# An AuxVariable is used to calculate the grain boundary locations
+# Postprocessors are used to record time step and the number of grains
+
+[Mesh]
+  # Mesh block.  Meshes can be read in or automatically generated
+  type = GeneratedMesh
+  dim = 2 # Problem dimension
+  nx = 15 # Number of elements in the x-direction
+  ny = 6 # Number of elements in the y-direction
+  xmin = 0 # minimum x-coordinate of the mesh
+  xmax = 1500 # maximum x-coordinate of the mesh
+  ymin = -300 # minimum y-coordinate of the mesh
+  ymax = 300 # maximum y-coordinate of the mesh
+  elem_type = QUAD4 # Type of elements used in the mesh
+  uniform_refine = 3 # Initial uniform refinement of the mesh
+
+  parallel_type = replicated # Periodic BCs
+[]
+
+[GlobalParams]
+  # Parameters used by several kernels that are defined globally to simplify input file
+  op_num = 10 # Number of order parameters used
+  var_name_base = gr # Base name of grains
+[]
+
+# [Functions]
+#   [mob]
+#     type = MobilityProfile
+#     x1 = 0
+#     y1 = 300
+#     z1 = 0
+#     r1 = 100
+#     haz = 150
+#     vp = 2.5
+#     factor = 10.0
+#     invalue = 1e-3
+#     outvalue = 1e-3
+#     weldpool_shape = circular
+#   []
+# []
+
+[Variables]
+  # Variable block, where all variables in the simulation are declared
+  [PolycrystalVariables]
+  []
+[]
+
+[UserObjects]
+  [voronoi]
+    type = PolycrystalVoronoi
+    grain_num = 120 # Number of grains
+    rand_seed = 10
+  []
+  [grain_tracker]
+    type = GrainTracker
+    threshold = 0.2
+    connecting_threshold = 0.08
+    compute_halo_maps = true # Only necessary for displaying HALOS
+  []
+[]
+
+[ICs]
+  [PolycrystalICs]
+    [PolycrystalColoringIC]
+      polycrystal_ic_uo = voronoi
+    []
+  []
+[]
+
+[AuxVariables]
+  # Dependent variables
+  [bnds]
+    # Variable used to visualize the grain boundaries in the simulation
+  []
+  [unique_grains]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [var_indices]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [ghost_regions]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [halos]
+    order = CONSTANT
+    family = MONOMIAL
+  []
+  [temp]
+    order = FIRST
+    family = MONOMIAL
+  []
+[]
+
+[Kernels]
+  # Kernel block, where the kernels defining the residual equations are set up.
+  [PolycrystalKernel]
+    # mob_name = ac_mob
+    # Custom action creating all necessary kernels for grain growth.  All input parameters are up in GlobalParams
+  []
+[]
+
+[AuxKernels]
+  # AuxKernel block, defining the equations used to calculate the auxvars
+  [bnds_aux]
+    # AuxKernel that calculates the GB term
+    type = BndsCalcAux
+    variable = bnds
+    execute_on = 'initial timestep_end'
+  []
+  [unique_grains]
+    type = FeatureFloodCountAux
+    variable = unique_grains
+    flood_counter = grain_tracker
+    field_display = UNIQUE_REGION
+    execute_on = 'initial timestep_end'
+  []
+  [var_indices]
+    type = FeatureFloodCountAux
+    variable = var_indices
+    flood_counter = grain_tracker
+    field_display = VARIABLE_COLORING
+    execute_on = 'initial timestep_end'
+  []
+  [temp]
+    type = ADMaterialRealAux
+    variable = temp
+    property = temp_source
+  []
+[]
+
+[BCs]
+  # Boundary Condition block
+  [Periodic]
+    [top_bottom]
+      auto_direction = 'x y' # Makes problem periodic in the x and y directions
+    []
+  []
+[]
+
+[Materials]
+  [heat]
+    type = ADHeatConductionMaterial
+    specific_heat = 500
+    thermal_conductivity = 20e-2
+  []
+  [density]
+    type = ADGenericConstantMaterial
+    prop_names = 'density'
+    prop_values = '8000e-12'
+  []
+  [meltpool]
+    type = ADRosenthalTemperatureSource
+    power = 100000
+    velocity = 5.0
+    absorptivity = 1.0
+    melting_temperature = 1700
+    ambient_temperature = 300
+  []
+  # [CuGrGr]
+  #   # Material properties
+  #   type = GBEvolution # Quantitative material properties for copper grain growth.  Dimensions are nm and ns
+  #   GBMobility = -1
+  #   GBmob0 = 2.5e-6 # Mobility prefactor for Cu from Schonfelder1997
+  #   GBenergy = 0.708 # GB energy for Cu from Schonfelder1997
+  #   Q = 0.23 # Activation energy for grain growth from Schonfelder 1997
+  #   T = temp # Constant temperature of the simulation (for mobility calculation)
+  #   wGB = 14 # Width of the diffuse GB
+  #   outputs = exodus
+  # []
+  [constants]
+    type = GenericConstantMaterial
+    prop_names = 'kappa_op   mu      Va         kB           l_GB gamma_asymm Tm'
+    prop_values = '46.4      1.9    0.04092     8.6173324e-5 14.0  1.5        1700'
+  []
+  [gb_mob]
+    type = ParsedMaterial
+    property_name = M
+    material_property_names = 'kB l_GB'
+    coupled_variables = temp
+    constant_names = 'Q M0'
+    constant_expressions = '0.23 400.5'
+    function = '4.0/3.0*M0*exp(-Q/kB/temp)/l_GB'
+    outputs = exodus
+  []
+  [mob]
+    type = ParsedMaterial
+    property_name = L
+    coupled_variables = temp
+    material_property_names = 'M phase Tm'
+    # expression = M*phase
+    expression = 'if(temp<Tm,M,0.0)'
+    outputs = exodus
+  []
+  [phasemap]
+    type = ParsedMaterial
+    property_name = phi
+    coupled_variables = 'temp'
+    material_property_names = 'Tm'
+    expression = 'if(temp<Tm,1,1/2*(1+tanh(14/sqrt(2))))'
+    outputs = exodus
+  []
+  [hb]
+    type = SwitchingFunctionMultiPhaseMaterial
+    h_name = hb
+    all_etas = 'gr0 gr1 gr2 gr3 gr4 gr5 gr6 gr7 gr8 gr9 phi'
+    phase_etas = 'phi'
+    outputs = exodus
+    output_properties = 'hb'
+  []
+  [f_temp]
+    type = ParsedMaterial
+    property_name = f_temp
+    coupled_variables = 'temp'
+    material_property_names = 'Tm hb'
+    expression = '(Tm_T)/Tm * hb'
+    outputs = exodus
+  []
+  # [switching_function]
+  #   type = DerivativeParsedMaterial
+  #   property_name = h
+  #   coupled_variables = 'temp'
+  #   material_property_names = 'Tm'
+  #   expression = 'if(temp<Tm,1,0)'
+  #   outputs = exodus
+  # []
+[]
+
+[Postprocessors]
+  # Scalar postprocessors
+  [dt]
+    # Outputs the current time step
+    type = TimestepSize
+  []
+[]
+
+[Executioner]
+  type = Transient # Type of executioner, here it is transient with an adaptive time step
+  scheme = bdf2 # Type of time integration (2nd order backward euler), defaults to 1st order backward euler
+
+  #Preconditioned JFNK (default)
+  solve_type = 'PJFNK'
+
+  petsc_options_iname = '-pc_type -ksp_gmres_restart -sub_ksp_type -sub_pc_type -pc_asm_overlap'
+  petsc_options_value = 'asm         31   preonly   lu      1'
+
+  l_max_its = 20 # Max number of linear iterations
+  l_tol = 1e-4 # Relative tolerance for linear solves
+  nl_max_its = 20 # Max number of nonlinear iterations
+  nl_rel_tol = 1e-10 # Absolute tolerance for nonlienar solves
+
+  start_time = 0.0
+  end_time = 200
+
+  # [./TimeStepper]
+  #   type = IterationAdaptiveDT
+  #   dt = 1.0 # Initial time step.  In this simulation it changes.
+  #   optimal_iterations = 6 # Time step will adapt to maintain this number of nonlinear iterations
+  # [../]
+[]
+
+[Adaptivity]
+  marker = bound_adapt
+  max_h_level = 4
+  [Indicators]
+    [error]
+      type = GradientJumpIndicator
+      variable = bnds
+    []
+  []
+  [Markers]
+    [bound_adapt]
+      type = ValueRangeMarker
+      lower_bound = 0.1
+      upper_bound = 0.99
+      variable = bnds
+    []
+  []
+[]
+
+[Outputs]
+  exodus = true # Exodus file will be outputted
+  csv = true
+  # file_base = weld_circ_vp25_b
+  [console]
+    type = Console
+    max_rows = 20 # Will print the 20 most recent postprocessor values to the screen
+  []
+[]
