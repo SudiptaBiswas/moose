@@ -1,12 +1,12 @@
-xmax = 1250.0
-# cx = '${fparse xmax/2.0}'
+xmax = 2.8
+cx = '${fparse xmax/2.0}'
 
 [Mesh]
   [gen]
     type = GeneratedMeshGenerator
     dim = 2
-    nx = 1250
-    ny = 1250
+    nx = 900
+    ny = 900
     xmax = ${xmax}
     ymax = ${xmax}
   []
@@ -40,7 +40,7 @@ xmax = 1250.0
 [UserObjects]
   [soln]
     type = SolutionUserObject
-    mesh = 2022_05_07_HBS_bub_gas_xolotl_sat_test6_vsrc_T1100_exodus.e-s4700
+    mesh = b101_out.e
     timestep = 'LATEST'
     execute_on = 'initial'
   []
@@ -68,10 +68,16 @@ xmax = 1250.0
     []
   []
   [c]
+    order = FIRST
+    family = LAGRANGE
     [InitialCondition]
-      type = FunctionIC
-      function = f_etab
-      variable = c
+      type = SmoothCircleIC
+      x1 = ${cx}
+      y1 = ${cx}
+      radius = 0.5
+      invalue = 1.0
+      outvalue = 0.0
+      int_width = 0.05
     []
   []
   [bounds_dummy]
@@ -93,7 +99,7 @@ xmax = 1250.0
   [pressure]
     type = PiecewiseLinear
     x = '0.0 50'
-    y = '0.0 0.000200'
+    y = '0.0 200'
   []
   # [./pressure]
   #   type = ParsedFunction
@@ -103,11 +109,6 @@ xmax = 1250.0
     type = SolutionFunction
     solution = soln
     from_variable = 'bnds'
-  []
-  [f_etab]
-    type = SolutionFunction
-    solution = soln
-    from_variable = 'etab'
   []
 []
 
@@ -158,7 +159,7 @@ xmax = 1250.0
   [pfbulkmat]
     type = GenericConstantMaterial
     prop_names = 'l visco'
-    prop_values = '50.0 1e-3'
+    prop_values = '0.01 1e-3'
   []
 
   [pressure]
@@ -232,9 +233,8 @@ xmax = 1250.0
     function = '((1.0-d)^2+eta)/((1.0-d)^2+d*(1-0.5*d)*(4/3.14159/l*E*gc_prop/sigma^2))'
     material_property_names = 'gc_prop l'
     constant_names = 'E sigma eta'
-    constant_expressions = '0.385 0.00013 1e-4'
+    constant_expressions = '385000 130 1e-4'
     derivative_order = 2
-    outputs = exodus
   []
   [fracture_energy]
     type = DerivativeParsedMaterial
@@ -243,7 +243,6 @@ xmax = 1250.0
     material_property_names = 'gc_prop l'
     function = 'gc_prop/l/3.14159*(2*d-d^2)'
     derivative_order = 2
-    outputs = exodus
   []
   [fracture_driving_energy]
     type = DerivativeParsedMaterial
@@ -252,21 +251,20 @@ xmax = 1250.0
     function = '(1-c)*elastic_energy + local_fracture_energy'
     derivative_order = 2
     f_name = F
-    outputs = exodus
   []
 
   [const_stress]
     type = ComputeExtraStressConstant
     block = 0
-    extra_stress_tensor = '-0.001 -0.001 -0.001 0 0 0'
+    extra_stress_tensor = '-1 -1 -1 0 0 0'
     prefactor = pressure_void
   []
   [elasticity_tensor]
     type = ComputeConcentrationDependentElasticityTensor
     block = 0
     c = c
-    C1_ijkl = '0.0000385 0.23'
-    C0_ijkl = '0.385 0.23'
+    C1_ijkl = '3.85 0.23'
+    C0_ijkl = '385000 0.23'
     fill_method1 = symmetric_isotropic_E_nu
     fill_method0 = symmetric_isotropic_E_nu
   []

@@ -68,7 +68,7 @@ cx = '${fparse xmax/2.0}'
 [MultiApps]
   [damage]
     type = TransientMultiApp
-    input_files = 'bubble_c_periodic_hbs.i'
+    input_files = 'bubble_c_periodic_hbs_MD.i'
   []
 []
 
@@ -175,6 +175,16 @@ cx = '${fparse xmax/2.0}'
   # [../]
   # [./gr8]
   # [../]
+  [temp]
+  []
+[]
+
+[AuxKernels]
+  [temp]
+    type = FunctionAux
+    variable = temp
+    function = temp
+  []
 []
 
 [Functions]
@@ -187,10 +197,15 @@ cx = '${fparse xmax/2.0}'
   #   data_file = 'pressure.csv'
   #   format = columns
   # [../]
+  [temp]
+    type = PiecewiseLinear
+    x = '0.0 70.0'
+    y = '700.0 1400.0'
+  []
   [pressure]
     type = PiecewiseLinear
-    x = '0.0 50'
-    y = '0.0 0.000200'
+    x = '0.0 70'
+    y = '0.0 200'
   []
   # [./pressure]
   #   type = ParsedFunction
@@ -259,7 +274,7 @@ cx = '${fparse xmax/2.0}'
   [pfbulkmat]
     type = GenericConstantMaterial
     prop_names = 'l visco'
-    prop_values = '50.0 1e-3'
+    prop_values = '20.0 1e-3'
   []
   [pressure]
     type = GenericFunctionMaterial
@@ -319,9 +334,9 @@ cx = '${fparse xmax/2.0}'
     f_name = degradation
     args = 'd'
     function = '((1.0-d)^2+eta)/((1.0-d)^2+d*(1-0.5*d)*(4/3.14159/l*E*gc_prop/sigma^2))'
-    material_property_names = 'gc_prop l'
-    constant_names = 'E sigma eta'
-    constant_expressions = '0.385000 0.000130 1e-4'
+    material_property_names = 'gc_prop l sigma'
+    constant_names = 'E eta'
+    constant_expressions = '385000 1e-4'
     derivative_order = 2
   []
   [fracture_energy]
@@ -344,17 +359,24 @@ cx = '${fparse xmax/2.0}'
   [const_stress]
     type = ComputeExtraStressConstant
     block = 0
-    extra_stress_tensor = '-0.001 -0.001 -0.001 0 0 0'
+    extra_stress_tensor = '-1 -1 -1 0 0 0'
     prefactor = pressure_void
   []
   [elasticity_tensor]
     type = ComputeConcentrationDependentElasticityTensor
     block = 0
     c = c
-    C1_ijkl = '0.0000385 0.23'
-    C0_ijkl = '0.385000 0.23'
+    C1_ijkl = '3.85 0.23'
+    C0_ijkl = '385000 0.23'
     fill_method1 = symmetric_isotropic_E_nu
     fill_method0 = symmetric_isotropic_E_nu
+  []
+  [critical_stress]
+    type = ParsedMaterial
+    property_name = sigma
+    coupled_variables = 'temp'
+    function = '(3.075-3.346e-3*temp+9.056e-7*temp*temp)*1e3'
+    outputs = exodus
   []
 []
 
