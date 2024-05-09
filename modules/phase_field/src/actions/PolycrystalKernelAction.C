@@ -36,6 +36,7 @@ PolycrystalKernelAction::validParams()
                         "entire domain!)");
   params.addCoupledVar("args", "Vector of nonlinear variable arguments that L depends on");
   params.deprecateCoupledVar("args", "coupled_variables", "02/27/2024");
+  params.addParam<MaterialPropertyName>("mob_name", "L", "The mobility used with the kernel");
 
   return params;
 }
@@ -73,6 +74,7 @@ PolycrystalKernelAction::act()
       InputParameters params = _factory.getValidParams("ACGrGrPoly");
       params.set<NonlinearVariableName>("variable") = var_name;
       params.set<std::vector<VariableName>>("v") = v;
+      params.set<MaterialPropertyName>("mob_name") = getParam<MaterialPropertyName>("mob_name");
       params.applyParameters(parameters());
 
       std::string kernel_name = "ACBulk_" + var_name;
@@ -86,6 +88,7 @@ PolycrystalKernelAction::act()
     {
       InputParameters params = _factory.getValidParams("ACInterface");
       params.set<NonlinearVariableName>("variable") = var_name;
+      params.set<MaterialPropertyName>("mob_name") = getParam<MaterialPropertyName>("mob_name");
       params.applyParameters(parameters());
 
       std::string kernel_name = "ACInt_" + var_name;
