@@ -3,12 +3,12 @@
 #include "libmesh/mesh_tools.h"
 #include "GeneralUserObject.h"
 
-class RosenthalTemperature : public GeneralUserObject
+class RosenthalTemperatureOld : public GeneralUserObject
 {
 public:
     static InputParameters validParams();
 
-    RosenthalTemperature(const InputParameters & parameters);
+    RosenthalTemperatureOld(const InputParameters & parameters);
 
     virtual void initialize() final {}
     virtual void execute() final {}
