@@ -87,6 +87,7 @@
     multi_app = sub_app
     source_variable = 'disp_y'
     variable = 'disp_y'
+    # num_points = 1
   [../]
   # [./from_sub_disloc]
   #   type = MultiAppInterpolationTransfer
@@ -101,6 +102,7 @@
     multi_app = sub_app
     source_variable = euler_angle0
     variable = euler_angle_1
+    num_points = 1
   [../]
   [./tosub_euler1]
     type = MultiAppGeometricInterpolationTransfer
@@ -108,6 +110,7 @@
     multi_app = sub_app
     source_variable = euler_angle1
     variable = euler_angle_2
+    num_points = 1
   [../]
   [./tosub_euler2]
     type = MultiAppGeometricInterpolationTransfer
@@ -115,6 +118,7 @@
     multi_app = sub_app
     source_variable = euler_angle2
     variable = euler_angle_3
+    num_points = 1
   [../]
   [./tosub_grain]
     type = MultiAppGeometricInterpolationTransfer
@@ -122,6 +126,7 @@
     multi_app = sub_app
     source_variable = 'unique_grains'
     variable = 'unique_grains'
+    num_points = 1
   [../]
 []
 
