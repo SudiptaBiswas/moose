@@ -77,6 +77,7 @@
     inclination_anisotropy = true
     delta_sigma = 0.1
     delta_mob = 0.0
+    outputs = exodus
   [../]
 []
 

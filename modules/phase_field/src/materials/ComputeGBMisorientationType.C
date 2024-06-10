@@ -19,7 +19,10 @@ ComputeGBMisorientationType::validParams()
   params.addClassDescription("Calculate types of grain boundaries in a polycrystalline sample");
   params.addRequiredParam<UserObjectName>("grain_tracker",
                                           "The GrainTracker UserObject to get values from.");
-  params.addRequiredParam<UserObjectName>("ebsd_reader", "The EBSDReader GeneralUserObject");
+  params.addRequiredParam<UserObjectName>(
+      "euler_angle_provider",
+      "The userobject to povide the euler angles, EBSDReader GeneralUserObject");
+  // params.addRequiredParam<UserObjectName>("ebsd_reader", "The EBSDReader GeneralUserObject");
   params.addRequiredCoupledVarWithAutoBuild(
       "v", "var_name_base", "op_num", "Array of coupled variables");
   params.addParam<Real>("angle_threshold", 15, "Max LAGB Misorientation angle");
@@ -29,13 +32,17 @@ ComputeGBMisorientationType::validParams()
 ComputeGBMisorientationType::ComputeGBMisorientationType(const InputParameters & parameters)
   : Material(parameters),
     _grain_tracker(getUserObject<GrainTracker>("grain_tracker")),
-    _ebsd_reader(getUserObject<EBSDReader>("ebsd_reader")),
+    _euler(getUserObject<EulerAngleProvider>("euler_angle_provider")),
+    // _ebsd_reader(getUserObject<EBSDReader>("ebsd_reader")),
     _op_num(coupledComponents("v")),
     _vals(coupledValues("v")),
     _angle_threshold(getParam<Real>("angle_threshold")),
+    _gb_misorientation(declareADProperty<Real>("gb_misorientation")),
     _gb_type(declareADProperty<Real>("gb_type"))
 {
-  getMisorientationAngles();
+  // Initialize symmetry operator as quaternion vectors
+  defineSymmetryOperator();
+  // getMisorientationAngles();
 }
 
 void
@@ -46,80 +53,84 @@ ComputeGBMisorientationType::computeQpProperties()
   _gb_op_pairs.clear();
 
   const auto & op_to_grains = _grain_tracker.getVarToFeatureVector(_current_elem->id());
-  for (auto i : index_range(op_to_grains))
+  for (auto op_index : index_range(op_to_grains))
   {
-    if (op_to_grains[i] == FeatureFloodCount::invalid_id)
+    if (op_to_grains[op_index] == FeatureFloodCount::invalid_id)
       continue;
 
-    _gb_pairs.push_back(_ebsd_reader.getFeatureID(op_to_grains[i]));
-    _gb_op_pairs.push_back((*_vals[i])[_qp]);
+    _gb_pairs.push_back(op_to_grains[op_index]);
+    _gb_op_pairs.push_back((*_vals[op_index])[_qp]);
   }
 
   // Compute GB type by the number of id
   _gb_type[_qp] = 0;
-  switch (_gb_pairs.size())
+  _gb_misorientation[_qp] = 0;
+
+  if (_gb_pairs.size() < 2)
+    return;
+
+  if (_gb_pairs.size() > 2)
   {
-    case 0:
-      break;
-    case 1:
-      break;
-    case 2:
-      // get type by Misorientation angle
-      _gb_type[_qp] =
-          ((_misorientation_angles[getLineNum(_gb_pairs[0], _gb_pairs[1])] < _angle_threshold) ? 1
-                                                                                               : 2);
-      break;
-    default:
-      // get continuous type at triple junction
-      _gb_type[_qp] = getTripleJunctionType();
+    // get continuous type at triple junction
+    computeTripleJunctionMisorientation();
+    _gb_misorientation[_qp] = _misorientation_angle;
+    _gb_type[_qp] = _gb;
+  }
+  else
+  { // get misorientation angle
+    _gb_misorientation[_qp] = getMisorientationAngle(_gb_pairs[0], _gb_pairs[1]);
+    _gb_type[_qp] = ((_gb_misorientation[_qp] < _angle_threshold) ? 1 : 2);
   }
 }
 
-// Function to output total line number of Misorientation angle file
-unsigned int
-ComputeGBMisorientationType::getTotalLineNum() const
-{
-  return _misorientation_angles.size();
-}
-
-// Function to output specific line number in Misorientation angle file
-unsigned int
-ComputeGBMisorientationType::getLineNum(unsigned int grain_i, unsigned int grain_j)
-{
-  if (grain_i > grain_j)
-    return grain_j + (grain_i - 1) * grain_i / 2;
-  else
-    return grain_i + (grain_j - 1) * grain_j / 2;
-}
-
-// Function to calculate the GB type in Triple junction
 Real
-ComputeGBMisorientationType::getTripleJunctionType()
+ComputeGBMisorientationType::getMisorientationAngle(unsigned int grain1, unsigned int grain2)
 {
+  EulerAngles euler1 = _euler.getEulerAngles(grain1);
+  EulerAngles euler2 = _euler.getEulerAngles(grain2);
+
+  Real theta = getMisorientationFromQuaternion(euler1.toQuaternion(), euler2.toQuaternion());
+
+  return theta / libMesh::pi * 180;
+}
+
+void
+ComputeGBMisorientationType::computeTripleJunctionMisorientation()
+{
+  Real val = 0.0;
+  Real misorientation = 0.0;
   unsigned int lagb_num = 0;
   unsigned int hagb_num = 0;
   Real ratio_base = 0.0;
   Real ratio_lagb = 0.0;
+  Real ratio_misorientation = 0.0;
+
   for (unsigned int i = 1; i < _gb_pairs.size(); ++i)
-  {
     for (unsigned int j = 0; j < i; ++j)
     {
-      ratio_base += (_gb_op_pairs[i] * _gb_op_pairs[i] * _gb_op_pairs[j] * _gb_op_pairs[j]);
-      if (_misorientation_angles[getLineNum(_gb_pairs[j], _gb_pairs[i])] < _angle_threshold)
+      val = (_gb_op_pairs[i] * _gb_op_pairs[i] * _gb_op_pairs[j] * _gb_op_pairs[j]);
+      misorientation = getMisorientationAngle(_gb_pairs[j], _gb_pairs[i]);
+
+      ratio_base += val;
+      ratio_misorientation += (misorientation * val);
+
+      if (misorientation < _angle_threshold)
       {
         lagb_num += 1;
-        ratio_lagb += (_gb_op_pairs[i] * _gb_op_pairs[i] * _gb_op_pairs[j] * _gb_op_pairs[j]);
+        ratio_lagb += val;
       }
       else
         hagb_num += 1;
     }
-  }
+
+  _misorientation_angle = ratio_misorientation / ratio_base;
+
   if (lagb_num == 0)
-    return 2;
+    _gb = 2;
   else if (hagb_num == 0)
-    return 1;
+    _gb = 1;
   else
-    return 2 - ratio_lagb / ratio_base;
+    _gb = 2 - ratio_lagb / ratio_base;
 }
 
 // Function to convert symmetry matrix to quaternion form
@@ -233,31 +244,31 @@ ComputeGBMisorientationType::getMisorientationFromQuaternion(const Eigen::Quater
 }
 
 // Get the Misorientation angle
-void
-ComputeGBMisorientationType::getMisorientationAngles()
-{
-  // Initialize symmetry operator as quaternion vectors
-  defineSymmetryOperator();
-  // Initialize parameters to calculate misorientation
-  const auto grain_num = _ebsd_reader.getGrainNum();
-  _euler_angle.resize(grain_num);
-  _quat_angle.resize(grain_num);
+// void
+// ComputeGBMisorientationType::getMisorientationAngles()
+// {
+//   // Initialize symmetry operator as quaternion vectors
+//   defineSymmetryOperator();
+//   // Initialize parameters to calculate misorientation
+//   const auto grain_num = _ebsd_reader.getGrainNum();
+//   _euler_angle.resize(grain_num);
+//   _quat_angle.resize(grain_num);
 
-  // Get Euler Angle of Orientation
-  for (const auto i : make_range(grain_num))
-  {
-    auto grain_id = _ebsd_reader.getFeatureID(i);
-    mooseAssert(grain_id < grain_num, "Feature ids cannot exceed max grain number");
-    _euler_angle[grain_id] = _ebsd_reader.getEulerAngles(i);
-    _quat_angle[grain_id] = _euler_angle[grain_id].toQuaternion();
-  }
+//   // Get Euler Angle of Orientation
+//   for (const auto i : make_range(grain_num))
+//   {
+//     auto grain_id = _ebsd_reader.getFeatureID(i);
+//     mooseAssert(grain_id < grain_num, "Feature ids cannot exceed max grain number");
+//     _euler_angle[grain_id] = _ebsd_reader.getEulerAngles(i);
+//     _quat_angle[grain_id] = _euler_angle[grain_id].toQuaternion();
+//   }
 
-  for (const auto j : make_range(std::make_unsigned_t<int>(1), grain_num))
-  {
-    for (const auto i : make_range(j))
-    {
-      Real theta = getMisorientationFromQuaternion(_quat_angle[i], _quat_angle[j]);
-      _misorientation_angles.push_back(theta / libMesh::pi * 180);
-    }
-  }
-}
+//   for (const auto j : make_range(std::make_unsigned_t<int>(1), grain_num))
+//   {
+//     for (const auto i : make_range(j))
+//     {
+//       Real theta = getMisorientationFromQuaternion(_quat_angle[i], _quat_angle[j]);
+//       _misorientation_angles.push_back(theta / libMesh::pi * 180);
+//     }
+//   }
+// }

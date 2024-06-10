@@ -25,7 +25,10 @@ public:
 protected:
   virtual void computeQpProperties();
 
-  Real _GBEnergy;
+  const MaterialPropertyName _gamma_name;
+  const GenericMaterialProperty<Real, is_ad> & _GBEnergy;
+
+  // Real _GBEnergy;
 };
 
 typedef GBEvolutionTempl<false> GBEvolution;
