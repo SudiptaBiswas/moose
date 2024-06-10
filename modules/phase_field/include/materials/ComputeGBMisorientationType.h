@@ -11,7 +11,7 @@
 
 #include "Material.h"
 #include "GrainTracker.h"
-#include "EBSDReader.h"
+#include "EulerAngleProvider.h"
 
 /**
  * Visualize the location of grain boundaries in a polycrystalline simulation.
@@ -27,12 +27,8 @@ protected:
   /// Necessary override. This is where the property values are set.
   virtual void computeQpProperties() override;
 
-  /// Function to obtain the total line number in misorientation angle file
-  virtual unsigned int getTotalLineNum() const;
-  /// Function to obtain line number for a given grain pair
-  virtual unsigned int getLineNum(unsigned int grain_i, unsigned int grain_j);
-  /// Function to get the GB type for triple junctions
-  virtual Real getTripleJunctionType();
+  /// Function to get the GB misorientation for triple junctions
+  virtual void computeTripleJunctionMisorientation();
   /// Function to convert symmetry matrix to quaternion form
   void rotationSymmetryToQuaternion(const double O[3][3], Eigen::Quaternion<Real> & q);
   /// Function to define the symmetry operator
@@ -41,16 +37,18 @@ protected:
   double getMisorientationFromQuaternion(const Eigen::Quaternion<Real> qi,
                                          const Eigen::Quaternion<Real> qj);
   /// Get the Misorientation angle
-  void getMisorientationAngles();
+  double getMisorientationAngle(unsigned int grain1, unsigned int grain2);
+  // void getMisorientationAngles();
 
   /// Grain tracker object
   const GrainTracker & _grain_tracker;
 
   /// EBSD reader user object
-  const EBSDReader & _ebsd_reader;
+  const EulerAngleProvider & _euler;
 
   /// Parameters to calculate the Misorientation angle file
-  std::vector<double> _misorientation_angles;
+  Real _misorientation_angle;
+  Real _gb;
 
   /// parameters to store the EBSD id and corresponding value on GB
   std::vector<unsigned int> _gb_pairs;
@@ -66,9 +64,10 @@ protected:
   /// The parameters to calculate the misorientation
   std::vector<Eigen::Quaternion<Real>> _sym_quat;
   int _o_sym = 24;
-  std::vector<EulerAngles> _euler_angle;
-  std::vector<Eigen::Quaternion<Real>> _quat_angle;
+  // std::vector<EulerAngles> _euler_angle;
+  // std::vector<Eigen::Quaternion<Real>> _quat_angle;
 
   /// precalculated element value
+  ADMaterialProperty<Real> & _gb_misorientation;
   ADMaterialProperty<Real> & _gb_type;
 };

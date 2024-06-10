@@ -193,11 +193,19 @@
   [./GB_type]
     # The new developed Miso Bnds Aux Kernel
     type = ComputeGBMisorientationType
-    ebsd_reader = ebsd_reader
+    euler_angle_provider = ebsd_reader
     grain_tracker = grain_tracker
-    output_properties = 'gb_type'
+    output_properties = 'gb_type gb_misorientation'
+    # output_properties = 'gb_type'
     outputs = exodus
   [../]
+  [./GB_prop]
+    # The new developed Miso Bnds Aux Kernel
+    type = MisorientationDependentProperties
+    gb_energy_isotropic = 1.5
+    outputs = exodus
+  [../]
+
 []
 
 [Postprocessors]

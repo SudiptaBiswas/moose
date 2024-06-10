@@ -77,6 +77,7 @@
     # molar_volume_value = 7.11e-6 #Units:m^3/mol
     Anisotropic_GB_file_name = anisotropy_mobility.txt   # anisotropy_energy.txt
     inclination_anisotropy = false # true
+    outputs = exodus
   [../]
 []
 

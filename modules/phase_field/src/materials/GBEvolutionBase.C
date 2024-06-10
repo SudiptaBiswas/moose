@@ -21,12 +21,15 @@ GBEvolutionBaseTempl<is_ad>::validParams()
   params.addRequiredParam<Real>("wGB", "Diffuse GB width in the length scale of the model");
   params.addParam<Real>("length_scale", 1.0e-9, "Length scale in m, where default is nm");
   params.addParam<Real>("time_scale", 1.0e-9, "Time scale in s, where default is ns");
+  params.addParam<MaterialPropertyName>("GBMobility_prop", "GB mobility property");
   params.addParam<Real>(
       "GBMobility",
       -1,
       "GB mobility input in m^4/(J*s), that overrides the temperature dependent calculation");
   params.addParam<Real>("GBmob0", 0, "Grain boundary mobility prefactor in m^4/(J*s)");
   params.addParam<Real>("Q", 0, "Grain boundary migration activation energy in eV");
+  // params.addRequiredParam<MaterialPropertyName>(
+  //     "gamma", "The interface profile coefficient to use with the kernel");
   params.addParam<Real>("molar_volume",
                         24.62e-6,
                         "Molar volume in m^3/mol, needed for temperature gradient driving force");
@@ -46,6 +49,8 @@ GBEvolutionBaseTempl<is_ad>::GBEvolutionBaseTempl(const InputParameters & parame
     _molar_vol(getParam<Real>("molar_volume")),
     _T(coupledValue("T")),
     _sigma(declareGenericProperty<Real, is_ad>("sigma")),
+    _M_name(this->template getParam<MaterialPropertyName>("GBMobility_prop")),
+    _M_GB_prop(this->template getGenericMaterialProperty<Real, is_ad>(_M_name)),
     _M_GB(declareGenericProperty<Real, is_ad>("M_GB")),
     _kappa(declareGenericProperty<Real, is_ad>("kappa_op")),
     _gamma(declareGenericProperty<Real, is_ad>("gamma_asymm")),
@@ -61,8 +66,8 @@ GBEvolutionBaseTempl<is_ad>::GBEvolutionBaseTempl(const InputParameters & parame
     _kb(8.617343e-5),     // Boltzmann constant in eV/K
     _JtoeV(6.24150974e18) // Joule to eV conversion
 {
-  if (_GBMobility == -1 && _GBmob0 == 0)
-    mooseError("Either a value for GBMobility or for GBmob0 and Q must be provided");
+  // if (_GBMobility == -1 && _GBmob0 == 0)
+  //   mooseError("Either a value for GBMobility or for GBmob0 and Q must be provided");
 }
 
 template <bool is_ad>
@@ -74,7 +79,12 @@ GBEvolutionBaseTempl<is_ad>::computeQpProperties()
   // GB mobility Derivative
   Real dM_GBdT;
 
-  if (_GBMobility < 0)
+  if (isParamValid("GBMobility_prop"))
+  {
+    _M_GB[_qp] = _M_GB_prop[_qp] * _time_scale / (_JtoeV * length_scale4);
+    dM_GBdT = 0.0;
+  }
+  else if (_GBMobility < 0)
   {
     // Convert to lengthscale^4/(eV*timescale);
     const Real M0 = _GBmob0 * _time_scale / (_JtoeV * length_scale4);
