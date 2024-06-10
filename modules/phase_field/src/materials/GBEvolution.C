@@ -17,13 +17,18 @@ InputParameters
 GBEvolutionTempl<is_ad>::validParams()
 {
   InputParameters params = GBEvolutionBaseTempl<is_ad>::validParams();
-  params.addRequiredParam<Real>("GBenergy", "Grain boundary energy in J/m^2");
+  // params.addParam<Real>("GBenergy", "Grain boundary energy in J/m^2");
+  params.addRequiredParam<MaterialPropertyName>(
+      "GBenergy", "The interface profile coefficient to use with the kernel");
   return params;
 }
 
 template <bool is_ad>
 GBEvolutionTempl<is_ad>::GBEvolutionTempl(const InputParameters & parameters)
-  : GBEvolutionBaseTempl<is_ad>(parameters), _GBEnergy(this->template getParam<Real>("GBenergy"))
+  : GBEvolutionBaseTempl<is_ad>(parameters),
+    // _GBEnergy(this->template getParam<Real>("GBenergy"))
+    _gamma_name(this->template getParam<MaterialPropertyName>("GBenergy")),
+    _GBEnergy(this->template getGenericMaterialProperty<Real, is_ad>(_gamma_name))
 {
 }
 
@@ -32,7 +37,8 @@ void
 GBEvolutionTempl<is_ad>::computeQpProperties()
 {
   // eV/nm^2
-  this->_sigma[this->_qp] = _GBEnergy * this->_JtoeV * (this->_length_scale * this->_length_scale);
+  this->_sigma[this->_qp] =
+      _GBEnergy[this->_qp] * this->_JtoeV * (this->_length_scale * this->_length_scale);
 
   GBEvolutionBaseTempl<is_ad>::computeQpProperties();
 }
