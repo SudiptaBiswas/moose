@@ -49,8 +49,10 @@ GBEvolutionBaseTempl<is_ad>::GBEvolutionBaseTempl(const InputParameters & parame
     _molar_vol(getParam<Real>("molar_volume")),
     _T(coupledValue("T")),
     _sigma(declareGenericProperty<Real, is_ad>("sigma")),
-    _M_name(this->template getParam<MaterialPropertyName>("GBMobility_prop")),
-    _M_GB_prop(this->template getGenericMaterialProperty<Real, is_ad>(_M_name)),
+    // _M_name(this->template getParam<MaterialPropertyName>("GBMobility_prop")),
+    _M_GB_prop(isParamValid("GBMobility_prop")
+                   ? &getGenericMaterialProperty<Real, is_ad>("GBMobility_prop")
+                   : nullptr),
     _M_GB(declareGenericProperty<Real, is_ad>("M_GB")),
     _kappa(declareGenericProperty<Real, is_ad>("kappa_op")),
     _gamma(declareGenericProperty<Real, is_ad>("gamma_asymm")),
@@ -79,9 +81,10 @@ GBEvolutionBaseTempl<is_ad>::computeQpProperties()
   // GB mobility Derivative
   Real dM_GBdT;
 
-  if (isParamValid("GBMobility_prop"))
+  if (_M_GB_prop)
   {
-    _M_GB[_qp] = _M_GB_prop[_qp] * _time_scale / (_JtoeV * length_scale4);
+    _M_GB[_qp] =
+        MetaPhysicL::raw_value((*_M_GB_prop)[_qp]) * _time_scale / (_JtoeV * length_scale4);
     dM_GBdT = 0.0;
   }
   else if (_GBMobility < 0)

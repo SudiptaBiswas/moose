@@ -27,6 +27,7 @@ PolycrystalElasticDrivingForceAction::validParams()
                                "Optional parameter that allows the user to define "
                                "multiple mechanics material systems on the same "
                                "block, i.e. for multiple phases");
+  params.addParam<std::string>("mob_name", "L", "The mobility used with the kernel");
   return params;
 }
 
@@ -36,7 +37,9 @@ PolycrystalElasticDrivingForceAction::PolycrystalElasticDrivingForceAction(
     _op_num(getParam<unsigned int>("op_num")),
     _var_name_base(getParam<std::string>("var_name_base")),
     _base_name(isParamValid("base_name") ? getParam<std::string>("base_name") + "_" : ""),
-    _elasticity_tensor_name(_base_name + "elasticity_tensor")
+    _elasticity_tensor_name(_base_name + "elasticity_tensor"),
+    _mob_name(getParam<std::string>("mob_name"))
+
 {
 }
 
@@ -63,6 +66,7 @@ PolycrystalElasticDrivingForceAction::act()
     // Set the actual parameters for the kernel
     InputParameters poly_params = _factory.getValidParams(kernel_type);
     poly_params.set<NonlinearVariableName>("variable") = var_name;
+    poly_params.set<MaterialPropertyName>("mob_name") = _mob_name;
     poly_params.set<MaterialPropertyName>("D_tensor_name") = D_stiff_name;
     poly_params.set<bool>("use_displaced_mesh") = getParam<bool>("use_displaced_mesh");
 

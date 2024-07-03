@@ -44,7 +44,11 @@ protected:
   const GrainTracker & _grain_tracker;
 
   /// EBSD reader user object
-  const EulerAngleProvider & _euler;
+  const EulerAngleProvider * const _euler;
+
+  // The coupled Euler angles component variables
+  unsigned int _n_euler_angle_vars;
+  const std::vector<const VariableValue *> _euler_angle_vars;
 
   /// Parameters to calculate the Misorientation angle file
   Real _misorientation_angle;

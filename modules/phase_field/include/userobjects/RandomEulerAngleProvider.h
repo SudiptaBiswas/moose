@@ -33,7 +33,8 @@ public:
   virtual unsigned int getGrainNum() const override;
 
 protected:
-  const GrainTrackerInterface & _grain_tracker;
+  const Real _grain_num;
+  const GrainTrackerInterface * _grain_tracker;
   std::vector<EulerAngles> _angles;
 
   MooseRandom _random;

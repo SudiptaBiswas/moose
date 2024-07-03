@@ -1,4 +1,4 @@
-L = 0.4 #mm
+L = 1000 #mm
 # area = ${fparse L*L}
 
 [GlobalParams]

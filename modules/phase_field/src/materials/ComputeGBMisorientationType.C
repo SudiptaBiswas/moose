@@ -22,6 +22,8 @@ ComputeGBMisorientationType::validParams()
   params.addRequiredParam<UserObjectName>(
       "euler_angle_provider",
       "The userobject to povide the euler angles, EBSDReader GeneralUserObject");
+  params.addCoupledVar("euler_angle_variables",
+                       "Vector of coupled variables representing the Euler angles' components.");
   params.addRequiredCoupledVarWithAutoBuild(
       "v", "var_name_base", "op_num", "Array of coupled variables");
   params.addParam<Real>("angle_threshold", 15, "Max LAGB Misorientation angle");
@@ -31,7 +33,11 @@ ComputeGBMisorientationType::validParams()
 ComputeGBMisorientationType::ComputeGBMisorientationType(const InputParameters & parameters)
   : Material(parameters),
     _grain_tracker(getUserObject<GrainTracker>("grain_tracker")),
-    _euler(getUserObject<EulerAngleProvider>("euler_angle_provider")),
+    _euler(isParamValid("euler_angle_provider")
+               ? &getUserObject<EulerAngleProvider>("euler_angle_provider")
+               : nullptr),
+    _n_euler_angle_vars(coupledComponents("euler_angle_variables")),
+    _euler_angle_vars(coupledValues("euler_angle_variables")),
     _op_num(coupledComponents("v")),
     _vals(coupledValues("v")),
     _angle_threshold(getParam<Real>("angle_threshold")),
@@ -40,6 +46,12 @@ ComputeGBMisorientationType::ComputeGBMisorientationType(const InputParameters &
 {
   // Initialize symmetry operator as quaternion vectors
   defineSymmetryOperator();
+
+  // Check if source of Euler angle values has a conflict
+  if (_euler && _n_euler_angle_vars)
+    paramError("euler_angle_variables",
+               "Euler angles cannot be supplied from both coupled variables and an UserObject "
+               "provided in the option `euler_angle_provider`.");
 }
 
 void
@@ -83,8 +95,8 @@ ComputeGBMisorientationType::computeQpProperties()
 Real
 ComputeGBMisorientationType::getMisorientationAngle(unsigned int grain1, unsigned int grain2)
 {
-  EulerAngles euler1 = _euler.getEulerAngles(grain1);
-  EulerAngles euler2 = _euler.getEulerAngles(grain2);
+  EulerAngles euler1 = _euler->getEulerAngles(grain1);
+  EulerAngles euler2 = _euler->getEulerAngles(grain2);
 
   Real theta = getMisorientationFromQuaternion(euler1.toQuaternion(), euler2.toQuaternion());
 

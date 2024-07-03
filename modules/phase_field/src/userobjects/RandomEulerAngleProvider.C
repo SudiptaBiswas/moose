@@ -17,17 +17,24 @@ RandomEulerAngleProvider::validParams()
 {
   InputParameters params = EulerAngleProvider::validParams();
   params.addClassDescription("Assign random Euler angles for each grain.");
-  params.addRequiredParam<UserObjectName>("grain_tracker_object",
-                                          "The FeatureFloodCount UserObject to get values from.");
+  params.addParam<Real>("grain_num", 0.0, "Number of grains");
+  params.addParam<UserObjectName>("grain_tracker_object",
+                                  "The FeatureFloodCount UserObject to get values from.");
   params.addParam<unsigned int>("seed", 0, "Seed value for the random number generator");
   return params;
 }
 
 RandomEulerAngleProvider::RandomEulerAngleProvider(const InputParameters & params)
   : EulerAngleProvider(params),
-    _grain_tracker(getUserObject<GrainTrackerInterface>("grain_tracker_object")),
+    _grain_num(getParam<Real>("grain_num")),
+    _grain_tracker(isParamValid("grain_tracker_object")
+                       ? &getUserObject<GrainTrackerInterface>("grain_tracker_object")
+                       : NULL),
     _angles(0)
 {
+  if (_grain_num == 0 && !_grain_tracker)
+    paramError("grain_num", "Either grain_num or a grain_tracker_object should be provided");
+
   _random.seed(0, getParam<unsigned int>("seed"));
 }
 
@@ -35,7 +42,10 @@ void
 RandomEulerAngleProvider::initialize()
 {
   EulerAngles angle;
-  auto grain_num = _grain_tracker.getTotalFeatureCount();
+  auto grain_num = _grain_num;
+  if (_grain_tracker)
+    grain_num = _grain_tracker->getTotalFeatureCount();
+
   for (auto i = _angles.size(); i < grain_num; ++i)
   {
     angle.random(_random);
