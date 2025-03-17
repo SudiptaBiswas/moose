@@ -8,7 +8,7 @@
 //* https://www.gnu.org/licenses/lgpl-2.1.html
 
 #include "RosenthalPolycrystalICAction.h"
-#include "RosenthalPolycrystalIC.h"
+#include "RosenthalPolycrystalICOld.h"
 #include "Factory.h"
 #include "FEProblem.h"
 #include "Conversion.h"
@@ -19,7 +19,7 @@ InputParameters
 RosenthalPolycrystalICAction::validParams()
 {
   InputParameters params = Action::validParams();
-  params += RosenthalPolycrystalIC::validParams();
+  params += RosenthalPolycrystalICOld::validParams();
   params.addRequiredParam<unsigned int>("op_num", "Number of order parameters");
   params.addRequiredParam<std::string>("var_name_base", "specifies the base name of the variables");
   params.suppressParameter<VariableName>("variable");
@@ -47,7 +47,7 @@ RosenthalPolycrystalICAction::act()
   for (unsigned int op = 0; op < _op_num; op++)
   {
     // Set parameters for RosenthalPolycrystalIC
-    InputParameters poly_params = _factory.getValidParams("RosenthalPolycrystalIC");
+    InputParameters poly_params = _factory.getValidParams("RosenthalPolycrystalICOld");
     poly_params.set<unsigned int>("op_index") = op;
     poly_params.set<VariableName>("variable") = _var_name_base + Moose::stringify(op);
     poly_params.set<MooseEnum>("structure_type") = "grains";
