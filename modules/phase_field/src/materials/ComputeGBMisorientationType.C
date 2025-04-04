@@ -38,7 +38,7 @@ ComputeGBMisorientationType::ComputeGBMisorientationType(const InputParameters &
     _vals(coupledValues("v")),
     _angle_threshold(getParam<Real>("angle_threshold")),
     _gb_misorientation(declareADProperty<Real>("gb_misorientation")),
-    _gb_type(declareADProperty<Real>("gb_type"))
+    _gb_type(declareProperty<Real>("gb_type"))
 {
   // Initialize symmetry operator as quaternion vectors
   defineSymmetryOperator();
@@ -69,18 +69,18 @@ ComputeGBMisorientationType::computeQpProperties()
   if (_gb_pairs.size() < 2)
     return;
 
-  if (_gb_pairs.size() > 2)
+  if (_gb_pairs.size() >= 2)
   {
     // get continuous type at triple junction
     computeTripleJunctionMisorientation();
     _gb_misorientation[_qp] = _misorientation_angle;
     _gb_type[_qp] = _gb;
   }
-  else
-  { // get misorientation angle
-    _gb_misorientation[_qp] = getMisorientationAngle(_gb_pairs[0], _gb_pairs[1]);
-    _gb_type[_qp] = ((_gb_misorientation[_qp] < _angle_threshold) ? 1 : 2);
-  }
+  // else
+  // { // get misorientation angle
+  //   _gb_misorientation[_qp] = getMisorientationAngle(_gb_pairs[0], _gb_pairs[1]);
+  //   _gb_type[_qp] = ((_gb_misorientation[_qp] < _angle_threshold) ? 1 : 2);
+  // }
 }
 
 Real

@@ -74,5 +74,5 @@ protected:
 
   /// precalculated element value
   ADMaterialProperty<Real> & _gb_misorientation;
-  ADMaterialProperty<Real> & _gb_type;
+  MaterialProperty<Real> & _gb_type;
 };
