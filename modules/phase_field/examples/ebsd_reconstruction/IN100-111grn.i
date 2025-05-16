@@ -1,7 +1,7 @@
 [Mesh]
   [ebsd_mesh]
     type = EBSDMeshGenerator
-    filename = IN100_120x120.txt
+    filename = IN100_128x128.txt
     pre_refine = 2
   []
 []

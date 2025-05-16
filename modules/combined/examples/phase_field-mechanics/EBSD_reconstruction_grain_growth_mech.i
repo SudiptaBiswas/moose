@@ -4,8 +4,9 @@
 [Mesh]
   [ebsd_mesh]
     type = EBSDMeshGenerator
-    uniform_refine = 2 #Mesh can go two levels coarser than the EBSD grid
+    # uniform_refine = 2 #Mesh can go two levels coarser than the EBSD grid
     filename = IN100_128x128.txt
+    pre_refine = 2
   []
 []
 
@@ -63,10 +64,14 @@
 
 [ICs]
   [PolycrystalICs]
-    [ReconVarIC]
-      ebsd_reader = ebsd
-      coloring_algorithm = bt
+    [PolycrystalColoringIC]
+      # select only data for phase 1 from the EBSD file
+      polycrystal_ic_uo = ebsd
     []
+    # [PolycrystalEBSD]
+    #   ebsd_reader = ebsd
+    #   coloring_algorithm = bt
+    # []
   []
 []
 
@@ -119,7 +124,7 @@
   [phi1]
     type = OutputEulerAngles
     variable = phi1
-    euler_angle_provider = ebsd
+    euler_angle_provider = ebsd_reader
     grain_tracker = grain_tracker
     output_euler_angle = 'phi1'
     execute_on = 'initial'
@@ -127,7 +132,7 @@
   [Phi]
     type = OutputEulerAngles
     variable = Phi
-    euler_angle_provider = ebsd
+    euler_angle_provider = ebsd_reader
     grain_tracker = grain_tracker
     output_euler_angle = 'Phi'
     execute_on = 'initial'
@@ -135,7 +140,7 @@
   [phi2]
     type = OutputEulerAngles
     variable = phi2
-    euler_angle_provider = ebsd
+    euler_angle_provider = ebsd_reader
     grain_tracker = grain_tracker
     output_euler_angle = 'phi2'
     execute_on = 'initial'
@@ -143,7 +148,7 @@
   [grain_aux]
     type = EBSDReaderPointDataAux
     variable = EBSD_grain
-    ebsd_reader = ebsd
+    ebsd_reader = ebsd_reader
     data_name = 'feature_id'
     execute_on = 'initial'
   []
@@ -154,7 +159,7 @@
     type = DirichletBC
     variable = disp_y
     boundary = top
-    value = -2.0
+    value = -1.0
   []
   [x_anchor]
     type = DirichletBC
@@ -174,7 +179,7 @@
   [PhaseField]
     [EulerAngles2RGB]
       crystal_structure = cubic
-      euler_angle_provider = ebsd
+      euler_angle_provider = ebsd_reader
       grain_tracker = grain_tracker
     []
   []
@@ -184,16 +189,33 @@
   [Copper]
     # T = 500 # K
     type = GBEvolution
-    block = 0
+    # block = 0
     T = 500
     wGB = 0.6 # um
     GBmob0 = 2.5e-6 # m^4/(Js) from Schoenfelder 1997
     Q = 0.23 # Migration energy in eV
     GBenergy = 0.708 # GB energy in J/m^2
-    molar_volume = 7.11e-6; # Molar volume in m^3/mol
+    molar_volume = 7.11e-6 # Molar volume in m^3/mol
     length_scale = 1.0e-6
     time_scale = 1.0e-6
+    outputs = exodus
   []
+  [./GB_type]
+    # The new developed Miso Bnds Aux Kernel
+    type = ComputeGBMisorientationType
+    euler_angle_provider = ebsd_reader
+    grain_tracker = grain_tracker
+    output_properties = 'gb_type gb_misorientation'
+    # output_properties = 'gb_type'
+    outputs = exodus
+  [../]
+  # [./GB_prop]
+  #   # The new developed Miso Bnds Aux Kernel
+  #   type = MisorientationDependentProperties
+  #   gb_energy_isotropic = 0.708
+  #   gb_mobility_isotropic = 6.6383e-9
+  #   outputs = exodus
+  # [../]
   [ElasticityTensor]
     type = ComputePolycrystalElasticityTensor
     grain_tracker = grain_tracker
@@ -227,17 +249,24 @@
 []
 
 [UserObjects]
-  [ebsd]
+  [ebsd_reader]
     type = EBSDReader
+  []
+  [ebsd]
+    type = PolycrystalEBSD
+    # coloring_algorithm = bt
+    ebsd_reader = ebsd_reader
+    enable_var_coloring = true
   []
   [grain_tracker]
     type = GrainTrackerElasticity
     compute_var_to_feature_map = true
-    ebsd_reader = ebsd
-
+    # ebsd_reader = ebsd_reader
+    flood_entity_type = ELEMENTAL
     fill_method = symmetric9
-    C_ijkl = '1.27e5 0.708e5 0.708e5 1.27e5 0.708e5 1.27e5 0.7355e5 0.7355e5 0.7355e5'
-    euler_angle_provider = ebsd
+    C_ijkl = '1.27e4 0.708e4 0.708e4 1.27e4 0.708e4 1.27e4 0.7355e4 0.7355e4 0.7355e4'
+    euler_angle_provider = ebsd_reader
+    polycrystal_ic_uo = ebsd
   []
 []
 
@@ -245,17 +274,18 @@
   type = Transient
   scheme = bdf2
   solve_type = PJFNK
-  petsc_options_iname = '-pc_type -pc_hypre_type -pc_hypre_boomeramg_strong_threshold'
-  petsc_options_value = '  hypre    boomeramg                   0.7'
+  petsc_options_iname = '-pc_type -pc_hypre_type -ksp_gmres_restart -pc_hypre_boomeramg_strong_threshold'
+  petsc_options_value = 'hypre    boomeramg       31                 0.7'
   l_tol = 1.0e-4
-  l_max_its = 20
-  nl_max_its = 20
-  nl_rel_tol = 1.0e-8
+  l_max_its = 30
+  nl_max_its = 25
+  nl_rel_tol = 1.0e-7
   start_time = 0.0
   num_steps = 30
-  dt = 10
+  automatic_scaling = true
+  dt = 1
   [Adaptivity]
-    initial_adaptivity = 0
+    initial_adaptivity = 2
     refine_fraction = 0.7
     coarsen_fraction = 0.1
     max_h_level = 2
@@ -263,7 +293,7 @@
   [TimeStepper]
     type = IterationAdaptiveDT
     cutback_factor = 0.9
-    dt = 10.0
+    dt = 1.0
     growth_factor = 1.1
     optimal_iterations = 7
   []

@@ -15,19 +15,20 @@
   op_num = 8
   var_name_base = gr
   grain_num = 36
+  displacements = 'disp_x disp_y'
 []
 
 [Variables]
   [./PolycrystalVariables]
   [../]
-  [./disp_x]
-    order = FIRST
-    family = LAGRANGE
-  [../]
-  [./disp_y]
-    order = FIRST
-    family = LAGRANGE
-  [../]
+  # [./disp_x]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
+  # [./disp_y]
+  #   order = FIRST
+  #   family = LAGRANGE
+  # [../]
 []
 
 [UserObjects]
@@ -104,10 +105,26 @@
   [../]
   [./PolycrystalElasticDrivingForce]
   [../]
-  [./TensorMechanics]
-    use_displaced_mesh = true
-    displacements = 'disp_x disp_y'
-  [../]
+  # [./TensorMechanics]
+  #   use_displaced_mesh = true
+  #   displacements = 'disp_x disp_y'
+  # [../]
+[]
+
+[Modules]
+
+  [TensorMechanics]
+
+    [Master]
+      [all]
+        strain = SMALL
+        add_variables = true
+        volumetric_locking_correction = true
+        generate_output = 'stress_yy strain_yy'
+        # save_in = 'resid_x resid_y'
+      []
+    []
+  []
 []
 
 [AuxKernels]
@@ -214,6 +231,7 @@
     block = 0
     T = 500 # K
     wGB = 15 # nm
+    # GBMobility_prop =
     GBmob0 = 2.5e-6 # m^4/(Js) from Schoenfelder 1997
     Q = 0.23 # Migration energy in eV
     GBenergy = 0.708 # GB energy in J/m^2
@@ -223,11 +241,11 @@
     grain_tracker = grain_tracker
     euler_angle_provider = euler_angle_file
   [../]
-  [./strain]
-    type = ComputeSmallStrain
-    block = 0
-    displacements = 'disp_x disp_y'
-  [../]
+  # [./strain]
+  #   type = ComputeSmallStrain
+  #   block = 0
+  #   displacements = 'disp_x disp_y'
+  # [../]
   [./stress]
     type = ComputeLinearElasticStress
     block = 0
