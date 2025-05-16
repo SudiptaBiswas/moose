@@ -35,8 +35,8 @@ protected:
   const VariableValue & _T;
 
   GenericMaterialProperty<Real, is_ad> & _sigma;
-  const MaterialPropertyName _M_name;
-  const GenericMaterialProperty<Real, is_ad> & _M_GB_prop;
+  // const MaterialPropertyName _M_name;
+  const GenericMaterialProperty<Real, is_ad> * _M_GB_prop;
   GenericMaterialProperty<Real, is_ad> & _M_GB;
   GenericMaterialProperty<Real, is_ad> & _kappa;
   GenericMaterialProperty<Real, is_ad> & _gamma;
